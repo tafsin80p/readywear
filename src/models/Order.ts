@@ -83,8 +83,10 @@ const OrderSchema: Schema<IOrder> = new Schema(
 
 // We need to delete the model from cache in development to ensure schema updates apply
 if (process.env.NODE_ENV === 'development') {
+  // @ts-ignore
   delete mongoose.models.Order;
   if (mongoose.connection && mongoose.connection.models) {
+    // @ts-ignore
     delete mongoose.connection.models.Order;
   }
 }

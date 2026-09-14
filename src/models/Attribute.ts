@@ -27,10 +27,12 @@ const AttributeSchema: Schema<IAttribute> = new Schema(
 
 // Delete cached model to force schema update in development
 if (mongoose.models.Attribute) {
+  // @ts-ignore
   delete mongoose.models.Attribute;
 }
 if (mongoose.connection && mongoose.connection.models && mongoose.connection.models.Attribute) {
-  delete mongoose.connection.models.Attribute;
+  // @ts-ignore
+    delete mongoose.connection.models.Attribute;
 }
 
 const Attribute: Model<IAttribute> = mongoose.model<IAttribute>("Attribute", AttributeSchema);

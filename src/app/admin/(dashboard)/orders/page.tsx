@@ -73,7 +73,7 @@ export default async function AdminOrdersPage() {
                 </td>
               </tr>
             ) : (
-              orders.map((order) => (
+              orders.map((order: any) => (
                 <OrderRow 
                   key={order._id.toString()}
                   order={order}

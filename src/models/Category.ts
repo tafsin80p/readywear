@@ -20,19 +20,20 @@ const CategorySchema: Schema<ICategory> = new Schema(
 );
 
 // Pre-save hook to generate slug if not provided, though we expect it to be provided
-CategorySchema.pre("save", function (next) {
+CategorySchema.pre("save", async function () {
   if (!this.slug && this.name) {
     this.slug = this.name.toLowerCase().trim().replace(/[\s_]+/g, '-').replace(/[^\w\u0980-\u09FF-]+/g, '');
   }
-  next();
 });
 
 // Delete cached model to force schema update in development
 if (mongoose.models.Category) {
+  // @ts-ignore
   delete mongoose.models.Category;
 }
 if (mongoose.connection && mongoose.connection.models && mongoose.connection.models.Category) {
-  delete mongoose.connection.models.Category;
+  // @ts-ignore
+    delete mongoose.connection.models.Category;
 }
 
 const Category: Model<ICategory> = mongoose.model<ICategory>("Category", CategorySchema);

@@ -74,10 +74,12 @@ ProductSchema.pre("save", function () {
 
 // Delete cached model to force schema update in development
 if (mongoose.models.Product) {
+  // @ts-ignore
   delete mongoose.models.Product;
 }
 if (mongoose.connection && mongoose.connection.models && mongoose.connection.models.Product) {
-  delete mongoose.connection.models.Product;
+  // @ts-ignore
+    delete mongoose.connection.models.Product;
 }
 
 const Product: Model<IProduct> = mongoose.model<IProduct>("Product", ProductSchema);

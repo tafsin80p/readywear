@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState, useEffect, type LucideIcon } from "react";
+import { useState, useEffect } from "react";
+import { LucideIcon } from "lucide-react";
 import { 
   Home, 
   ShoppingBag, 

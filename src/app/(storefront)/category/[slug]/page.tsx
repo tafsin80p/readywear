@@ -61,7 +61,7 @@ export default async function CategoryShopPage({ params }: { params: Promise<{ s
               {filteredProducts.length > 0 ? (
                 <div className="grid grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-3 md:gap-6">
                   {filteredProducts.map((product, index) => (
-                    <ProductCard key={product.id} product={product} priority={index < 2} />
+                    <ProductCard key={product.id} product={product as any} priority={index < 2} />
                   ))}
                 </div>
               ) : (

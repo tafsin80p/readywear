@@ -25,9 +25,9 @@ export default function AdminProfile() {
     if (status === "authenticated" && session?.user) {
       setFormData(prev => ({
         ...prev,
-        name: session.user.name || "",
-        email: session.user.email || "",
-        image: session.user.image || "",
+        name: session?.user?.name || "",
+        email: session?.user?.email || "",
+        image: session?.user?.image || "",
       }));
     }
   }, [session, status]);
