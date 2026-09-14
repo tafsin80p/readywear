@@ -1,11 +1,11 @@
 "use client";
 
-import { products, categoryData } from "@/data/mock";
+import { categoryData } from "@/data/mock";
 import { ProductCard } from "./ProductCard";
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 
-export function CollectionSection() {
+export function CollectionSection({ products = [] }: { products?: any[] }) {
   const categories = [{ slug: "all", label: "সকল পণ্য" }, ...categoryData];
   
   // On the home page, we will show some default products (e.g., first 10)
@@ -16,7 +16,7 @@ export function CollectionSection() {
       <div className="flex flex-col md:flex-row md:items-end justify-between mb-6 gap-4">
         <div>
           <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2 flex items-center gap-2">
-            সকল পণ্য <span className="text-gray-400 font-normal text-xl">(Full Collection)</span>
+            সকল পণ্য <span className="text-gray-500 font-normal text-xl">(Full Collection)</span>
           </h2>
           <p className="text-gray-500">আমাদের সব নতুন এবং জনপ্রিয় পণ্য এখন এক জায়গায়</p>
         </div>
@@ -45,8 +45,8 @@ export function CollectionSection() {
 
       {/* Grid */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-6">
-        {defaultProducts.map((product) => (
-          <ProductCard key={product.id} product={product} />
+        {defaultProducts.map((product, index) => (
+          <ProductCard key={product._id} product={product} priority={index < 4} />
         ))}
       </div>
     </section>

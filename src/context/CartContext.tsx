@@ -12,6 +12,7 @@ export interface CartItem {
   quantity: number;
   size?: string;
   color?: string;
+  attributes?: Record<string, string>;
 }
 
 interface CartContextType {
@@ -19,9 +20,10 @@ interface CartContextType {
   openCart: () => void;
   closeCart: () => void;
   items: CartItem[];
-  addToCart: (product: any, quantity?: number, size?: string, color?: string) => void;
+  addToCart: (product: any, quantity?: number, size?: string, color?: string, attributes?: Record<string, string>, openSidebar?: boolean) => void;
   removeFromCart: (id: string) => void;
   updateQuantity: (id: string, quantity: number) => void;
+  clearCart: () => void;
   cartTotal: number;
   cartCount: number;
 }
@@ -49,8 +51,9 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const openCart = () => setIsCartOpen(true);
   const closeCart = () => setIsCartOpen(false);
 
-  const addToCart = (product: any, quantity = 1, size?: string, color?: string) => {
-    const cartItemId = `${product.id}-${size || 'default'}-${color || 'default'}`;
+  const addToCart = (product: any, quantity = 1, size?: string, color?: string, attributes?: Record<string, string>, openSidebar = true) => {
+    const attrString = attributes ? Object.entries(attributes).map(([k, v]) => `${k}:${v}`).sort().join('-') : '';
+    const cartItemId = `${product.id}-${size || 'default'}-${color || 'default'}${attrString ? `-${attrString}` : ''}`;
     
     setItems(prev => {
       const existingItem = prev.find(item => item.id === cartItemId);
@@ -70,12 +73,15 @@ export function CartProvider({ children }: { children: ReactNode }) {
         image: product.image,
         quantity,
         size,
-        color
+        color,
+        attributes
       }];
     });
     
     toast(`${product.title} কার্টে যোগ করা হয়েছে!`);
-    openCart(); // Open sidebar when item is added
+    if (openSidebar) {
+      openCart();
+    }
   };
 
   const removeFromCart = (id: string) => {
@@ -93,13 +99,17 @@ export function CartProvider({ children }: { children: ReactNode }) {
     ));
   };
 
+  const clearCart = () => {
+    setItems([]);
+  };
+
   const cartTotal = items.reduce((total, item) => total + (item.price * item.quantity), 0);
   const cartCount = items.reduce((count, item) => count + item.quantity, 0);
 
   return (
     <CartContext.Provider value={{ 
       isCartOpen, openCart, closeCart, 
-      items, addToCart, removeFromCart, updateQuantity, cartTotal, cartCount 
+      items, addToCart, removeFromCart, updateQuantity, clearCart, cartTotal, cartCount 
     }}>
       {children}
     </CartContext.Provider>

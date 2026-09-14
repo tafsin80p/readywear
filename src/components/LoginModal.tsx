@@ -1,17 +1,38 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Lock, User, Phone, X } from "lucide-react";
+import { Lock, User, Phone, Mail, X } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
+import { signIn } from "next-auth/react";
+import { useToast } from "@/context/ToastContext";
 
 export function LoginModal() {
   const { isLoginModalOpen, closeLoginModal } = useAuth();
+  const { toast } = useToast();
   const [isLogin, setIsLogin] = useState(true);
+  
+  // Login state
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+
+  // Register state
+  const [registerName, setRegisterName] = useState("");
+  const [registerEmail, setRegisterEmail] = useState("");
+  const [registerPassword, setRegisterPassword] = useState("");
+  const [isRegistering, setIsRegistering] = useState(false);
 
   // Reset state when opened
   useEffect(() => {
     if (isLoginModalOpen) {
       setIsLogin(true);
+      setError("");
+      setEmail("");
+      setPassword("");
+      setRegisterName("");
+      setRegisterEmail("");
+      setRegisterPassword("");
     }
   }, [isLoginModalOpen]);
 
@@ -86,22 +107,46 @@ export function LoginModal() {
                 isLogin ? "opacity-100 translate-x-0 relative z-10" : "opacity-0 -translate-x-8 absolute inset-0 pointer-events-none z-0"
               }`}
             >
-              <div className="mb-8">
+              <div className="mb-6">
                 <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">লগইন করুন</h2>
                 <p className="text-gray-500 text-sm sm:text-base">আপনার একাউন্টে প্রবেশ করতে তথ্য দিন</p>
+                {error && <p className="text-red-500 text-sm mt-2 font-medium">{error}</p>}
               </div>
 
-              <form className="space-y-4" onSubmit={(e) => e.preventDefault()}>
+              <form className="space-y-4" onSubmit={async (e) => {
+                e.preventDefault();
+                setError("");
+                setIsLoading(true);
+                try {
+                  const res = await signIn("credentials", {
+                    redirect: false,
+                    email,
+                    password,
+                  });
+                  if (res?.error) {
+                    setError(res.error);
+                  } else {
+                    toast("সফলভাবে লগইন হয়েছে!", "success");
+                    closeLoginModal();
+                  }
+                } catch (err) {
+                  setError("An unexpected error occurred");
+                } finally {
+                  setIsLoading(false);
+                }
+              }}>
                 <div className="space-y-1.5">
-                  <label className="text-sm font-semibold text-gray-700 block">মোবাইল নাম্বার বা ইমেইল</label>
+                  <label className="text-sm font-semibold text-gray-700 block">ইমেইল</label>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400">
-                      <User className="w-5 h-5" />
+                      <Mail className="w-5 h-5" />
                     </div>
                     <input 
-                      type="text" 
+                      type="email" 
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
                       className="w-full pl-11 pr-4 py-3 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors text-gray-900"
-                      placeholder="01XXXXXXXXX"
+                      placeholder="your@email.com"
                     />
                   </div>
                 </div>
@@ -117,14 +162,19 @@ export function LoginModal() {
                     </div>
                     <input 
                       type="password" 
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
                       className="w-full pl-11 pr-4 py-3 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors text-gray-900"
                       placeholder="••••••••"
                     />
                   </div>
                 </div>
 
-                <button className="w-full bg-primary hover:bg-primary/90 text-white font-bold py-3 rounded-xl transition-all shadow-lg shadow-primary/25 active:scale-[0.98] mt-2">
-                  লগইন করুন
+                <button 
+                  disabled={isLoading}
+                  className="w-full bg-primary hover:bg-primary/90 text-white font-bold py-3 rounded-xl transition-all shadow-lg shadow-primary/25 active:scale-[0.98] mt-2 disabled:opacity-70 disabled:cursor-not-allowed"
+                >
+                  {isLoading ? "লগইন হচ্ছে..." : "লগইন করুন"}
                 </button>
               </form>
             </div>
@@ -140,7 +190,42 @@ export function LoginModal() {
                 <p className="text-gray-500 text-sm sm:text-base">নতুন একাউন্ট তৈরি করতে তথ্য দিন</p>
               </div>
 
-              <form className="space-y-4" onSubmit={(e) => e.preventDefault()}>
+              <form className="space-y-4" onSubmit={async (e) => {
+                e.preventDefault();
+                setIsRegistering(true);
+                setError("");
+                try {
+                  const res = await fetch("/api/auth/register", {
+                    method: "POST",
+                    headers: {
+                      "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                      name: registerName,
+                      email: registerEmail,
+                      password: registerPassword,
+                    }),
+                  });
+
+                  const data = await res.json();
+
+                  if (!res.ok) {
+                    toast(data.message || "Registration failed", "error");
+                  } else {
+                    toast("অ্যাকাউন্ট সফলভাবে তৈরি হয়েছে! এখন লগইন করুন।", "success");
+                    // Switch to login tab and prefill the email
+                    setEmail(registerEmail);
+                    setIsLogin(true);
+                    setRegisterName("");
+                    setRegisterEmail("");
+                    setRegisterPassword("");
+                  }
+                } catch (error) {
+                  toast("An unexpected error occurred", "error");
+                } finally {
+                  setIsRegistering(false);
+                }
+              }}>
                 <div className="space-y-1.5">
                   <label className="text-sm font-semibold text-gray-700 block">আপনার নাম</label>
                   <div className="relative">
@@ -149,6 +234,9 @@ export function LoginModal() {
                     </div>
                     <input 
                       type="text" 
+                      required
+                      value={registerName}
+                      onChange={(e) => setRegisterName(e.target.value)}
                       className="w-full pl-11 pr-4 py-3 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors text-gray-900"
                       placeholder="সম্পূর্ণ নাম"
                     />
@@ -156,15 +244,18 @@ export function LoginModal() {
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-sm font-semibold text-gray-700 block">মোবাইল নাম্বার</label>
+                  <label className="text-sm font-semibold text-gray-700 block">ইমেইল</label>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400">
-                      <Phone className="w-5 h-5" />
+                      <Mail className="w-5 h-5" />
                     </div>
                     <input 
-                      type="tel" 
+                      type="email" 
+                      required
+                      value={registerEmail}
+                      onChange={(e) => setRegisterEmail(e.target.value)}
                       className="w-full pl-11 pr-4 py-3 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors text-gray-900"
-                      placeholder="01XXXXXXXXX"
+                      placeholder="your@email.com"
                     />
                   </div>
                 </div>
@@ -177,14 +268,20 @@ export function LoginModal() {
                     </div>
                     <input 
                       type="password" 
+                      required
+                      value={registerPassword}
+                      onChange={(e) => setRegisterPassword(e.target.value)}
                       className="w-full pl-11 pr-4 py-3 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors text-gray-900"
                       placeholder="••••••••"
                     />
                   </div>
                 </div>
 
-                <button className="w-full bg-primary hover:bg-primary/90 text-white font-bold py-3 rounded-xl transition-all shadow-lg shadow-primary/20 active:scale-[0.98] mt-2">
-                  রেজিস্ট্রেশন করুন
+                <button 
+                  disabled={isRegistering}
+                  className="w-full bg-primary hover:bg-primary/90 text-white font-bold py-3 rounded-xl transition-all shadow-lg shadow-primary/20 active:scale-[0.98] mt-2 disabled:opacity-70 disabled:cursor-not-allowed"
+                >
+                  {isRegistering ? "রেজিস্ট্রেশন হচ্ছে..." : "রেজিস্ট্রেশন করুন"}
                 </button>
               </form>
             </div>

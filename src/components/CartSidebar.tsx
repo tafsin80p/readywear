@@ -48,6 +48,7 @@ export function CartSidebar() {
           </div>
           <button 
             onClick={closeCart}
+            aria-label="Close Cart"
             className="p-2 text-gray-400 hover:text-gray-900 hover:bg-gray-100 rounded-full transition-colors"
           >
             <X className="w-5 h-5" />
@@ -64,7 +65,7 @@ export function CartSidebar() {
             items.map((item) => (
               <div key={item.id} className="flex gap-4 bg-gray-50/50 p-3 rounded-xl border border-gray-100">
                 <div className="relative w-20 h-24 rounded-lg overflow-hidden shrink-0 bg-white">
-                  <Image src={item.image} alt={item.title} fill className="object-cover" />
+                  <Image src={item.image || "https://placehold.co/400x600/f3f4f6/a1a1aa?text=No+Image"} alt={item.title} fill className="object-cover" />
                 </div>
                 <div className="flex flex-col flex-1">
                   <div className="flex justify-between items-start">
@@ -87,12 +88,12 @@ export function CartSidebar() {
                     <div className="flex items-center gap-3 bg-white border border-gray-200 rounded-md h-8 px-2">
                       <button 
                         onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                        className="text-gray-500 hover:text-primary"
+                        className="text-gray-500 hover:text-primary p-1"
                       >-</button>
-                      <span className="text-sm font-medium w-4 text-center">{item.quantity}</span>
+                      <span className="text-base font-bold w-6 text-center text-gray-900">{item.quantity}</span>
                       <button 
                         onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                        className="text-gray-500 hover:text-primary"
+                        className="text-gray-500 hover:text-primary p-1"
                       >+</button>
                     </div>
                     <span className="font-bold text-primary">৳ {toBengaliNumber(item.price * item.quantity)}</span>

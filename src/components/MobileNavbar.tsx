@@ -78,7 +78,7 @@ export function MobileNavbar() {
                 }}
                 className={cn(
                   "flex items-center justify-center px-4 py-2.5 rounded-full transition-all duration-300 ease-out",
-                  isActive ? "bg-primary text-white shadow-md shadow-primary/20" : "text-gray-500 hover:text-gray-800"
+                  isActive ? "bg-primary text-white shadow-md shadow-primary/20" : "text-gray-600 hover:text-gray-900"
                 )}
               >
                 <div className="relative">
@@ -120,6 +120,7 @@ export function MobileNavbar() {
             <h3 className="font-bold text-lg text-gray-900">ক্যাটাগরি সমূহ</h3>
             <button 
               onClick={() => setIsCategoryOpen(false)}
+              aria-label="Close Categories"
               className="p-2 bg-gray-50 hover:bg-gray-100 text-gray-500 rounded-full transition-colors"
             >
               <X className="w-5 h-5" />

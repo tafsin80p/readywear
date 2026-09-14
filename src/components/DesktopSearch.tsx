@@ -90,10 +90,10 @@ export function DesktopSearch() {
           <div className="max-h-[60vh] overflow-y-auto p-4 [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-thumb]:bg-gray-200 [&::-webkit-scrollbar-thumb]:rounded-full">
             {!query.trim() ? (
               <div className="py-2">
-                <h4 className="text-sm font-semibold text-gray-900 mb-3 flex items-center gap-2">
+                <h2 className="text-sm font-semibold text-gray-900 mb-3 flex items-center gap-2">
                   <Search className="w-4 h-4 text-gray-400" />
                   জনপ্রিয় সার্চ
-                </h4>
+                </h2>
                 <div className="flex flex-wrap gap-2">
                   {popularSearches.map((term, idx) => (
                     <button

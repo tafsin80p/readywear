@@ -1,26 +1,23 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useRef } from "react";
+import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 
 export function PromoMarquee() {
   const textRef1 = useRef<HTMLDivElement>(null);
   const textRef2 = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
+  useGSAP(() => {
     if (!textRef1.current || !textRef2.current) return;
 
-    const ctx = gsap.context(() => {
-      gsap.to([textRef1.current, textRef2.current], {
-        xPercent: -100,
-        repeat: -1,
-        duration: 25,
-        ease: "linear",
-      });
+    gsap.to([textRef1.current, textRef2.current], {
+      xPercent: -100,
+      repeat: -1,
+      duration: 25,
+      ease: "linear",
     });
-
-    return () => ctx.revert();
-  }, []);
+  }, { dependencies: [] });
 
   return (
     <div className="w-full bg-primary text-white py-4 overflow-hidden flex whitespace-nowrap mt-4 text-base font-medium leading-relaxed">

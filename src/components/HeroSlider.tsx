@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import Image from "next/image";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import gsap from "gsap";
+import { useGSAP } from "@gsap/react";
 
 const slides = [
   {
@@ -31,14 +32,14 @@ export function HeroSlider() {
   const slideRefs = useRef<(HTMLDivElement | null)[]>([]);
   const contentRefs = useRef<(HTMLDivElement | null)[]>([]);
 
-  useEffect(() => {
+  useGSAP(() => {
     // Initial animation for the first slide
     gsap.fromTo(
       contentRefs.current[current],
       { y: 50, opacity: 0 },
       { y: 0, opacity: 1, duration: 1, ease: "power3.out" }
     );
-  }, [current]);
+  }, { dependencies: [current] });
 
   const nextSlide = () => {
     setCurrent((prev) => (prev === slides.length - 1 ? 0 : prev + 1));

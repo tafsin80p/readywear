@@ -1,0 +1,73 @@
+import { NextRequest, NextResponse } from "next/server";
+import connectToDatabase from "@/lib/mongodb";
+import Order from "@/models/Order";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
+
+export async function POST(req: NextRequest) {
+  try {
+    const body = await req.json();
+    const { customerInfo, items, pricing, paymentMethod } = body;
+
+    if (!customerInfo || !items || items.length === 0 || !pricing) {
+      return NextResponse.json(
+        { success: false, message: "Missing required order data" },
+        { status: 400 }
+      );
+    }
+
+    await connectToDatabase();
+
+    // Generate Order ID (RW001, RW002, etc.)
+    // Find the order with the highest orderId
+    const lastOrder = await Order.findOne({}, { orderId: 1 }).sort({ createdAt: -1 });
+    
+    let nextNum = 1;
+    if (lastOrder && lastOrder.orderId) {
+      // Extract the numeric part from e.g. "RW005"
+      const match = lastOrder.orderId.match(/^RW(\d+)$/);
+      if (match && match[1]) {
+        nextNum = parseInt(match[1], 10) + 1;
+      } else {
+        // If the last order format is weird, fallback to counting documents (less reliable but safe fallback)
+        const count = await Order.countDocuments();
+        nextNum = count + 1;
+      }
+    }
+
+    // Pad with leading zeros to ensure at least 3 digits
+    const paddedNum = String(nextNum).padStart(3, '0');
+    const orderId = `RW${paddedNum}`;
+
+    // Create the order
+    const orderData: any = {
+      orderId,
+      customerInfo,
+      items,
+      pricing,
+      paymentMethod: paymentMethod || "cod",
+      status: "pending",
+    };
+
+    // If user is logged in, attach their userId
+    const session = await getServerSession(authOptions);
+    if (session?.user?.id) {
+      orderData.userId = session.user.id;
+    }
+
+    const newOrder = await Order.create(orderData);
+
+    await newOrder.save();
+
+    return NextResponse.json(
+      { success: true, message: "Order created successfully", orderId: newOrder._id, displayId: orderId },
+      { status: 201 }
+    );
+  } catch (error: any) {
+    console.error("Create order error:", error);
+    return NextResponse.json(
+      { success: false, message: "Failed to create order", error: error.message },
+      { status: 500 }
+    );
+  }
+}

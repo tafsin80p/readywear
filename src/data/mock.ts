@@ -10,7 +10,7 @@ export const navLinks: NavLink[] = [
 ];
 
 export const categoryData = [
-  { slug: "saree", label: "শাড়ি", description: "ঐতিহ্যবাহী ও ট্রেন্ডি শাড়ি", image: "https://images.unsplash.com/photo-1610189044238-d7486e962b70?q=80&w=800&auto=format&fit=crop" },
+  { slug: "saree", label: "শাড়ি", description: "ঐতিহ্যবাহী ও ট্রেন্ডি শাড়ি", image: "/Zunaira-1.webp" },
   { slug: "dress", label: "ড্রেস", description: "আকর্ষণীয় ও স্টাইলিশ ড্রেস", image: "https://images.unsplash.com/photo-1483985988355-763728e1935b?q=80&w=800&auto=format&fit=crop" },
   { slug: "baby-dress", label: "বেবি ড্রেস", description: "ছোট সোনামণিদের জন্য কিউট ড্রেস", image: "https://images.unsplash.com/photo-1518831959646-742c3a14ebf7?q=80&w=800&auto=format&fit=crop" },
   { slug: "panjabi", label: "পাঞ্জাবি", description: "স্টাইলিশ ও আরামদায়ক পাঞ্জাবি", image: "https://images.unsplash.com/photo-1589465885857-44edb59bbff2?q=80&w=800&auto=format&fit=crop" },
@@ -55,7 +55,7 @@ export const products = [
     discount: 20,
     rating: 4.8,
     reviews: 120,
-    image: "https://images.unsplash.com/photo-1583391733958-6c581e2b6e15?q=80&w=600&auto=format&fit=crop",
+    image: "/Zunaira-1.webp",
     specifications: [
       { label: "ডিটেইলস", value: "কাঠ ব্লক প্রিন্ট , এমব্রয়ডারি ও টার্সেল ওয়ার্ক" },
       { label: "ব্লাউজ পিস", value: "রেডি শাড়ি, রেডি ব্লাউজ শাড়ির সাথে এটাচ অথবা এটাচ ছাড়া দুইটা স্টাইল" },
@@ -86,7 +86,7 @@ export const products = [
     discount: 25,
     rating: 4.9,
     reviews: 210,
-    image: "https://images.unsplash.com/photo-1610189044238-d7486e962b70?q=80&w=600&auto=format&fit=crop",
+    image: "/Zunaira-1.webp",
     specifications: [
       { label: "ডিটেইলস", value: "জরি সুতার আকর্ষণীয় কাজ ও স্টাইলিশ ডিজাইন" },
       { label: "ব্লাউজ পিস", value: "রেডি শাড়ি, রেডি ব্লাউজ শাড়ির সাথে এটাচ অথবা এটাচ ছাড়া দুইটা স্টাইল" },
@@ -162,4 +162,45 @@ export const services = [
   { id: 2, title: "সিকিউর পেমেন্ট", subtitle: "বিভিন্ন পেমেন্ট অপশন", icon: "ShieldCheck" },
   { id: 3, title: "রিটার্ন পলিসি", subtitle: "সহজ রিটার্ন ও এক্সচেঞ্জ", icon: "RefreshCw" },
   { id: 4, title: "কাস্টমার সাপোর্ট", subtitle: "২৪/৭ সাপোর্ট টিম", icon: "HeadphonesIcon" },
+];
+
+export const mockOrders = [
+  {
+    id: "10045",
+    date: "2026-09-12T10:30:00Z",
+    total: 2449.00,
+    status: "processing",
+    items: [
+      { name: "জুনাইরা – কো-ওডস সেট", quantity: 1, price: 1250, image: "/Zunaira-1.webp" },
+      { name: "মেহজাবিন কটন ড্রেস", quantity: 1, price: 1199, image: "/Zunaira-1.webp" }
+    ]
+  },
+  {
+    id: "10042",
+    date: "2026-08-25T14:15:00Z",
+    total: 1499.00,
+    status: "delivered",
+    items: [
+      { name: "জরির কাজের শাড়ি", quantity: 1, price: 1499, image: "/Zunaira-1.webp" }
+    ]
+  },
+  {
+    id: "10038",
+    date: "2026-08-10T09:45:00Z",
+    total: 850.00,
+    status: "delivered",
+    items: [
+      { name: "কিউট প্রিন্টেড বেবি ড্রেস", quantity: 1, price: 850, image: "https://images.unsplash.com/photo-1518831959646-742c3a14ebf7?q=80&w=600&auto=format&fit=crop" }
+    ]
+  },
+  {
+    id: "10025",
+    date: "2026-07-05T16:20:00Z",
+    total: 3500.00,
+    status: "cancelled",
+    items: [
+      { name: "ফ্যামিলি কম্বো প্যাক", quantity: 1, price: 2550, image: "https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?q=80&w=600&auto=format&fit=crop" },
+      { name: "বেবি বয় পাঞ্জাবি সেট", quantity: 1, price: 950, image: "https://images.unsplash.com/photo-1518831959646-742c3a14ebf7?q=80&w=600&auto=format&fit=crop" }
+    ]
+  }
 ];

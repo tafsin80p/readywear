@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useState, ReactNode, useCallback } from "react";
+import { createContext, useContext, useState, ReactNode, useCallback, useEffect } from "react";
 import { CheckCircle2, XCircle, Info, X } from "lucide-react";
 
 export type ToastType = "success" | "error" | "info";
@@ -12,7 +12,7 @@ interface Toast {
 }
 
 interface ToastContextType {
-  toast: (message: string, type?: ToastType) => void;
+  toast: (arg1: string, arg2?: string) => void;
 }
 
 const ToastContext = createContext<ToastContextType | undefined>(undefined);
@@ -20,14 +20,26 @@ const ToastContext = createContext<ToastContextType | undefined>(undefined);
 export function ToastProvider({ children }: { children: ReactNode }) {
   const [toasts, setToasts] = useState<Toast[]>([]);
 
-  const toast = useCallback((message: string, type: ToastType = "success") => {
+  const toast = useCallback((arg1: string, arg2?: string) => {
+    let message = arg1;
+    let type: ToastType = "success";
+    
+    // Auto-detect if arguments were passed backwards like toast("error", "Message")
+    if (["success", "error", "info"].includes(arg1) && arg2) {
+      type = arg1 as ToastType;
+      message = arg2;
+    } else if (arg2 && ["success", "error", "info"].includes(arg2)) {
+      type = arg2 as ToastType;
+      message = arg1;
+    }
+
     const id = Math.random().toString(36).substring(2, 9);
     setToasts((prev) => [...prev, { id, message, type }]);
 
-    // Auto remove after 3 seconds
+    // Auto remove after 3.5 seconds
     setTimeout(() => {
       setToasts((prev) => prev.filter((t) => t.id !== id));
-    }, 3000);
+    }, 3500);
   }, []);
 
   const removeToast = (id: string) => {
@@ -38,25 +50,50 @@ export function ToastProvider({ children }: { children: ReactNode }) {
     <ToastContext.Provider value={{ toast }}>
       {children}
       
-      {/* Toast Container */}
-      <div className="fixed bottom-4 right-4 z-[100] flex flex-col gap-2 pointer-events-none">
+      {/* Toast Container (Top Right) */}
+      <div className="fixed top-6 right-6 z-[100] flex flex-col items-end gap-3 pointer-events-none">
         {toasts.map((t) => (
           <div 
             key={t.id} 
-            className="bg-white border border-gray-100 shadow-xl rounded-xl p-3 sm:p-4 flex items-center gap-3 w-[300px] pointer-events-auto animate-in slide-in-from-bottom-5 fade-in duration-300"
+            className="bg-white/90 backdrop-blur-md border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.08)] rounded-2xl p-4 flex items-start gap-3 w-[340px] max-w-[calc(100vw-3rem)] pointer-events-auto animate-in slide-in-from-right-8 fade-in duration-300 relative overflow-hidden group"
           >
-            {t.type === "success" && <CheckCircle2 className="w-5 h-5 text-emerald-500 shrink-0" />}
-            {t.type === "error" && <XCircle className="w-5 h-5 text-red-500 shrink-0" />}
-            {t.type === "info" && <Info className="w-5 h-5 text-blue-500 shrink-0" />}
+            {/* Left Color Indicator Line */}
+            <div className={`absolute left-0 top-0 bottom-0 w-1 ${
+              t.type === "success" ? "bg-emerald-500" : 
+              t.type === "error" ? "bg-[#F5426A]" : "bg-blue-500"
+            }`} />
+
+            {t.type === "success" && <CheckCircle2 className="w-5 h-5 text-emerald-500 shrink-0 mt-0.5" />}
+            {t.type === "error" && <XCircle className="w-5 h-5 text-[#F5426A] shrink-0 mt-0.5" />}
+            {t.type === "info" && <Info className="w-5 h-5 text-blue-500 shrink-0 mt-0.5" />}
             
-            <span className="text-sm font-semibold text-gray-800 flex-1">{t.message}</span>
+            <div className="flex-1 pr-6">
+              <h4 className={`text-sm font-bold ${
+                t.type === "success" ? "text-emerald-700" : 
+                t.type === "error" ? "text-[#F5426A]" : "text-blue-700"
+              }`}>
+                {t.type === "success" ? "Success" : t.type === "error" ? "Error" : "Info"}
+              </h4>
+              <p className="text-sm font-medium text-gray-600 leading-snug mt-1">{t.message}</p>
+            </div>
             
             <button 
               onClick={() => removeToast(t.id)}
-              className="text-gray-400 hover:text-gray-600 transition-colors p-1"
+              className="absolute top-4 right-4 text-gray-300 hover:text-gray-500 transition-colors p-1"
             >
               <X className="w-4 h-4" />
             </button>
+            
+            {/* Progress Bar Animation */}
+            <div className="absolute bottom-0 left-0 right-0 h-[3px] bg-gray-100 origin-left">
+              <div 
+                className={`h-full ${
+                  t.type === "success" ? "bg-emerald-500" : 
+                  t.type === "error" ? "bg-[#F5426A]" : "bg-blue-500"
+                }`}
+                style={{ animation: "toast-progress 3.5s linear forwards" }}
+              />
+            </div>
           </div>
         ))}
       </div>

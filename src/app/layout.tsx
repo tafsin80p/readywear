@@ -1,11 +1,8 @@
 import type { Metadata } from "next";
 import { Hind_Siliguri } from "next/font/google";
+import { Toaster } from "react-hot-toast";
 import "./globals.css";
-import { MobileNavbar } from "@/components/MobileNavbar";
-import { Providers } from "@/components/Providers";
-import { CartSidebar } from "@/components/CartSidebar";
-import { LoginModal } from "@/components/LoginModal";
-import { SearchModal } from "@/components/SearchModal";
+
 
 const bengaliFont = Hind_Siliguri({
   subsets: ["bengali"],
@@ -14,8 +11,35 @@ const bengaliFont = Hind_Siliguri({
 });
 
 export const metadata: Metadata = {
-  title: "ReadyWear - Premium E-commerce",
-  description: "স্টাইলের দেখা নতুন যাত্রা",
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://readywear.com.bd'),
+  title: {
+    default: "ReadyWear - Premium E-commerce in Bangladesh",
+    template: "%s | ReadyWear"
+  },
+  description: "ReadyWear - স্টাইলের দেখা নতুন যাত্রা। সেরা মানের পোশাক ও প্রিমিয়াম ই-কমার্স অভিজ্ঞতা।",
+  keywords: ["ReadyWear", "E-commerce", "Bangladesh", "Fashion", "Clothing", "Premium Wear", "পাঞ্জাবি", "শার্ট"],
+  openGraph: {
+    type: "website",
+    locale: "bn_BD",
+    url: "/",
+    siteName: "ReadyWear",
+    title: "ReadyWear - Premium E-commerce in Bangladesh",
+    description: "ReadyWear - স্টাইলের দেখা নতুন যাত্রা। সেরা মানের পোশাক ও প্রিমিয়াম ই-কমার্স অভিজ্ঞতা।",
+    images: [
+      {
+        url: "/icon.jpg",
+        width: 800,
+        height: 600,
+        alt: "ReadyWear Logo",
+      }
+    ]
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "ReadyWear - Premium E-commerce in Bangladesh",
+    description: "ReadyWear - স্টাইলের দেখা নতুন যাত্রা।",
+    images: ["/icon.jpg"],
+  }
 };
 
 export default function RootLayout({
@@ -25,14 +49,13 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="bn">
-      <body className={`${bengaliFont.variable} antialiased font-sans min-h-full flex flex-col pb-16 md:pb-0`} suppressHydrationWarning>
-        <Providers>
-          {children}
-          <MobileNavbar />
-          <CartSidebar />
-          <LoginModal />
-          <SearchModal />
-        </Providers>
+      <head>
+        <link rel="preconnect" href="https://images.unsplash.com" />
+        <link rel="dns-prefetch" href="https://images.unsplash.com" />
+      </head>
+      <body className={`${bengaliFont.variable} antialiased font-sans`} suppressHydrationWarning>
+        <Toaster position="top-right" />
+        {children}
       </body>
     </html>
   );

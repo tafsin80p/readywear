@@ -76,6 +76,7 @@ export function SearchModal() {
         <div className="flex items-center gap-1.5 p-3 border-b border-gray-100 bg-white">
           <button 
             onClick={closeSearch}
+            aria-label="Close Search"
             className="p-2 text-gray-500 hover:text-gray-900 transition-colors rounded-full active:bg-gray-100"
           >
             <ArrowLeft className="w-5 h-5" />
@@ -113,10 +114,10 @@ export function SearchModal() {
         <div className="flex-1 overflow-y-auto p-4 md:p-6 bg-gray-50/50 [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-thumb]:bg-gray-200 [&::-webkit-scrollbar-thumb]:rounded-full">
           {!query.trim() ? (
             <div className="py-2">
-              <h4 className="text-sm font-semibold text-gray-900 mb-4 flex items-center gap-2">
+              <h2 className="text-sm font-semibold text-gray-900 mb-4 flex items-center gap-2">
                 <Search className="w-4 h-4 text-gray-400" />
                 জনপ্রিয় সার্চ
-              </h4>
+              </h2>
               <div className="flex flex-wrap gap-2">
                 {popularSearches.map((term, idx) => (
                   <button
