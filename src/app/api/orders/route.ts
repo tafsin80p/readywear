@@ -3,11 +3,13 @@ import connectToDatabase from "@/lib/mongodb";
 import Order from "@/models/Order";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
+import { telegramService } from "@/lib/services/telegramService";
+import { googleSheetService } from "@/lib/services/googleSheetService";
 
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { customerInfo, items, pricing, paymentMethod } = body;
+    const { customerInfo, items, pricing, paymentMethod, source } = body;
 
     if (!customerInfo || !items || items.length === 0 || !pricing) {
       return NextResponse.json(
@@ -47,6 +49,7 @@ export async function POST(req: NextRequest) {
       pricing,
       paymentMethod: paymentMethod || "cod",
       status: "pending",
+      source: source || "Website",
     };
 
     // If user is logged in, attach their userId
@@ -58,6 +61,30 @@ export async function POST(req: NextRequest) {
     const newOrder = await Order.create(orderData);
 
     await newOrder.save();
+
+    // Trigger Telegram notification asynchronously (don't block the response)
+    telegramService.sendOrderNotification(newOrder).then(async (result) => {
+      if (result.success) {
+        newOrder.telegramNotificationStatus = "sent";
+        newOrder.telegramMessageId = result.messageId;
+        newOrder.telegramChatId = result.chatId;
+      } else {
+        newOrder.telegramNotificationStatus = "failed";
+        newOrder.telegramLastError = result.error || result.reason;
+      }
+      await newOrder.save();
+    });
+
+    // Trigger Google Sheet sync asynchronously
+    googleSheetService.sendOrderToSheet(newOrder).then(async (result) => {
+      if (result.success) {
+        newOrder.googleSheetSyncStatus = "sent";
+      } else {
+        newOrder.googleSheetSyncStatus = "failed";
+        newOrder.googleSheetLastError = result.error || result.reason;
+      }
+      await newOrder.save();
+    });
 
     return NextResponse.json(
       { success: true, message: "Order created successfully", orderId: newOrder._id, displayId: orderId },

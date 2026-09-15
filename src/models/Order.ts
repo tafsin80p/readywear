@@ -32,6 +32,32 @@ export interface IOrder extends Document {
   paymentStatus: "unpaid" | "paid" | "refunded";
   status: "pending" | "processing" | "shipped" | "delivered" | "cancelled";
   isRead: boolean;
+  
+  // Verification & Integrations
+  verificationStatus: "pending_verification" | "confirmed" | "fake" | "cancelled";
+  telegramNotificationStatus: "pending" | "sent" | "failed";
+  telegramMessageId?: string;
+  telegramChatId?: string;
+  telegramLastError?: string;
+  
+  googleSheetSyncStatus: "pending" | "sent" | "failed";
+  googleSheetLastError?: string;
+  
+  confirmedAt?: Date;
+  confirmedBy?: string;
+  
+  metaEventStatus: "not_sent" | "sent" | "failed";
+  metaEventId?: string;
+  metaEventSentAt?: Date;
+  metaEventResponse?: any;
+  metaEventError?: string;
+
+  metaLeadEventStatus: "not_sent" | "sent" | "failed";
+  metaLeadEventId?: string;
+  metaLeadEventSentAt?: Date;
+
+  source?: string; // Track if order came from Facebook, TikTok, Instagram, etc.
+
   createdAt: Date;
   updatedAt: Date;
 }
@@ -77,8 +103,55 @@ const OrderSchema: Schema<IOrder> = new Schema(
       default: "pending",
     },
     isRead: { type: Boolean, default: false },
+    
+    // Verification & Integrations
+    verificationStatus: {
+      type: String,
+      enum: ["pending_verification", "confirmed", "fake", "cancelled"],
+      default: "pending_verification",
+    },
+    telegramNotificationStatus: {
+      type: String,
+      enum: ["pending", "sent", "failed"],
+      default: "pending",
+    },
+    telegramMessageId: { type: String },
+    telegramChatId: { type: String },
+    telegramLastError: { type: String },
+    
+    googleSheetSyncStatus: {
+      type: String,
+      enum: ["pending", "sent", "failed"],
+      default: "pending",
+    },
+    googleSheetLastError: { type: String },
+    
+    confirmedAt: { type: Date },
+    confirmedBy: { type: String }, // e.g., Telegram User ID or Admin User ID
+    
+    metaEventStatus: {
+      type: String,
+      enum: ["not_sent", "sent", "failed"],
+      default: "not_sent",
+    },
+    metaEventId: { type: String },
+    metaEventSentAt: { type: Date },
+    metaEventResponse: { type: Schema.Types.Mixed },
+    metaEventError: { type: String },
+    
+    metaLeadEventStatus: {
+      type: String,
+      enum: ["not_sent", "sent", "failed"],
+      default: "not_sent",
+    },
+    metaLeadEventId: { type: String },
+    metaLeadEventSentAt: { type: Date },
+    
+    source: { type: String, default: "Website" },
   },
-  { timestamps: true }
+  {
+    timestamps: true,
+  }
 );
 
 // We need to delete the model from cache in development to ensure schema updates apply

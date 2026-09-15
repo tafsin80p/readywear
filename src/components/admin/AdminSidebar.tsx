@@ -21,7 +21,8 @@ import {
   Palette, 
   Settings,
   List,
-  Circle
+  Circle,
+  Link as LinkIcon
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
@@ -43,6 +44,7 @@ const ICON_MAP: Record<string, LucideIcon> = {
   Banners: ImageIcon,
   Appearance: Palette,
   Settings: Settings,
+  Integrations: LinkIcon,
 };
 
 function renderIcon(name: string, className: string) {
@@ -118,6 +120,7 @@ export function AdminSidebar({
       items: [
         { name: "Appearance", href: "/admin/appearance" },
         { name: "Settings", href: "/admin/settings" },
+        { name: "Integrations", href: "/admin/integrations" },
       ]
     }
   ];

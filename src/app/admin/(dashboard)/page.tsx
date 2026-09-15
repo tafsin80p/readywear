@@ -28,10 +28,31 @@ import { AnimatedNumber } from "@/components/admin/AnimatedNumber";
 
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
-import { useRef } from "react";
+import { useRef, useState, useEffect } from "react";
 
 export default function AdminDashboard() {
   const containerRef = useRef<HTMLDivElement>(null);
+  const [data, setData] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const [range, setRange] = useState("7");
+
+  useEffect(() => {
+    const fetchDashboardData = async () => {
+      try {
+        setLoading(true);
+        const res = await fetch(`/api/admin/dashboard?range=${range}`);
+        const result = await res.json();
+        if (result.success) {
+          setData(result.data);
+        }
+      } catch (error) {
+        console.error("Failed to fetch dashboard data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchDashboardData();
+  }, [range]);
 
   useGSAP(() => {
     // 1. Fade and slide in cards
@@ -50,28 +71,11 @@ export default function AdminDashboard() {
   }, { scope: containerRef });
 
   
-  const recentOrders = [
-    { id: "#ORD-1256", customer: "Sarah Khan", amount: 1850, status: "Delivered", date: "23 Aug, 10:24 AM", img: "https://images.unsplash.com/photo-1515372039744-b8f02a3ae446?auto=format&fit=crop&q=80&w=100" },
-    { id: "#ORD-1255", customer: "Rafiqul Islam", amount: 2450, status: "Processing", date: "22 Aug, 06:32 PM", img: "https://images.unsplash.com/photo-1596755094514-f87e32f85e2c?auto=format&fit=crop&q=80&w=100" },
-    { id: "#ORD-1254", customer: "Nusrat Jahan", amount: 1320, status: "Shipped", date: "22 Aug, 04:17 PM", img: "https://images.unsplash.com/photo-1583391733958-6c581e2b6e15?auto=format&fit=crop&q=80&w=100" },
-    { id: "#ORD-1253", customer: "Tanjim Ahmed", amount: 3780, status: "Processing", date: "21 Aug, 01:05 PM", img: "https://images.unsplash.com/photo-1620799140188-3b2a02fd9a77?auto=format&fit=crop&q=80&w=100" },
-    { id: "#ORD-1252", customer: "Farhana Akter", amount: 2150, status: "Delivered", date: "20 Aug, 11:48 AM", img: "https://images.unsplash.com/photo-1539008835657-9e8e9680c956?auto=format&fit=crop&q=80&w=100" },
-  ];
-
-  const topSelling = [
-    { name: "Floral Printed Dress", price: 1850, sold: 245, img: "https://images.unsplash.com/photo-1515372039744-b8f02a3ae446?auto=format&fit=crop&q=80&w=100" },
-    { name: "Men's Casual Shirt", price: 1650, sold: 189, img: "https://images.unsplash.com/photo-1596755094514-f87e32f85e2c?auto=format&fit=crop&q=80&w=100" },
-    { name: "Leather Handbag", price: 3200, sold: 142, img: "https://images.unsplash.com/photo-1584916201218-f4242ceb4809?auto=format&fit=crop&q=80&w=100" },
-    { name: "White Sneakers", price: 2450, sold: 128, img: "https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?auto=format&fit=crop&q=80&w=100" },
-  ];
-
-  const lowStockItems = [
-    { name: "Classic White T-Shirt", sku: "TS-WHT-01", stock: 2, status: "Critical", img: "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&q=80&w=100" },
-    { name: "Denim Jacket", sku: "JK-DEN-04", stock: 5, status: "Low", img: "https://images.unsplash.com/photo-1601333144130-8c1f123cb49a?auto=format&fit=crop&q=80&w=100" },
-    { name: "Running Sneakers", sku: "SH-RUN-09", stock: 3, status: "Critical", img: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&q=80&w=100" },
-    { name: "Floral Summer Dress", sku: "DR-FLR-12", stock: 8, status: "Low", img: "https://images.unsplash.com/photo-1515372039744-b8f02a3ae446?auto=format&fit=crop&q=80&w=100" },
-    { name: "Leather Wallet", sku: "AC-WAL-02", stock: 4, status: "Critical", img: "https://images.unsplash.com/photo-1627123424574-724758594e93?auto=format&fit=crop&q=80&w=100" },
-  ];
+  const recentOrders: any[] = data?.recentOrders || [];
+  const topSelling: any[] = data?.topSelling || [];
+  const lowStockItems: any[] = data?.lowStockItems || [];
+  
+  const today = new Date().toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' });
 
   return (
     <div ref={containerRef} className="p-4 md:p-8 space-y-6 md:space-y-8 max-w-[1600px] mx-auto pb-10">
@@ -91,7 +95,7 @@ export default function AdminDashboard() {
             </div>
             <div>
               <p className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Today</p>
-              <p className="text-sm font-bold text-gray-900">23 Aug, 2025</p>
+              <p className="text-sm font-bold text-gray-900">{today}</p>
             </div>
           </div>
         </div>
@@ -108,7 +112,7 @@ export default function AdminDashboard() {
                   <div className="w-2 h-2 rounded-full bg-white animate-pulse"></div>
                   <span className="text-xs font-bold text-pink-100 uppercase tracking-wider">Live Now</span>
                 </div>
-                <h3 className="text-4xl font-black mb-1 text-white">42</h3>
+                <h3 className="text-4xl font-black mb-1 text-white">{data?.activeVisitors || 0}</h3>
                 <p className="text-sm text-pink-100 font-medium">Active visitors on site</p>
               </div>
             </div>
@@ -118,14 +122,14 @@ export default function AdminDashboard() {
              <div className="bg-white/80 backdrop-blur-xl p-5 rounded-[2rem] border border-white flex-1 flex flex-col justify-center shadow-[0_4px_20px_rgb(0,0,0,0.03)] hover:-translate-y-1 transition-transform">
                 <div className="flex items-center gap-3 mb-2">
                    <div className="w-8 h-8 rounded-xl bg-pink-50 text-[#F5426A] flex items-center justify-center"><Package className="w-4 h-4"/></div>
-                   <h4 className="font-bold text-[#1a2b4b]">12 Pending</h4>
+                   <h4 className="font-bold text-[#1a2b4b]">{data?.pendingOrders || 0} Pending</h4>
                 </div>
                 <p className="text-xs text-gray-500 font-medium">Orders to process</p>
              </div>
              <div className="bg-white/80 backdrop-blur-xl p-5 rounded-[2rem] border border-white flex-1 flex flex-col justify-center shadow-[0_4px_20px_rgb(0,0,0,0.03)] hover:-translate-y-1 transition-transform">
                 <div className="flex items-center gap-3 mb-2">
                    <div className="w-8 h-8 rounded-xl bg-pink-50 text-[#F5426A] flex items-center justify-center"><AlertCircle className="w-4 h-4"/></div>
-                   <h4 className="font-bold text-[#1a2b4b]">5 Items</h4>
+                   <h4 className="font-bold text-[#1a2b4b]">{data?.lowStockItems?.length || 0} Items</h4>
                 </div>
                 <p className="text-xs text-gray-500 font-medium">Low in stock</p>
              </div>
@@ -145,9 +149,14 @@ export default function AdminDashboard() {
           <div>
             <p className="text-gray-500 text-sm font-medium mb-1">Total Orders</p>
             <h3 className="text-3xl font-black text-[#1a2b4b] mb-2 tracking-tight">
-              <AnimatedNumber value={1248} />
+              <AnimatedNumber value={data?.totals?.orders || 0} />
             </h3>
-            <p className="text-sm font-medium"><span className="text-emerald-500 font-bold bg-emerald-50 px-2 py-0.5 rounded-md">↑ +12%</span> <span className="text-gray-400 ml-1">vs last 7 days</span></p>
+            <p className="text-sm font-medium">
+              <span className={`font-bold px-2 py-0.5 rounded-md ${(data?.changes?.orders || 0) >= 0 ? 'text-emerald-500 bg-emerald-50' : 'text-rose-500 bg-rose-50'}`}>
+                {(data?.changes?.orders || 0) >= 0 ? '↑' : '↓'} {Math.abs(data?.changes?.orders || 0)}%
+              </span> 
+              <span className="text-gray-400 ml-1">vs last {range} days</span>
+            </p>
           </div>
         </div>
         <div className="bg-white/80 backdrop-blur-xl p-6 rounded-[2rem] border border-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] flex flex-col justify-between h-[180px] hover:-translate-y-1 transition-transform duration-300 cursor-default">
@@ -159,9 +168,14 @@ export default function AdminDashboard() {
           <div>
             <p className="text-gray-500 text-sm font-medium mb-1">Total Revenue</p>
             <h3 className="text-3xl font-black text-[#1a2b4b] mb-2 tracking-tight">
-              <AnimatedNumber value={485620} prefix="৳ " />
+              <AnimatedNumber value={data?.totals?.revenue || 0} prefix="৳ " />
             </h3>
-            <p className="text-sm font-medium"><span className="text-emerald-500 font-bold bg-emerald-50 px-2 py-0.5 rounded-md">↑ +18%</span> <span className="text-gray-400 ml-1">vs last 7 days</span></p>
+            <p className="text-sm font-medium">
+              <span className={`font-bold px-2 py-0.5 rounded-md ${(data?.changes?.revenue || 0) >= 0 ? 'text-emerald-500 bg-emerald-50' : 'text-rose-500 bg-rose-50'}`}>
+                {(data?.changes?.revenue || 0) >= 0 ? '↑' : '↓'} {Math.abs(data?.changes?.revenue || 0)}%
+              </span> 
+              <span className="text-gray-400 ml-1">vs last {range} days</span>
+            </p>
           </div>
         </div>
         <div className="bg-white/80 backdrop-blur-xl p-6 rounded-[2rem] border border-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] flex flex-col justify-between h-[180px] hover:-translate-y-1 transition-transform duration-300 cursor-default">
@@ -173,9 +187,8 @@ export default function AdminDashboard() {
           <div>
             <p className="text-gray-500 text-sm font-medium mb-1">Total Customers</p>
             <h3 className="text-3xl font-black text-[#1a2b4b] mb-2 tracking-tight">
-              <AnimatedNumber value={892} />
+              <AnimatedNumber value={data?.totals?.customers || 0} />
             </h3>
-            <p className="text-sm font-medium"><span className="text-emerald-500 font-bold bg-emerald-50 px-2 py-0.5 rounded-md">↑ +10%</span> <span className="text-gray-400 ml-1">vs last 7 days</span></p>
           </div>
         </div>
         <div className="bg-white/80 backdrop-blur-xl p-6 rounded-[2rem] border border-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] flex flex-col justify-between h-[180px] hover:-translate-y-1 transition-transform duration-300 cursor-default">
@@ -187,9 +200,9 @@ export default function AdminDashboard() {
           <div>
             <p className="text-gray-500 text-sm font-medium mb-1">Total Products</p>
             <h3 className="text-3xl font-black text-[#1a2b4b] mb-2 tracking-tight">
-              <AnimatedNumber value={156} />
+              <AnimatedNumber value={data?.totals?.products || 0} />
             </h3>
-            <p className="text-sm font-medium text-gray-400">In Stock: <span className="text-gray-600 font-bold">148</span></p>
+            <p className="text-sm font-medium text-gray-400">In Stock: <span className="text-gray-600 font-bold">{data?.totals?.inStockProducts || 0}</span></p>
           </div>
         </div>
       </div>
@@ -208,12 +221,12 @@ export default function AdminDashboard() {
                 <h2 className="text-xl font-bold text-[#1a2b4b]">Sales Overview</h2>
               </div>
               <div className="flex bg-gray-50 p-1 rounded-xl">
-                <button className="px-4 py-1.5 text-xs font-bold bg-[#F5426A] text-white rounded-lg shadow-sm">7 Days</button>
-                <button className="px-4 py-1.5 text-xs font-bold text-gray-500 hover:text-gray-900 rounded-lg transition-colors">30 Days</button>
-                <button className="px-4 py-1.5 text-xs font-bold text-gray-500 hover:text-gray-900 rounded-lg transition-colors">90 Days</button>
+                <button onClick={() => setRange('7')} className={`px-4 py-1.5 text-xs font-bold rounded-lg transition-colors ${range === '7' ? 'bg-[#F5426A] text-white shadow-sm' : 'text-gray-500 hover:text-gray-900'}`}>7 Days</button>
+                <button onClick={() => setRange('30')} className={`px-4 py-1.5 text-xs font-bold rounded-lg transition-colors ${range === '30' ? 'bg-[#F5426A] text-white shadow-sm' : 'text-gray-500 hover:text-gray-900'}`}>30 Days</button>
+                <button onClick={() => setRange('90')} className={`px-4 py-1.5 text-xs font-bold rounded-lg transition-colors ${range === '90' ? 'bg-[#F5426A] text-white shadow-sm' : 'text-gray-500 hover:text-gray-900'}`}>90 Days</button>
               </div>
             </div>
-            <SalesChart />
+            <SalesChart data={data?.salesChartData} />
           </div>
 
           {/* Recent Orders */}
@@ -280,7 +293,7 @@ export default function AdminDashboard() {
           {/* Order Status */}
           <div className="bg-white/80 backdrop-blur-xl rounded-[2rem] p-6 border border-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] flex flex-col h-fit">
             <h2 className="text-lg font-bold text-[#1a2b4b] mb-2">Order Status</h2>
-            <OrderStatusChart />
+            <OrderStatusChart data={data?.orderStatuses} />
           </div>
 
           {/* Quick Actions */}
@@ -348,7 +361,7 @@ export default function AdminDashboard() {
             {/* Chart Area */}
             <div className="lg:w-1/2">
               <h3 className="text-sm font-bold text-gray-500 mb-4 uppercase tracking-wider">Stock by Category</h3>
-              <InventoryChart />
+              <InventoryChart data={data?.inventoryData} />
             </div>
             
             {/* Table Area */}

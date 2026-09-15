@@ -2,22 +2,16 @@
 
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
-const data = [
-  { name: 'Aug 17', sales: 22000 },
-  { name: 'Aug 18', sales: 38000 },
-  { name: 'Aug 19', sales: 35000 },
-  { name: 'Aug 20', sales: 52000 },
-  { name: 'Aug 21', sales: 42000 },
-  { name: 'Aug 22', sales: 45000 },
-  { name: 'Aug 23', sales: 62000 },
-];
+export function SalesChart({ data }: { data?: any[] }) {
+  const chartData = data && data.length > 0 ? data.map(d => ({ name: d.date, sales: d.sales })) : [
+    { name: 'Loading', sales: 0 }
+  ];
 
-export function SalesChart() {
   return (
     <div className="h-[300px] w-full mt-6">
       <ResponsiveContainer width="100%" height="100%">
         <AreaChart
-          data={data}
+          data={chartData}
           margin={{
             top: 10,
             right: 10,

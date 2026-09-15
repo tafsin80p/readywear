@@ -62,13 +62,14 @@ export default async function AdminOrdersPage() {
               <th className="px-6 py-4 whitespace-nowrap">Total Bill</th>
               <th className="px-6 py-4 whitespace-nowrap">Payment</th>
               <th className="px-6 py-4 whitespace-nowrap">Status</th>
+              <th className="px-6 py-4 whitespace-nowrap">Verification & Meta</th>
               <th className="px-6 py-4 whitespace-nowrap text-right">Action</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100">
             {orders.length === 0 ? (
               <tr>
-                <td colSpan={8} className="px-6 py-16 text-center text-gray-500">
+                <td colSpan={9} className="px-6 py-16 text-center text-gray-500">
                   No orders found.
                 </td>
               </tr>
