@@ -1,0 +1,56 @@
+// 1. Google Sheets-এ যান (sheets.new)
+// 2. মেনু থেকে Extensions > Apps Script-এ ক্লিক করুন
+// 3. নিচের পুরো কোডটি কপি করে সেখানে পেস্ট করুন
+// 4. Save (Ctrl+S) করুন
+// 5. Deploy > New Deployment-এ ক্লিক করুন
+// 6. Type: Web app সিলেক্ট করুন
+// 7. Execute as: Me, Who has access: Anyone সিলেক্ট করে Deploy করুন
+// 8. Deploy হওয়ার পর যে Web App URL-টি দিবে, সেটি কপি করে ReadyWear অ্যাডমিন প্যানেলে বসিয়ে দিন।
+
+function doPost(e) {
+  try {
+    const sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+    const data = JSON.parse(e.postData.contents);
+    
+    // Check if headers exist, if not create them
+    if (sheet.getLastRow() === 0) {
+      sheet.appendRow([
+        "Timestamp",
+        "Order ID",
+        "Customer Name",
+        "Customer Phone",
+        "Customer Address",
+        "Products",
+        "Subtotal",
+        "Shipping",
+        "Total",
+        "Payment Method",
+        "Status"
+      ]);
+      // Make header row bold
+      sheet.getRange("A1:K1").setFontWeight("bold");
+    }
+
+    // Append the new order data
+    sheet.appendRow([
+      data.timestamp || new Date().toISOString(),
+      data.orderId || "",
+      data.customerName || "",
+      data.customerPhone || "",
+      data.customerAddress || "",
+      data.products || "",
+      data.subtotal || 0,
+      data.shipping || 0,
+      data.total || 0,
+      data.paymentMethod || "",
+      data.status || ""
+    ]);
+
+    return ContentService.createTextOutput(JSON.stringify({ "status": "success" }))
+      .setMimeType(ContentService.MimeType.JSON);
+      
+  } catch (error) {
+    return ContentService.createTextOutput(JSON.stringify({ "status": "error", "message": error.toString() }))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+}

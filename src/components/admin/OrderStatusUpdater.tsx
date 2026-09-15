@@ -78,9 +78,10 @@ interface OrderStatusUpdaterProps {
   orderId: string; // This is the MongoDB _id
   currentStatus: string;
   currentPaymentStatus: string;
+  verificationStatus?: string;
 }
 
-export function OrderStatusUpdater({ orderId, currentStatus, currentPaymentStatus }: OrderStatusUpdaterProps) {
+export function OrderStatusUpdater({ orderId, currentStatus, currentPaymentStatus, verificationStatus = "pending_verification" }: OrderStatusUpdaterProps) {
   const router = useRouter();
   
   const [status, setStatus] = useState(currentStatus);
@@ -154,9 +155,70 @@ export function OrderStatusUpdater({ orderId, currentStatus, currentPaymentStatu
     }
   };
 
+  const handleVerification = async (action: 'confirm' | 'fake') => {
+    if (!window.confirm(`Are you sure you want to ${action === 'confirm' ? 'confirm' : 'mark this order as fake'}?`)) {
+      return;
+    }
+    
+    setIsUpdating(true);
+    const loadingToast = toast.loading(`${action === 'confirm' ? 'Confirming' : 'Marking fake'}...`);
+    
+    try {
+      const res = await fetch(`/api/admin/orders/${orderId}/verify`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || "Failed to verify order");
+
+      toast.success(`Order ${action === 'confirm' ? 'confirmed' : 'marked fake'} successfully!`, { id: loadingToast });
+      router.refresh();
+      
+    } catch (error: any) {
+      console.error(error);
+      toast.error(error.message || "Failed to verify order", { id: loadingToast });
+    } finally {
+      setIsUpdating(false);
+    }
+  };
+
   return (
     <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
       
+      {/* Verification Actions */}
+      {verificationStatus === 'pending_verification' && (
+        <div className="flex items-center gap-2 mr-2">
+           <button 
+             onClick={() => handleVerification('confirm')}
+             disabled={isUpdating}
+             className="px-3 py-1.5 bg-green-50 text-green-700 text-xs font-bold rounded-lg border border-green-200 hover:bg-green-100 transition-colors shadow-sm disabled:opacity-50"
+           >
+             Confirm Order
+           </button>
+           <button 
+             onClick={() => handleVerification('fake')}
+             disabled={isUpdating}
+             className="px-3 py-1.5 bg-red-50 text-red-700 text-xs font-bold rounded-lg border border-red-200 hover:bg-red-100 transition-colors shadow-sm disabled:opacity-50"
+           >
+             Mark Fake
+           </button>
+        </div>
+      )}
+
+      {verificationStatus === 'confirmed' && (
+        <span className="px-3 py-1.5 bg-green-100 text-green-800 text-xs font-bold rounded-lg mr-2 border border-green-200">
+          Verified & Confirmed
+        </span>
+      )}
+      
+      {verificationStatus === 'fake' && (
+        <span className="px-3 py-1.5 bg-red-100 text-red-800 text-xs font-bold rounded-lg mr-2 border border-red-200">
+          Marked Fake
+        </span>
+      )}
+
       {/* Delete Button */}
       <button 
         onClick={handleDelete}

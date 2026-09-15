@@ -2,23 +2,24 @@
 
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
 
-const data = [
-  { name: 'Pending', value: 12, color: '#F5426A' },     // Pink
-  { name: 'Processing', value: 46, color: '#F59E0B' },  // Yellow/Orange
-  { name: 'Shipped', value: 812, color: '#3B82F6' },    // Blue
-  { name: 'Delivered', value: 378, color: '#10B981' },  // Green
-];
+export function OrderStatusChart({ data }: { data?: any[] }) {
+  const chartData = data && data.length > 0 ? data : [
+    { name: 'Pending', value: 0, color: '#F5426A' },
+    { name: 'Processing', value: 0, color: '#F59E0B' },
+    { name: 'Shipped', value: 0, color: '#3B82F6' },
+    { name: 'Delivered', value: 0, color: '#10B981' },
+    { name: 'Cancelled', value: 0, color: '#ef4444' }
+  ];
 
-const totalOrders = data.reduce((sum, item) => sum + item.value, 0);
+  const totalOrders = chartData.reduce((sum, item) => sum + item.value, 0);
 
-export function OrderStatusChart() {
   return (
     <div className="flex flex-col h-full mt-4">
       <div className="relative h-[220px] w-full flex items-center justify-center">
         <ResponsiveContainer width="100%" height="100%">
           <PieChart>
             <Pie
-              data={data}
+              data={chartData}
               cx="50%"
               cy="50%"
               innerRadius={65}
@@ -27,7 +28,7 @@ export function OrderStatusChart() {
               dataKey="value"
               stroke="none"
             >
-              {data.map((entry, index) => (
+              {chartData.map((entry, index) => (
                 <Cell key={`cell-${index}`} fill={entry.color} />
               ))}
             </Pie>
@@ -45,7 +46,7 @@ export function OrderStatusChart() {
 
       {/* Legend below chart to match reference exactly */}
       <div className="mt-4 space-y-3 px-4">
-        {data.map((item, index) => (
+        {chartData.map((item, index) => (
           <div key={index} className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <span 

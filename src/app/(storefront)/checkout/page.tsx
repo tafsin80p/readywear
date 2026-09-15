@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { useCart } from "@/context/CartContext";
 import Link from "next/link";
+import toast from "react-hot-toast";
 
 const toBengaliNumber = (num: number) => {
   const bengaliDigits = ["০", "১", "২", "৩", "৪", "৫", "৬", "৭", "৮", "৯"];
@@ -83,6 +84,11 @@ export default function CheckoutPage() {
     
     if (cartItems.length === 0) return;
     
+    if (!formData.firstName || !formData.phone || !addressText) {
+      toast.error("অনুগ্রহ করে নাম, মোবাইল নাম্বার এবং সম্পূর্ণ ঠিকানা প্রদান করুন");
+      return;
+    }
+
     setIsSubmitting(true);
     
     try {
@@ -109,7 +115,8 @@ export default function CheckoutPage() {
           deliveryCharge,
           total
         },
-        paymentMethod: "cod"
+        paymentMethod: "cod",
+        source: typeof window !== "undefined" ? (localStorage.getItem("order_source") || "Website") : "Website"
       };
 
       const res = await fetch("/api/orders", {

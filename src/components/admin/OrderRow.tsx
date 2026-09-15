@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { Eye, Clock, Truck, CheckCircle, XCircle } from "lucide-react";
+import { Eye, Clock, Truck, CheckCircle, XCircle, AlertCircle, Send, CheckCircle2, ShieldAlert } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 export function OrderRow({ order, formattedDate }: { order: any, formattedDate: string }) {
@@ -78,6 +78,50 @@ export function OrderRow({ order, formattedDate }: { order: any, formattedDate: 
     }
   };
 
+  const getVerificationBadge = (status: string) => {
+    switch(status) {
+      case 'confirmed':
+        return (
+          <div className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-medium bg-green-100 text-green-700">
+            <CheckCircle2 className="w-3 h-3" /> Confirmed
+          </div>
+        );
+      case 'fake':
+        return (
+          <div className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-medium bg-red-100 text-red-700">
+            <ShieldAlert className="w-3 h-3" /> Fake
+          </div>
+        );
+      case 'pending_verification':
+      default:
+        return (
+          <div className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-medium bg-yellow-100 text-yellow-700">
+            <AlertCircle className="w-3 h-3" /> Pending Verify
+          </div>
+        );
+    }
+  };
+
+  const getMetaBadge = (status: string) => {
+    if (status === 'sent') {
+      return (
+        <div className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-semibold bg-blue-100 text-blue-700 border border-blue-200">
+          <div className="w-3 h-3 flex items-center justify-center font-bold text-[8px] bg-blue-600 text-white rounded-full">f</div>
+          Sent
+        </div>
+      );
+    }
+    if (status === 'failed') {
+      return (
+        <div className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-semibold bg-red-50 text-red-600 border border-red-200">
+          <div className="w-3 h-3 flex items-center justify-center font-bold text-[8px] bg-red-500 text-white rounded-full">f</div>
+          Failed
+        </div>
+      );
+    }
+    return null;
+  };
+
   const handleRowClick = () => {
     router.push(`/admin/orders/${order._id}`);
   };
@@ -146,16 +190,35 @@ export function OrderRow({ order, formattedDate }: { order: any, formattedDate: 
       <td className="px-6 py-4">
         {getStatusBadge(order.status)}
       </td>
+      <td className="px-6 py-4">
+        <div className="flex flex-col gap-1.5 items-start">
+          {getVerificationBadge(order.verificationStatus)}
+          {getMetaBadge(order.metaEventStatus)}
+        </div>
+      </td>
       <td className="px-6 py-4 text-right">
-        <button 
-          onClick={(e) => {
-            e.stopPropagation(); // prevent double navigation
-            router.push(`/admin/orders/${order._id}`);
-          }}
-          className="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-gray-50 text-gray-500 hover:bg-primary hover:text-white hover:shadow-md transition-all"
-        >
-          <Eye className="w-4 h-4" />
-        </button>
+        <div className="flex items-center justify-end gap-2">
+          <button 
+            onClick={(e) => {
+              e.stopPropagation();
+              router.push(`/admin/orders/${order._id}/invoice`);
+            }}
+            className="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-green-50 text-green-600 hover:bg-green-600 hover:text-white hover:shadow-md transition-all"
+            title="View Invoice"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+          </button>
+          <button 
+            onClick={(e) => {
+              e.stopPropagation(); // prevent double navigation
+              router.push(`/admin/orders/${order._id}`);
+            }}
+            className="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-gray-50 text-gray-500 hover:bg-primary hover:text-white hover:shadow-md transition-all"
+            title="View Details"
+          >
+            <Eye className="w-4 h-4" />
+          </button>
+        </div>
       </td>
     </tr>
   );

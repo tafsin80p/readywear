@@ -63,6 +63,7 @@ export default async function AdminOrderDetailsPage({ params }: { params: Promis
             orderId={order._id.toString()} 
             currentStatus={order.status} 
             currentPaymentStatus={order.paymentStatus || 'unpaid'} 
+            verificationStatus={order.verificationStatus}
           />
         </div>
       </div>
