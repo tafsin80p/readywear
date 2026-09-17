@@ -1,12 +1,43 @@
 "use client";
 
-import { mockOrders } from "@/data/mock";
-import { Package, ChevronRight } from "lucide-react";
+import { Package, ChevronRight, Loader2, ChevronLeft } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
+import { useEffect, useState } from "react";
+import { useSession } from "next-auth/react";
 
 export default function AccountOrders() {
+  const { data: session, status } = useSession();
+  const [orders, setOrders] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    if (status === "authenticated") {
+      fetch("/api/user/orders")
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) {
+            setOrders(data.orders);
+          }
+          setIsLoading(false);
+        })
+        .catch(err => {
+          console.error("Failed to fetch orders:", err);
+          setIsLoading(false);
+        });
+    } else if (status === "unauthenticated") {
+      setIsLoading(false);
+    }
+  }, [status]);
+
   return (
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+      {/* Mobile Back Button */}
+      <Link href="/account" className="md:hidden inline-flex items-center gap-2 text-sm font-semibold text-gray-600 hover:text-gray-900 transition-colors">
+        <ChevronLeft className="w-4 h-4" />
+        Back to Menu
+      </Link>
+
       <div className="bg-white rounded-2xl p-6 md:p-8 border border-gray-100 shadow-sm">
         <div className="mb-8">
           <h1 className="text-2xl font-bold text-gray-900 tracking-tight">Order History</h1>
@@ -14,7 +45,12 @@ export default function AccountOrders() {
         </div>
 
         <div className="space-y-6">
-          {mockOrders.length === 0 ? (
+          {isLoading ? (
+            <div className="text-center py-12 flex flex-col items-center justify-center">
+              <Loader2 className="w-8 h-8 text-primary animate-spin mb-4" />
+              <p className="text-gray-500 font-medium">Loading your orders...</p>
+            </div>
+          ) : orders.length === 0 ? (
             <div className="text-center py-12">
               <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Package className="w-8 h-8 text-gray-400" />
@@ -23,7 +59,7 @@ export default function AccountOrders() {
               <p className="text-gray-500 mt-1">When you place an order, it will appear here.</p>
             </div>
           ) : (
-            mockOrders.map((order) => (
+            orders.map((order) => (
               <div key={order.id} className="border border-gray-100 rounded-2xl overflow-hidden hover:shadow-md transition-shadow">
                 {/* Order Header */}
                 <div className="bg-gray-50 p-4 md:px-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-100">
@@ -34,7 +70,7 @@ export default function AccountOrders() {
                     </div>
                     <div>
                       <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Total Amount</p>
-                      <p className="font-medium text-gray-900">${order.total.toFixed(2)}</p>
+                      <p className="font-medium text-gray-900">৳{order.total}</p>
                     </div>
                     <div>
                       <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Order ID</p>
@@ -62,7 +98,7 @@ export default function AccountOrders() {
                       <div className="flex-1 min-w-0">
                         <h4 className="font-bold text-gray-900 truncate">{item.name}</h4>
                         <p className="text-sm text-gray-500 mt-1">Quantity: {item.quantity}</p>
-                        <p className="text-sm font-semibold text-[#F5426A] mt-1">${item.price.toFixed(2)}</p>
+                        <p className="text-sm font-semibold text-[#F5426A] mt-1">৳{item.price}</p>
                       </div>
                       <button className="hidden sm:flex items-center gap-1 text-sm font-medium text-gray-600 hover:text-[#F5426A] transition-colors p-2">
                         View Product <ChevronRight className="w-4 h-4" />

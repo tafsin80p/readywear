@@ -120,10 +120,11 @@ export default function CategoriesPage() {
     }
   };
 
-  const filteredCategories = categories.filter(c => 
-    c.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
-    c.slug.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredCategories = categories.filter(c => {
+    const matchName = c.name?.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchSlug = c.slug?.toLowerCase().includes(searchQuery.toLowerCase());
+    return matchName || matchSlug;
+  });
 
   return (
     <div className="p-6 md:p-8 w-full animate-in fade-in duration-500">
@@ -139,10 +140,10 @@ export default function CategoriesPage() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+      <div className="grid grid-cols-1 xl:grid-cols-12 gap-8 items-start">
         
         {/* Left Side: Add/Edit Form */}
-        <div className="lg:col-span-4 bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden sticky top-24">
+        <div className="xl:col-span-4 bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden xl:sticky xl:top-24 relative z-10">
           <div className="p-5 border-b border-gray-100 bg-gray-50/50">
             <h2 className="text-lg font-bold text-gray-900">
               {editingId ? "Edit Category" : "Add New Category"}
@@ -236,7 +237,7 @@ export default function CategoriesPage() {
         </div>
 
         {/* Right Side: Categories List */}
-        <div className="lg:col-span-8 bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+        <div className="xl:col-span-8 bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
           <div className="p-5 border-b border-gray-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-gray-50/50">
             <h2 className="text-lg font-bold text-gray-900">All Categories</h2>
             <div className="relative max-w-xs w-full">

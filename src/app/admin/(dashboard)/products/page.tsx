@@ -10,11 +10,26 @@ export default function ProductsList() {
   const [products, setProducts] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
+  const [showFilters, setShowFilters] = useState(false);
+  const [categoryFilter, setCategoryFilter] = useState("all");
+  const [stockFilter, setStockFilter] = useState("all");
+  const [categories, setCategories] = useState<any[]>([]);
   const { toast } = useToast();
 
   useEffect(() => {
     fetchProducts();
+    fetchCategories();
   }, []);
+
+  const fetchCategories = async () => {
+    try {
+      const res = await fetch("/api/admin/categories");
+      const data = await res.json();
+      if (res.ok) setCategories(data.categories);
+    } catch (e) {
+      console.error(e);
+    }
+  };
 
   const fetchProducts = async () => {
     try {
@@ -54,10 +69,16 @@ export default function ProductsList() {
     }
   };
 
-  const filteredProducts = products.filter(p => 
-    p.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
-    p.sku.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredProducts = products.filter(p => {
+    const matchesSearch = p.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                          p.sku.toLowerCase().includes(searchQuery.toLowerCase());
+    
+    const matchesCategory = categoryFilter === "all" || p.category === categoryFilter;
+    const matchesStock = stockFilter === "all" || 
+                         (stockFilter === "in-stock" ? p.inStock : !p.inStock);
+
+    return matchesSearch && matchesCategory && matchesStock;
+  });
 
   return (
     <div className="p-6 md:p-8 max-w-[1600px] mx-auto animate-in fade-in duration-500">
@@ -78,7 +99,7 @@ export default function ProductsList() {
       </div>
 
       {/* Filters Bar */}
-      <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm flex flex-col md:flex-row gap-4 mb-6">
+      <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm flex flex-col md:flex-row gap-4 mb-6 relative z-30">
         <div className="relative flex-1">
           <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
           <input 
@@ -89,10 +110,67 @@ export default function ProductsList() {
             className="w-full pl-11 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#F5426A]/20 focus:border-[#F5426A] transition-all text-sm"
           />
         </div>
-        <button className="flex items-center justify-center gap-2 px-5 py-2.5 border border-gray-200 rounded-xl hover:bg-gray-50 text-gray-700 font-medium text-sm transition-colors md:w-auto">
-          <Filter className="w-4 h-4" />
-          Filters
-        </button>
+        
+        <div className="relative">
+          <button 
+            onClick={() => setShowFilters(!showFilters)}
+            className={`flex items-center justify-center gap-2 px-5 py-2.5 border rounded-xl font-medium text-sm transition-colors md:w-auto ${
+              showFilters || categoryFilter !== "all" || stockFilter !== "all" 
+                ? "bg-pink-50 border-pink-200 text-[#F5426A]" 
+                : "border-gray-200 hover:bg-gray-50 text-gray-700"
+            }`}
+          >
+            <Filter className="w-4 h-4" />
+            Filters {(categoryFilter !== "all" || stockFilter !== "all") && "(Active)"}
+          </button>
+
+          {showFilters && (
+            <div className="absolute right-0 top-full mt-2 w-64 bg-white border border-gray-100 rounded-xl shadow-xl p-4 z-50 animate-in fade-in zoom-in-95 duration-200">
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Category</label>
+                  <select 
+                    value={categoryFilter}
+                    onChange={(e) => setCategoryFilter(e.target.value)}
+                    className="w-full p-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-pink-500/20"
+                  >
+                    <option value="all">All Categories</option>
+                    {categories.map((cat: any) => (
+                      <option key={cat._id} value={cat.slug}>{cat.name}</option>
+                    ))}
+                  </select>
+                </div>
+                
+                <div>
+                  <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Stock Status</label>
+                  <select 
+                    value={stockFilter}
+                    onChange={(e) => setStockFilter(e.target.value)}
+                    className="w-full p-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-pink-500/20"
+                  >
+                    <option value="all">All Status</option>
+                    <option value="in-stock">In Stock</option>
+                    <option value="out-of-stock">Out of Stock</option>
+                  </select>
+                </div>
+
+                <div className="pt-2 border-t border-gray-100">
+                  <button 
+                    onClick={() => {
+                      setCategoryFilter("all");
+                      setStockFilter("all");
+                      setSearchQuery("");
+                      setShowFilters(false);
+                    }}
+                    className="w-full py-2 text-sm font-bold text-gray-500 hover:text-gray-700 transition-colors"
+                  >
+                    Clear Filters
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Products Table */}

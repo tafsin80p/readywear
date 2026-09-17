@@ -2,10 +2,11 @@
 
 import { useState, useEffect } from "react";
 import { useSession, signOut } from "next-auth/react";
-import { User, Mail, Lock, Shield, ArrowRight, Loader2, Camera, CheckCircle2 } from "lucide-react";
+import { User, Mail, Lock, Shield, ArrowRight, Loader2, Camera, CheckCircle2, ChevronLeft } from "lucide-react";
 import { useToast } from "@/context/ToastContext";
 import { ImageUpload } from "@/components/ImageUpload";
 import Image from "next/image";
+import Link from "next/link";
 
 export default function AccountProfile() {
   const { data: session, status, update } = useSession();
@@ -77,6 +78,12 @@ export default function AccountProfile() {
   return (
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
       
+      {/* Mobile Back Button */}
+      <Link href="/account" className="md:hidden inline-flex items-center gap-2 text-sm font-semibold text-gray-600 hover:text-gray-900 transition-colors">
+        <ChevronLeft className="w-4 h-4" />
+        Back to Menu
+      </Link>
+
       {/* Header Section */}
       <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 md:p-8 flex flex-col md:flex-row gap-8 items-center md:items-start relative overflow-hidden">
         {/* Decorative bg */}
@@ -204,14 +211,14 @@ export default function AccountProfile() {
             <button
               type="submit"
               disabled={isLoading}
-              className="bg-gray-900 hover:bg-[#F5426A] text-white px-8 py-4 rounded-xl font-bold transition-all flex items-center justify-center gap-3 hover:-translate-y-0.5 disabled:opacity-70 disabled:hover:translate-y-0 min-w-[220px]"
+              className="bg-[#F5426A] hover:bg-[#ff5a7f] text-white px-6 py-2.5 rounded-lg text-sm font-bold transition-all flex items-center justify-center gap-2 hover:-translate-y-0.5 disabled:opacity-70 disabled:hover:translate-y-0 w-full md:w-auto shadow-sm shadow-[#F5426A]/20"
             >
               {isLoading ? (
-                <Loader2 className="w-5 h-5 animate-spin" />
+                <Loader2 className="w-4 h-4 animate-spin" />
               ) : (
                 <>
                   Save Changes
-                  <ArrowRight className="w-5 h-5" />
+                  <ArrowRight className="w-4 h-4" />
                 </>
               )}
             </button>

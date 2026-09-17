@@ -1,4 +1,6 @@
-import { categoryData, products } from "@/data/mock";
+import connectToDatabase from "@/lib/mongodb";
+import Category from "@/models/Category";
+import Product from "@/models/Product";
 import { notFound } from "next/navigation";
 import { ProductCard } from "@/components/ProductCard";
 
@@ -6,12 +8,16 @@ import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { Metadata } from "next";
 
+export const revalidate = 60; // Cache for 60 seconds (ISR)
+
 export async function generateMetadata(
   { params }: { params: Promise<{ slug: string }> }
 ): Promise<Metadata> {
   const resolvedParams = await params;
   const activeSlug = resolvedParams.slug;
-  const activeCategoryObj = categoryData.find(c => c.slug === activeSlug);
+  
+  await connectToDatabase();
+  const activeCategoryObj = await Category.findOne({ slug: activeSlug }).lean();
 
   if (!activeCategoryObj) {
     return {
@@ -20,11 +26,11 @@ export async function generateMetadata(
   }
 
   return {
-    title: activeCategoryObj.label,
-    description: `Shop the best ${activeCategoryObj.label} collection at ReadyWear. Premium quality clothing in Bangladesh.`,
+    title: activeCategoryObj.name,
+    description: `Shop the best ${activeCategoryObj.name} collection at ReadyWear. Premium quality clothing in Bangladesh.`,
     openGraph: {
-      title: `${activeCategoryObj.label} Collection | ReadyWear`,
-      description: `Shop the best ${activeCategoryObj.label} collection at ReadyWear.`,
+      title: `${activeCategoryObj.name} Collection | ReadyWear`,
+      description: `Shop the best ${activeCategoryObj.name} collection at ReadyWear.`,
     },
   };
 }
@@ -32,14 +38,25 @@ export async function generateMetadata(
 export default async function CategoryShopPage({ params }: { params: Promise<{ slug: string }> }) {
   const resolvedParams = await params;
   const activeSlug = resolvedParams.slug;
-  const activeCategoryObj = categoryData.find(c => c.slug === activeSlug);
+  
+  await connectToDatabase();
+  const activeCategoryObj = await Category.findOne({ slug: activeSlug }).lean();
   
   if (!activeCategoryObj) {
     notFound();
   }
   
-  const activeCategoryLabel = activeCategoryObj.label;
-  const filteredProducts = products.filter(p => p.category === activeCategoryLabel);
+  const activeCategoryLabel = activeCategoryObj.name;
+  
+  // Fetch products that belong to this category by slug (limited for performance)
+  const productsDocs = await Product.find({ category: activeCategoryObj.slug })
+    .sort({ createdAt: -1 })
+    .limit(24)
+    .lean();
+    
+  const totalCount = await Product.countDocuments({ category: activeCategoryObj.slug });
+  
+  const filteredProducts = JSON.parse(JSON.stringify(productsDocs));
 
   return (
     <>
@@ -50,18 +67,18 @@ export default async function CategoryShopPage({ params }: { params: Promise<{ s
             <div className="flex-1">
               <div className="mb-6 flex justify-between items-center bg-white p-4 rounded-xl shadow-sm border border-gray-100 hidden md:flex">
                 <h1 className="text-xl font-bold text-gray-900">{activeCategoryLabel}</h1>
-                <span className="text-sm font-medium bg-gray-100 text-gray-600 px-3 py-1 rounded-full">{filteredProducts.length} টি পণ্য</span>
+                <span className="text-sm font-medium bg-gray-100 text-gray-600 px-3 py-1 rounded-full">{totalCount} টি পণ্য</span>
               </div>
               
               <div className="mb-4 flex justify-between items-center md:hidden">
                 <h1 className="text-lg font-bold text-gray-900">{activeCategoryLabel}</h1>
-                <span className="text-xs font-medium text-gray-500">{filteredProducts.length} টি পণ্য</span>
+                <span className="text-xs font-medium text-gray-500">{totalCount} টি পণ্য</span>
               </div>
               
               {filteredProducts.length > 0 ? (
                 <div className="grid grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-3 md:gap-6">
-                  {filteredProducts.map((product, index) => (
-                    <ProductCard key={product.id} product={product as any} priority={index < 2} />
+                  {filteredProducts.map((product: any, index: number) => (
+                    <ProductCard key={product._id} product={product} priority={index < 2} />
                   ))}
                 </div>
               ) : (

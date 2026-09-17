@@ -1,10 +1,11 @@
 "use client";
 
 import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { AccountSidebar } from "@/components/account/AccountSidebar";
 import { Loader2 } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 export default function AccountLayout({
   children,
@@ -33,18 +34,27 @@ export default function AccountLayout({
     return null;
   }
 
+  const pathname = usePathname();
+  const isRootAccount = pathname === "/account";
+
   return (
-    <div className="min-h-screen bg-gray-50/50 py-10 md:py-16">
+    <div className="min-h-screen bg-gray-50/50 py-6 md:py-16">
       <div className="container mx-auto px-4 lg:px-8 max-w-7xl">
         <div className="flex flex-col md:flex-row gap-8 items-start">
           
-          {/* Sidebar */}
-          <aside className="w-full md:w-64 lg:w-72 shrink-0 md:sticky md:top-24">
+          {/* Sidebar - Visible on mobile ONLY if on root account, always visible on desktop */}
+          <aside className={cn(
+            "w-full md:w-64 lg:w-72 shrink-0 md:sticky md:top-24",
+            isRootAccount ? "block" : "hidden md:block"
+          )}>
             <AccountSidebar />
           </aside>
 
-          {/* Main Content Area */}
-          <main className="flex-1 w-full min-w-0">
+          {/* Main Content Area - Hidden on mobile if on root account, always visible on desktop */}
+          <main className={cn(
+            "flex-1 w-full min-w-0",
+            isRootAccount ? "hidden md:block" : "block"
+          )}>
             {children}
           </main>
           

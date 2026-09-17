@@ -1,15 +1,27 @@
-import { categoryData, products } from "@/data/mock";
+import connectToDatabase from "@/lib/mongodb";
+import Category from "@/models/Category";
+import Product from "@/models/Product";
 import { ProductCard } from "@/components/ProductCard";
 
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 
-export default function ShopPage() {
+export default async function ShopPage() {
+  await connectToDatabase();
+  
+  const categoryDocs = await Category.find({ isActive: true }).lean();
   const activeSlug = "all";
   const activeCategoryLabel = "সকল পণ্য";
 
-  const categories = [{ slug: "all", label: "সকল পণ্য" }, ...categoryData];
-  const filteredProducts = products;
+  const dbCategories = JSON.parse(JSON.stringify(categoryDocs)).map((cat: any) => ({
+    ...cat,
+    label: cat.name
+  }));
+
+  const categories = [{ slug: "all", label: "সকল পণ্য" }, ...dbCategories];
+  
+  const productsDocs = await Product.find({}).sort({ createdAt: -1 }).lean();
+  const filteredProducts = JSON.parse(JSON.stringify(productsDocs));
 
   return (
     <>

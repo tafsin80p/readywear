@@ -30,6 +30,9 @@ export async function POST(req: NextRequest) {
       };
       settings.meta = body.meta;
       settings.googleSheet = body.googleSheet;
+      settings.pathao = body.pathao;
+      settings.steadfast = body.steadfast;
+      settings.googleAnalytics = body.googleAnalytics;
     }
     
     await settings.save();

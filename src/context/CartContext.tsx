@@ -16,6 +16,7 @@ export interface CartItem {
 }
 
 interface CartContextType {
+  isLoaded: boolean;
   isCartOpen: boolean;
   openCart: () => void;
   closeCart: () => void;
@@ -32,6 +33,7 @@ const CartContext = createContext<CartContextType | undefined>(undefined);
 
 export function CartProvider({ children }: { children: ReactNode }) {
   const { toast } = useToast();
+  const [isLoaded, setIsLoaded] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [items, setItems] = useState<CartItem[]>([]);
 
@@ -41,6 +43,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
     if (savedCart) {
       try { setItems(JSON.parse(savedCart)); } catch (e) {}
     }
+    setIsLoaded(true);
   }, []);
 
   // Save to localStorage when items change
@@ -108,6 +111,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   return (
     <CartContext.Provider value={{ 
+      isLoaded,
       isCartOpen, openCart, closeCart, 
       items, addToCart, removeFromCart, updateQuantity, clearCart, cartTotal, cartCount 
     }}>

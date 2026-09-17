@@ -28,8 +28,16 @@ export default function CheckoutPage() {
     note: "",
   });
 
-  const { items: cartItems, cartTotal: subtotal, clearCart } = useCart();
+  const { items: cartItems, cartTotal: subtotal, clearCart, isLoaded } = useCart();
   
+  // Protect checkout page from empty cart
+  useEffect(() => {
+    if (isLoaded && cartItems.length === 0 && !isSuccess) {
+      toast.error("Your cart is empty. Please add items to checkout.");
+      router.replace("/");
+    }
+  }, [isLoaded, cartItems, isSuccess, router]);
+
   useEffect(() => {
     if (!addressText || addressText.trim().length < 3) return;
 

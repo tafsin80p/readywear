@@ -1,9 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams, useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
-import { LucideIcon } from "lucide-react";
+import { LucideIcon, X } from "lucide-react";
 import { 
   Home, 
   ShoppingBag, 
@@ -22,7 +22,10 @@ import {
   Settings,
   List,
   Circle,
-  Link as LinkIcon
+  Link as LinkIcon,
+  ChevronLeft,
+  ChevronRight,
+  BarChart2
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
@@ -45,6 +48,7 @@ const ICON_MAP: Record<string, LucideIcon> = {
   Appearance: Palette,
   Settings: Settings,
   Integrations: LinkIcon,
+  Visitors: BarChart2,
 };
 
 function renderIcon(name: string, className: string) {
@@ -60,8 +64,19 @@ export function AdminSidebar({
   totalProductsCount?: number
 }) {
   const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const isMobileOpen = searchParams.get("sidebar") === "true";
+
+  const closeMobileSidebar = () => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.delete("sidebar");
+    router.push(`${pathname}?${params.toString()}`, { scroll: false });
+  };
+
   const [expandedMenu, setExpandedMenu] = useState<string | null>("Products");
   const [unreadCount, setUnreadCount] = useState(initialCount);
+  const [isCollapsed, setIsCollapsed] = useState(false);
 
   // Poll for unread orders count every 15 seconds
   useEffect(() => {
@@ -101,10 +116,14 @@ export function AdminSidebar({
         { name: "Orders", href: "/admin/orders" },
         { name: "Customers", href: "/admin/customers" },
         { name: "Coupons", href: "/admin/coupons" },
-        { name: "Reviews", href: "/admin/reviews" },
         { name: "Inventory", href: "/admin/inventory" },
         { name: "Shipping", href: "/admin/shipping" },
-        { name: "Reports", href: "/admin/reports" },
+      ]
+    },
+    {
+      title: "ANALYTICS",
+      items: [
+        { name: "Visitors", href: "/admin/analytics" }
       ]
     },
     {
@@ -126,43 +145,101 @@ export function AdminSidebar({
   ];
 
   return (
-    <aside suppressHydrationWarning className="w-[280px] shrink-0 bg-white border-r border-gray-100 flex flex-col h-screen sticky top-0 overflow-hidden">
-      {/* Logo */}
-      <div suppressHydrationWarning className="h-[72px] flex items-center px-6 shrink-0">
-        <Link href="/admin" className="flex items-center -ml-2">
+    <>
+      {/* Mobile Overlay */}
+      {isMobileOpen && (
+        <div 
+          onClick={closeMobileSidebar}
+          className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 lg:hidden animate-in fade-in duration-300"
+        />
+      )}
+
+      <aside suppressHydrationWarning className={cn(
+        "shrink-0 bg-white border-r border-gray-100 flex-col h-screen sticky top-0 transition-all duration-300 z-50",
+        isCollapsed ? "w-[84px]" : "w-[280px]",
+        isMobileOpen ? "fixed inset-y-0 left-0 flex shadow-2xl translate-x-0" : "hidden lg:flex"
+      )}>
+        {/* Mobile Close Button */}
+        {isMobileOpen && (
+          <button 
+            onClick={closeMobileSidebar}
+            className="absolute top-4 right-4 lg:hidden p-2 text-gray-400 hover:bg-gray-100 rounded-full transition-colors z-50"
+          >
+            <X className="w-5 h-5" />
+          </button>
+        )}
+
+        {/* Logo Area */}
+      <div suppressHydrationWarning className="h-[72px] relative flex items-center shrink-0 border-b border-gray-100 px-6">
+        <Link 
+          href="/admin" 
+          className={cn(
+            "flex items-center transition-all duration-300 origin-left", 
+            isCollapsed ? "opacity-0 pointer-events-none scale-90 w-0" : "opacity-100 scale-100 w-auto"
+          )}
+        >
           <Image 
             src="/readywear logo.png" 
             alt="ReadyWear Logo" 
             width={240} 
             height={60} 
-            className="w-44 h-auto object-contain"
+            className="h-9 sm:h-10 w-auto object-contain object-left"
             priority
           />
         </Link>
+
+        {/* Collapsed Logo (R) */}
+        <Link 
+          href="/admin" 
+          className={cn(
+            "absolute left-1/2 -translate-x-1/2 flex items-center justify-center transition-all duration-300", 
+            isCollapsed ? "opacity-100 scale-100" : "opacity-0 pointer-events-none scale-90"
+          )}
+        >
+          <div className="w-9 h-9 bg-gradient-to-br from-[#F5426A] to-[#ff6b8b] rounded-xl flex items-center justify-center text-white font-black text-lg shadow-sm">
+            R
+          </div>
+        </Link>
       </div>
 
-      <div className="flex-1 overflow-y-auto px-4 py-6 custom-scrollbar">
+      <button 
+        onClick={() => setIsCollapsed(!isCollapsed)}
+        className="hidden lg:flex absolute top-[28px] -right-[14px] z-50 bg-white border border-gray-200 rounded-full p-1.5 shadow-sm text-gray-400 hover:text-[#F5426A] transition-all hover:scale-110"
+      >
+        {isCollapsed ? <ChevronRight className="w-3.5 h-3.5" /> : <ChevronLeft className="w-3.5 h-3.5" />}
+      </button>
+
+      <div className="flex-1 overflow-y-auto overflow-x-hidden px-4 py-6 custom-scrollbar">
         {/* Dashboard Link (Always at top) */}
         <Link 
           href="/admin"
           className={cn(
-            "flex items-center gap-3 px-4 py-3 rounded-xl font-medium mb-6 group",
+            "flex items-center py-3 rounded-xl font-medium mb-6 group transition-all duration-300 relative",
+            isCollapsed ? "justify-center" : "px-4",
             pathname === "/admin" 
-              ? "bg-[#F5426A] text-white shadow-md shadow-[#F5426A]/20 font-semibold" 
-              : "text-gray-500 hover:bg-pink-50/50 hover:text-[#F5426A] transition-colors"
+              ? "bg-gradient-to-r from-[#F5426A] to-[#ff6b8b] text-white shadow-lg shadow-[#F5426A]/25 font-bold" 
+              : "text-gray-500 hover:bg-pink-50/50 hover:text-[#F5426A]"
           )}
         >
-          <Home className={cn("w-5 h-5", pathname === "/admin" ? "text-white" : "text-gray-400 group-hover:text-[#F5426A] transition-colors")} />
-          <span>Dashboard</span>
+          <Home className={cn("w-5 h-5 shrink-0 transition-transform duration-300", !isCollapsed && "group-hover:scale-110", pathname === "/admin" ? "text-white" : "text-gray-400 group-hover:text-[#F5426A]")} />
+          <span className={cn(
+            "transition-all duration-300 overflow-hidden whitespace-nowrap",
+            isCollapsed ? "max-w-0 opacity-0 ml-0" : "max-w-[200px] opacity-100 ml-3 group-hover:translate-x-1"
+          )}>
+            Dashboard
+          </span>
         </Link>
 
         {/* Dynamic Sections */}
         <div className="space-y-8">
           {navigation.map((section, idx) => (
             <div key={idx} suppressHydrationWarning>
-              <h4 className="px-4 text-xs font-bold text-gray-400 mb-3 uppercase tracking-wider">
-                {section.title}
-              </h4>
+              <div className={cn("transition-all duration-300 overflow-hidden", isCollapsed ? "h-0 opacity-0 mb-0" : "h-6 opacity-100 mb-3")}>
+                <h4 className="px-4 text-xs font-bold text-gray-400 uppercase tracking-wider whitespace-nowrap">
+                  {section.title}
+                </h4>
+              </div>
+              <div className={cn("transition-all duration-300 mx-4 bg-gray-100", isCollapsed && idx !== 0 ? "h-px my-4 opacity-100" : "h-0 my-0 opacity-0")}></div>
               <ul className="space-y-1">
                 {section.items.map((item, itemIdx) => {
                   const hasSubItems = !!item.subItems;
@@ -183,22 +260,31 @@ export function AdminSidebar({
                         <button
                           onClick={() => setExpandedMenu(isExpanded ? null : item.name)}
                           className={cn(
-                            "flex items-center justify-between px-4 py-2.5 rounded-xl text-[15px] w-full group",
+                            "flex items-center justify-between py-2.5 rounded-xl text-[15px] w-full group transition-all duration-300 overflow-hidden",
+                            isCollapsed ? "px-0 justify-center" : "px-4",
                             isActive
-                              ? "bg-[#F5426A] text-white shadow-md shadow-[#F5426A]/20 font-semibold"
-                              : "text-gray-500 hover:bg-pink-50/50 hover:text-[#F5426A] transition-colors font-medium"
+                              ? "bg-gradient-to-r from-[#F5426A] to-[#ff6b8b] text-white shadow-lg shadow-[#F5426A]/25 font-bold"
+                              : "text-gray-500 hover:bg-pink-50/50 hover:text-[#F5426A] font-medium"
                           )}
                         >
-                          <div className="flex items-center gap-3">
-                            {renderIcon(item.name, cn("w-[18px] h-[18px] transition-colors", isActive ? "text-white" : "text-gray-400 group-hover:text-[#F5426A]"))}
-                            <span>{item.name}</span>
+                          <div className={cn("flex items-center", isCollapsed ? "justify-center" : "")}>
+                            {renderIcon(item.name, cn("w-[20px] h-[20px] shrink-0 transition-all duration-300", !isCollapsed && "group-hover:scale-110", isActive ? "text-white" : "text-gray-400 group-hover:text-[#F5426A]"))}
+                            <span className={cn(
+                              "transition-all duration-300 overflow-hidden whitespace-nowrap text-left",
+                              isCollapsed ? "max-w-0 opacity-0 ml-0" : "max-w-[150px] opacity-100 ml-3 group-hover:translate-x-1"
+                            )}>
+                              {item.name}
+                            </span>
                           </div>
                           
-                          <div className="flex items-center gap-2">
+                          <div className={cn(
+                            "flex items-center gap-2 transition-all duration-300 overflow-hidden whitespace-nowrap",
+                            isCollapsed ? "max-w-0 opacity-0" : "max-w-[100px] opacity-100"
+                          )}>
                             {/* Badge for Products */}
                             {item.name === "Products" && totalProductsCount > 0 && (
                               <div className={cn(
-                                "flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full text-[11px] font-bold",
+                                "flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full text-[11px] font-bold shrink-0",
                                 isActive 
                                   ? "bg-white text-[#F5426A]" 
                                   : "bg-[#F5426A] text-white shadow-sm shadow-[#F5426A]/30"
@@ -207,7 +293,7 @@ export function AdminSidebar({
                               </div>
                             )}
                             <svg 
-                              className={cn("w-4 h-4 transition-transform duration-200", isExpanded ? "rotate-90" : "", isActive ? "text-white" : "text-gray-400 group-hover:text-[#F5426A]")} 
+                              className={cn("w-4 h-4 shrink-0 transition-transform duration-200", isExpanded ? "rotate-90" : "", isActive ? "text-white" : "text-gray-400 group-hover:text-[#F5426A]")} 
                               fill="none" 
                               viewBox="0 0 24 24" 
                               stroke="currentColor"
@@ -221,23 +307,30 @@ export function AdminSidebar({
                           href={item.href!}
                           suppressHydrationWarning
                           className={cn(
-                            "flex items-center justify-between px-4 py-2.5 rounded-xl text-[15px] group",
+                            "flex items-center justify-between py-2.5 rounded-xl text-[15px] group transition-all duration-300 relative overflow-hidden",
+                            isCollapsed ? "px-0 justify-center" : "px-4",
                             isActive
-                              ? "bg-[#F5426A] text-white shadow-md shadow-[#F5426A]/20 font-semibold"
-                              : "text-gray-500 hover:bg-pink-50/50 hover:text-[#F5426A] transition-colors font-medium"
+                              ? "bg-gradient-to-r from-[#F5426A] to-[#ff6b8b] text-white shadow-lg shadow-[#F5426A]/25 font-bold"
+                              : "text-gray-500 hover:bg-pink-50/50 hover:text-[#F5426A] font-medium"
                           )}
                         >
-                          <div className="flex items-center gap-3">
-                            {renderIcon(item.name, cn("w-[18px] h-[18px] transition-colors", isActive ? "text-white" : "text-gray-400 group-hover:text-[#F5426A]"))}
-                            <span>{item.name}</span>
+                          <div className={cn("flex items-center", isCollapsed ? "justify-center" : "")}>
+                            {renderIcon(item.name, cn("w-[20px] h-[20px] shrink-0 transition-all duration-300", !isCollapsed && "group-hover:scale-110", isActive ? "text-white" : "text-gray-400 group-hover:text-[#F5426A]"))}
+                            <span className={cn(
+                              "transition-all duration-300 overflow-hidden whitespace-nowrap",
+                              isCollapsed ? "max-w-0 opacity-0 ml-0" : "max-w-[150px] opacity-100 ml-3 group-hover:translate-x-1"
+                            )}>
+                              {item.name}
+                            </span>
                           </div>
                           
                           {/* Badge for Orders */}
                           {item.name === "Orders" && unreadCount > 0 && (
                             <div className={cn(
-                              "flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full text-[11px] font-bold",
+                              "flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full text-[11px] font-bold shrink-0 transition-all duration-300",
+                              isCollapsed ? "absolute top-1 right-2 border-2 border-white min-w-[16px] h-4 text-[9px] px-1 shadow-md" : "ml-2",
                               isActive 
-                                ? "bg-white text-[#F5426A]" 
+                                ? (isCollapsed ? "bg-white text-[#F5426A]" : "bg-white text-[#F5426A]") 
                                 : "bg-[#F5426A] text-white shadow-sm shadow-[#F5426A]/30"
                             )}>
                               {unreadCount > 99 ? '99+' : unreadCount}
@@ -247,7 +340,7 @@ export function AdminSidebar({
                       )}
 
                       {/* Sub Items Dropdown */}
-                      {hasSubItems && isExpanded && (
+                      {hasSubItems && isExpanded && !isCollapsed && (
                         <ul className="mt-1 ml-11 space-y-1 overflow-hidden animate-in slide-in-from-top-2 fade-in duration-200">
                           {item.subItems!.map((subItem, subIdx) => {
                             const isSubActive = pathname === subItem.href;
@@ -256,16 +349,16 @@ export function AdminSidebar({
                                 <Link
                                   href={subItem.href}
                                   className={cn(
-                                    "flex items-center px-4 py-2 rounded-lg text-sm font-medium transition-colors relative",
+                                    "flex items-center px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 relative group",
                                     isSubActive
-                                      ? "text-[#F5426A] bg-pink-50/30"
+                                      ? "text-[#F5426A] bg-pink-50/50 font-bold"
                                       : "text-gray-500 hover:text-gray-900 hover:bg-gray-50"
                                   )}
                                 >
                                   {isSubActive && (
                                     <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-4 bg-[#F5426A] rounded-r-full"></div>
                                   )}
-                                  <span className="flex-1">{subItem.name}</span>
+                                  <span className="flex-1 transition-transform duration-300 group-hover:translate-x-1">{subItem.name}</span>
                                   
                                   {/* Badge for All Products */}
                                   {subItem.name === "All Products" && totalProductsCount > 0 && (
@@ -294,15 +387,14 @@ export function AdminSidebar({
       </div>
 
       {/* Promo Banner */}
-      <div className="p-6 shrink-0 mt-auto">
-        <div className="bg-gradient-to-br from-pink-50 to-pink-100/50 rounded-2xl p-4 flex items-center justify-between border border-pink-100">
+      <div className={cn("transition-all duration-300 overflow-hidden", isCollapsed ? "h-0 opacity-0 p-0" : "h-[100px] opacity-100 p-6")}>
+        <div className="bg-gradient-to-br from-pink-50 via-white to-pink-100/50 rounded-2xl p-4 flex items-center justify-between border border-pink-100/50 shadow-sm hover:shadow-md transition-shadow cursor-pointer group">
           <div>
-            <h4 className="font-bold text-[#F5426A] text-sm">ReadyWear</h4>
-            <p className="text-xs text-gray-500 mt-0.5">Fashion for Every You</p>
+            <h4 className="font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-[#F5426A] to-[#ff6b8b] text-sm">ReadyWear</h4>
+            <p className="text-xs text-gray-500 mt-0.5 font-medium whitespace-nowrap">Fashion for Every You</p>
           </div>
-          <div className="w-10 h-10 bg-[#F5426A] rounded-full flex items-center justify-center text-white shrink-0 shadow-sm shadow-pink-200">
-            {/* Placeholder for the pink shirt image in the reference */}
-            <ShoppingBag className="w-5 h-5" />
+          <div className="w-10 h-10 bg-gradient-to-br from-[#F5426A] to-[#ff6b8b] rounded-full flex items-center justify-center text-white shrink-0 shadow-lg shadow-pink-200 group-hover:scale-110 transition-transform duration-300">
+            <ShoppingBag className="w-4 h-4" />
           </div>
         </div>
       </div>
@@ -320,5 +412,6 @@ export function AdminSidebar({
         }
       `}</style>
     </aside>
+    </>
   );
 }

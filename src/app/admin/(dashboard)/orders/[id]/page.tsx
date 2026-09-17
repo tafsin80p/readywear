@@ -41,39 +41,41 @@ export default async function AdminOrderDetailsPage({ params }: { params: Promis
     <div className="w-full flex flex-col bg-gray-50/50 min-h-screen">
       
       {/* Admin Top Bar */}
-      <div className="bg-white border-b border-gray-200 px-6 py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 sticky top-0 z-10">
-        <div className="flex items-center gap-4">
-          <Link href="/admin/orders" className="p-2 hover:bg-gray-100 rounded-md transition-colors text-gray-500">
+      <div className="bg-white border-b border-gray-200 px-4 sm:px-6 py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 relative z-20">
+        <div className="flex items-start sm:items-center gap-3">
+          <Link href="/admin/orders" className="p-1.5 sm:p-2 hover:bg-gray-100 rounded-md transition-colors text-gray-500 shrink-0 mt-0.5 sm:mt-0">
             <ArrowLeft className="w-5 h-5" />
           </Link>
           <div>
-            <h1 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+            <h1 className="text-lg sm:text-xl font-bold text-gray-900 flex items-center gap-2 leading-tight">
               Order #{order.orderId}
             </h1>
-            <p className="text-xs text-gray-500 flex items-center gap-1 mt-0.5">
-              <Calendar className="w-3 h-3" />
+            <p className="text-[11px] sm:text-xs text-gray-500 flex items-center gap-1 mt-1 sm:mt-0.5">
+              <Calendar className="w-3 h-3 shrink-0" />
               {formatDate(order.createdAt)}
             </p>
           </div>
         </div>
 
         {/* Status Actions */}
-        <div className="flex items-center">
-          <OrderStatusUpdater 
-            orderId={order._id.toString()} 
-            currentStatus={order.status} 
-            currentPaymentStatus={order.paymentStatus || 'unpaid'} 
-            verificationStatus={order.verificationStatus}
-          />
+        <div className="flex items-center sm:w-auto w-full">
+          <div className="w-full sm:w-auto ml-10 sm:ml-0">
+            <OrderStatusUpdater 
+              orderId={order._id.toString()} 
+              currentStatus={order.status} 
+              currentPaymentStatus={order.paymentStatus || 'unpaid'} 
+              verificationStatus={order.verificationStatus}
+            />
+          </div>
         </div>
       </div>
 
       {/* Admin Content Area */}
       <div className="p-6">
-        <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 2xl:grid-cols-3 gap-6">
           
           {/* Main Info - Left (Takes up 2/3) */}
-          <div className="xl:col-span-2 space-y-6">
+          <div className="2xl:col-span-2 space-y-6">
             
             {/* Order Progress Timeline */}
             <div className="bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm p-6">
@@ -145,7 +147,7 @@ export default async function AdminOrderDetailsPage({ params }: { params: Promis
                   <tbody className="divide-y divide-gray-100">
                     {order.items.map((item: any, index: number) => (
                       <tr key={index} className="hover:bg-gray-50/50">
-                        <td className="px-5 py-4">
+                        <td className="px-5 py-4 md:whitespace-nowrap">
                           <div className="flex items-center gap-3">
                             <div className="relative w-12 h-16 bg-gray-100 border border-gray-200 shrink-0">
                               <Image 
@@ -160,20 +162,20 @@ export default async function AdminOrderDetailsPage({ params }: { params: Promis
                             </span>
                           </div>
                         </td>
-                        <td className="px-5 py-4 text-gray-600">
+                        <td className="px-5 py-4 text-gray-600 md:whitespace-nowrap">
                           {item.size && <div className="text-xs">Size: <span className="font-medium text-gray-900">{item.size}</span></div>}
                           {item.color && <div className="text-xs mt-1">Color: <span className="font-medium text-gray-900">{item.color}</span></div>}
                           {item.productId && <div className="text-[10px] text-gray-400 mt-1 uppercase">ID: {item.productId.substring(0, 8)}</div>}
                         </td>
-                        <td className="px-5 py-4 font-medium text-gray-900">
+                        <td className="px-5 py-4 font-medium text-gray-900 md:whitespace-nowrap">
                           ৳ {item.price.toLocaleString('en-US')}
                         </td>
-                        <td className="px-5 py-4 text-center">
+                        <td className="px-5 py-4 text-center md:whitespace-nowrap">
                           <span className="bg-gray-100 text-gray-800 font-semibold px-2 py-0.5 rounded text-xs">
                             x{item.quantity}
                           </span>
                         </td>
-                        <td className="px-5 py-4 text-right font-bold text-gray-900">
+                        <td className="px-5 py-4 text-right font-bold text-gray-900 md:whitespace-nowrap">
                           ৳ {(item.price * item.quantity).toLocaleString('en-US')}
                         </td>
                       </tr>

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Hind_Siliguri } from "next/font/google";
 import { Toaster } from "react-hot-toast";
 import "./globals.css";
+import GoogleAnalytics from "@/components/GoogleAnalytics";
 
 
 const bengaliFont = Hind_Siliguri({
@@ -27,9 +28,9 @@ export const metadata: Metadata = {
     description: "ReadyWear - স্টাইলের দেখা নতুন যাত্রা। সেরা মানের পোশাক ও প্রিমিয়াম ই-কমার্স অভিজ্ঞতা।",
     images: [
       {
-        url: "/icon.jpg",
-        width: 800,
-        height: 600,
+        url: "/readywear logo.png",
+        width: 1200,
+        height: 630,
         alt: "ReadyWear Logo",
       }
     ]
@@ -38,7 +39,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "ReadyWear - Premium E-commerce in Bangladesh",
     description: "ReadyWear - স্টাইলের দেখা নতুন যাত্রা।",
-    images: ["/icon.jpg"],
+    images: ["/readywear logo.png"],
   }
 };
 
@@ -54,6 +55,7 @@ export default function RootLayout({
         <link rel="dns-prefetch" href="https://images.unsplash.com" />
       </head>
       <body className={`${bengaliFont.variable} antialiased font-sans`} suppressHydrationWarning>
+        <GoogleAnalytics />
         <Toaster position="top-right" />
         {children}
       </body>

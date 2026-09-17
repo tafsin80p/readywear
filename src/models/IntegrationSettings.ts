@@ -25,6 +25,23 @@ export interface IIntegrationSettings extends Document {
     webhookUrl: string;
     sheetUrl: string;
   };
+  pathao: {
+    enabled: boolean;
+    clientId: string;
+    clientSecret: string;
+    storeId: string;
+    logoUrl?: string;
+  };
+  steadfast: {
+    enabled: boolean;
+    apiKey: string;
+    secretKey: string;
+    logoUrl?: string;
+  };
+  googleAnalytics: {
+    enabled: boolean;
+    measurementId: string;
+  };
   createdAt: Date;
   updatedAt: Date;
 }
@@ -56,6 +73,23 @@ const IntegrationSettingsSchema: Schema<IIntegrationSettings> = new Schema(
       enabled: { type: Boolean, default: false },
       webhookUrl: { type: String, default: "" },
       sheetUrl: { type: String, default: "" },
+    },
+    pathao: {
+      enabled: { type: Boolean, default: false },
+      clientId: { type: String, default: "" },
+      clientSecret: { type: String, default: "" },
+      storeId: { type: String, default: "" },
+      logoUrl: { type: String, default: "" },
+    },
+    steadfast: {
+      enabled: { type: Boolean, default: false },
+      apiKey: { type: String, default: "" },
+      secretKey: { type: String, default: "" },
+      logoUrl: { type: String, default: "" },
+    },
+    googleAnalytics: {
+      enabled: { type: Boolean, default: false },
+      measurementId: { type: String, default: "" },
     },
   },
   { timestamps: true }

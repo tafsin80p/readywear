@@ -23,7 +23,8 @@ export async function GET() {
     });
 
     return NextResponse.json({ count });
-  } catch (error) {
-    return NextResponse.json({ count: 0 }, { status: 500 });
+  } catch (error: any) {
+    console.error("Unread count error:", error);
+    return NextResponse.json({ count: 0, error: error.message }, { status: 500 });
   }
 }

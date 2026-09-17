@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Save, RefreshCw, Send, CheckCircle, XCircle, Copy } from "lucide-react";
+import { Save, RefreshCw, Send, CheckCircle, XCircle, Copy, UploadCloud } from "lucide-react";
 import toast from "react-hot-toast";
 
 const APPS_SCRIPT_CODE = `function doPost(e) {
@@ -39,6 +39,7 @@ export default function IntegrationsPage() {
   const [testing, setTesting] = useState(false);
   const [expanded, setExpanded] = useState<string | null>(null);
   const [isClosing, setIsClosing] = useState(false);
+  const [uploadingLogo, setUploadingLogo] = useState<'pathao' | 'steadfast' | null>(null);
 
   const handleCloseModal = () => {
     setIsClosing(true);
@@ -69,6 +70,26 @@ export default function IntegrationsPage() {
     sheetUrl: ""
   });
 
+  const [googleAnalytics, setGoogleAnalytics] = useState({
+    enabled: false,
+    measurementId: ""
+  });
+
+  const [pathao, setPathao] = useState({
+    enabled: false,
+    clientId: "",
+    clientSecret: "",
+    storeId: "",
+    logoUrl: ""
+  });
+
+  const [steadfast, setSteadfast] = useState({
+    enabled: false,
+    apiKey: "",
+    secretKey: "",
+    logoUrl: ""
+  });
+
   const [pendingUsers, setPendingUsers] = useState<any[]>([]);
 
   useEffect(() => {
@@ -82,11 +103,14 @@ export default function IntegrationsPage() {
       if (data.success && data.settings) {
         setTelegram({
           ...data.settings.telegram,
-          authorizedUsers: data.settings.telegram.authorizedUsers?.join(", ") || ""
+          authorizedUsers: data.settings.telegram?.authorizedUsers?.join(", ") || ""
         });
-        setMeta(data.settings.meta);
+        if (data.settings.meta) setMeta(data.settings.meta);
+        if (data.settings.googleAnalytics) setGoogleAnalytics(data.settings.googleAnalytics);
         if (data.settings.googleSheet) setGoogleSheet(data.settings.googleSheet);
-        setPendingUsers(data.settings.telegram.pendingTelegramUsers || []);
+        if (data.settings.pathao) setPathao(data.settings.pathao);
+        if (data.settings.steadfast) setSteadfast(data.settings.steadfast);
+        setPendingUsers(data.settings.telegram?.pendingTelegramUsers || []);
       }
     } catch (error) {
       toast.error("Failed to load settings");
@@ -104,7 +128,10 @@ export default function IntegrationsPage() {
           authorizedUsers: telegram.authorizedUsers.split(",").map(u => u.trim()).filter(Boolean)
         },
         meta,
-        googleSheet
+        googleAnalytics,
+        googleSheet,
+        pathao,
+        steadfast
       };
 
       const res = await fetch("/api/admin/integrations", {
@@ -115,7 +142,9 @@ export default function IntegrationsPage() {
       
       const data = await res.json();
       if (data.success) {
-        toast.success("Settings saved successfully!");
+        if (!overridePayload?.isLogoUpload) {
+          toast.success("Settings saved successfully!");
+        }
       } else {
         toast.error(data.error || "Failed to save settings");
       }
@@ -126,11 +155,58 @@ export default function IntegrationsPage() {
     }
   };
 
-  const handleToggle = (type: 'telegram' | 'meta' | 'googleSheet', enabled: boolean) => {
+  const handleLogoUpload = async (type: 'pathao' | 'steadfast', e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploadingLogo(type);
+    try {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onloadend = async () => {
+        const base64data = reader.result;
+        const res = await fetch("/api/upload", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ file: base64data, folder: "readywear/integrations" })
+        });
+        const data = await res.json();
+        
+        if (data.url) {
+          const payload = {
+            telegram: { ...telegram, authorizedUsers: telegram.authorizedUsers.split(",").map(u => u.trim()).filter(Boolean) },
+            meta,
+            googleAnalytics,
+            googleSheet,
+            pathao: { ...pathao, logoUrl: type === 'pathao' ? data.url : pathao.logoUrl },
+            steadfast: { ...steadfast, logoUrl: type === 'steadfast' ? data.url : steadfast.logoUrl },
+            isLogoUpload: true
+          };
+
+          if (type === 'pathao') setPathao({ ...pathao, logoUrl: data.url });
+          else setSteadfast({ ...steadfast, logoUrl: data.url });
+
+          await handleSave(payload);
+          toast.success("Logo updated successfully!");
+        } else {
+          toast.error("Failed to upload logo");
+        }
+        setUploadingLogo(null);
+      };
+    } catch (error) {
+      toast.error("Error uploading logo");
+      setUploadingLogo(null);
+    }
+  };
+
+  const handleToggle = (type: 'telegram' | 'meta' | 'googleAnalytics' | 'googleSheet' | 'pathao' | 'steadfast', enabled: boolean) => {
     const payload = {
       telegram: { ...telegram, authorizedUsers: telegram.authorizedUsers.split(",").map(u => u.trim()).filter(Boolean) },
       meta,
-      googleSheet
+      googleAnalytics,
+      googleSheet,
+      pathao,
+      steadfast
     };
     
     if (type === 'telegram') {
@@ -139,9 +215,18 @@ export default function IntegrationsPage() {
     } else if (type === 'meta') {
       setMeta({ ...meta, enabled });
       payload.meta.enabled = enabled;
+    } else if (type === 'googleAnalytics') {
+      setGoogleAnalytics({ ...googleAnalytics, enabled });
+      payload.googleAnalytics.enabled = enabled;
     } else if (type === 'googleSheet') {
       setGoogleSheet({ ...googleSheet, enabled });
       payload.googleSheet.enabled = enabled;
+    } else if (type === 'pathao') {
+      setPathao({ ...pathao, enabled });
+      payload.pathao.enabled = enabled;
+    } else if (type === 'steadfast') {
+      setSteadfast({ ...steadfast, enabled });
+      payload.steadfast.enabled = enabled;
     }
     
     handleSave(payload);
@@ -204,7 +289,7 @@ export default function IntegrationsPage() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 items-start">
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6 items-start">
         {/* Telegram Section */}
         <div className={`bg-white rounded-2xl border relative transition-all duration-300 shadow-sm ${expanded === 'telegram' ? 'border-blue-300 ring-2 ring-blue-50' : 'border-gray-200'}`}>
           {telegram.enabled && telegram.botToken && telegram.chatId && (
@@ -270,6 +355,38 @@ export default function IntegrationsPage() {
           </div>
         </div>
 
+        {/* Google Analytics Section */}
+        <div className={`bg-white rounded-2xl border relative transition-all duration-300 shadow-sm ${expanded === 'googleAnalytics' ? 'border-orange-300 ring-2 ring-orange-50' : 'border-gray-200'}`}>
+          {googleAnalytics.enabled && googleAnalytics.measurementId && (
+            <div className="absolute top-4 right-4 bg-green-50 border border-green-200 text-green-700 text-[10px] font-bold px-2 py-1 rounded-full flex items-center gap-1.5 shadow-sm">
+              <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span>
+              Connected
+            </div>
+          )}
+          <div className="p-6 flex flex-col items-center text-center gap-3">
+            <svg className="w-14 h-14" viewBox="0 0 24 24" fill="#F9AB00" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1.41 16.09V11.1h2.1v6.99h-2.1zm-4.92 0V14.1h2.1v3.99h-2.1z"/>
+            </svg>
+            <div>
+              <h2 className="text-lg font-bold text-gray-900">Google Analytics</h2>
+              <p className="text-xs text-gray-500 mt-1 line-clamp-2">Track website traffic and user behavior.</p>
+            </div>
+            
+            <div className="w-full flex items-center justify-between mt-3 pt-4 border-t border-gray-100">
+              <label className="relative inline-flex items-center cursor-pointer">
+                <input type="checkbox" className="sr-only peer" checked={googleAnalytics.enabled} onChange={e => handleToggle('googleAnalytics', e.target.checked)} />
+                <div className="w-10 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-[#F9AB00]"></div>
+              </label>
+              <button 
+                onClick={() => setExpanded(expanded === 'googleAnalytics' ? null : 'googleAnalytics')}
+                className="px-3 py-1.5 bg-gray-50 border border-gray-200 text-gray-700 rounded-lg text-xs font-medium hover:bg-gray-100 transition-colors"
+              >
+                {expanded === 'googleAnalytics' ? 'Close' : 'Configure'}
+              </button>
+            </div>
+          </div>
+        </div>
+
         {/* Google Sheet Section */}
         <div className={`bg-white rounded-2xl border relative transition-all duration-300 shadow-sm ${expanded === 'googleSheet' ? 'border-green-400 ring-2 ring-green-50' : 'border-gray-200'}`}>
           {googleSheet.enabled && googleSheet.webhookUrl && (
@@ -304,6 +421,122 @@ export default function IntegrationsPage() {
           </div>
         </div>
 
+        {/* Pathao Section */}
+        <div className={`bg-white rounded-2xl border relative transition-all duration-300 shadow-sm ${expanded === 'pathao' ? 'border-red-400 ring-2 ring-red-50' : 'border-gray-200'}`}>
+          {pathao.enabled && pathao.clientId && pathao.clientSecret && (
+            <div className="absolute top-4 right-4 bg-green-50 border border-green-200 text-green-700 text-[10px] font-bold px-2 py-1 rounded-full flex items-center gap-1.5 shadow-sm">
+              <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span>
+              Connected
+            </div>
+          )}
+          <div className="p-6 flex flex-col items-center text-center gap-3">
+            <div className="relative group cursor-pointer w-14 h-14">
+              <input 
+                type="file" 
+                accept="image/*" 
+                onChange={(e) => handleLogoUpload('pathao', e)}
+                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                disabled={uploadingLogo === 'pathao'}
+              />
+              
+              {uploadingLogo === 'pathao' ? (
+                <div className="w-14 h-14 bg-white rounded-xl flex items-center justify-center border border-gray-100 shadow-sm">
+                  <RefreshCw className="w-5 h-5 text-gray-400 animate-spin" />
+                </div>
+              ) : pathao.logoUrl ? (
+                <img 
+                  src={pathao.logoUrl} 
+                  alt="Pathao" 
+                  className="w-14 h-14 object-contain rounded-xl border border-gray-100 p-1.5 bg-white shadow-sm transition-opacity group-hover:opacity-50"
+                />
+              ) : (
+                <div className="w-14 h-14 bg-red-50 text-[#ED1C24] rounded-xl flex items-center justify-center font-bold text-2xl border border-red-100 shadow-sm transition-opacity group-hover:opacity-50">P</div>
+              )}
+              
+              {!uploadingLogo && (
+                <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/20 rounded-xl">
+                  <UploadCloud className="w-5 h-5 text-white" />
+                </div>
+              )}
+            </div>
+            <div>
+              <h2 className="text-lg font-bold text-gray-900">Pathao</h2>
+              <p className="text-xs text-gray-500 mt-1 line-clamp-2">Automate order dispatching and get live tracking updates.</p>
+            </div>
+            
+            <div className="w-full flex items-center justify-between mt-3 pt-4 border-t border-gray-100">
+              <label className="relative inline-flex items-center cursor-pointer">
+                <input type="checkbox" className="sr-only peer" checked={pathao.enabled} onChange={e => handleToggle('pathao', e.target.checked)} />
+                <div className="w-10 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-[#ED1C24]"></div>
+              </label>
+              <button 
+                onClick={() => setExpanded(expanded === 'pathao' ? null : 'pathao')}
+                className="px-3 py-1.5 bg-gray-50 border border-gray-200 text-gray-700 rounded-lg text-xs font-medium hover:bg-gray-100 transition-colors"
+              >
+                {expanded === 'pathao' ? 'Close' : 'Configure'}
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Steadfast Section */}
+        <div className={`bg-white rounded-2xl border relative transition-all duration-300 shadow-sm ${expanded === 'steadfast' ? 'border-[#0a192f]-400 ring-2 ring-[#0a192f]-50' : 'border-gray-200'}`}>
+          {steadfast.enabled && steadfast.apiKey && steadfast.secretKey && (
+            <div className="absolute top-4 right-4 bg-green-50 border border-green-200 text-green-700 text-[10px] font-bold px-2 py-1 rounded-full flex items-center gap-1.5 shadow-sm">
+              <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span>
+              Connected
+            </div>
+          )}
+          <div className="p-6 flex flex-col items-center text-center gap-3">
+            <div className="relative group cursor-pointer w-14 h-14">
+              <input 
+                type="file" 
+                accept="image/*" 
+                onChange={(e) => handleLogoUpload('steadfast', e)}
+                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                disabled={uploadingLogo === 'steadfast'}
+              />
+              
+              {uploadingLogo === 'steadfast' ? (
+                <div className="w-14 h-14 bg-white rounded-xl flex items-center justify-center border border-gray-100 shadow-sm">
+                  <RefreshCw className="w-5 h-5 text-gray-400 animate-spin" />
+                </div>
+              ) : steadfast.logoUrl ? (
+                <img 
+                  src={steadfast.logoUrl} 
+                  alt="Steadfast" 
+                  className="w-14 h-14 object-contain rounded-xl border border-gray-100 p-1.5 bg-white shadow-sm transition-opacity group-hover:opacity-50"
+                />
+              ) : (
+                <div className="w-14 h-14 bg-gray-100 text-[#0a192f] rounded-xl flex items-center justify-center font-bold text-2xl border border-gray-200 shadow-sm transition-opacity group-hover:opacity-50">S</div>
+              )}
+              
+              {!uploadingLogo && (
+                <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/20 rounded-xl">
+                  <UploadCloud className="w-5 h-5 text-white" />
+                </div>
+              )}
+            </div>
+            <div>
+              <h2 className="text-lg font-bold text-gray-900">Steadfast</h2>
+              <p className="text-xs text-gray-500 mt-1 line-clamp-2">Fast and reliable nationwide courier integration.</p>
+            </div>
+            
+            <div className="w-full flex items-center justify-between mt-3 pt-4 border-t border-gray-100">
+              <label className="relative inline-flex items-center cursor-pointer">
+                <input type="checkbox" className="sr-only peer" checked={steadfast.enabled} onChange={e => handleToggle('steadfast', e.target.checked)} />
+                <div className="w-10 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-[#0a192f]"></div>
+              </label>
+              <button 
+                onClick={() => setExpanded(expanded === 'steadfast' ? null : 'steadfast')}
+                className="px-3 py-1.5 bg-gray-50 border border-gray-200 text-gray-700 rounded-lg text-xs font-medium hover:bg-gray-100 transition-colors"
+              >
+                {expanded === 'steadfast' ? 'Close' : 'Configure'}
+              </button>
+            </div>
+          </div>
+        </div>
+
       </div>
 
       {/* Configuration Modals */}
@@ -317,7 +550,10 @@ export default function IntegrationsPage() {
               <h2 className="text-lg font-bold text-gray-900 flex items-center gap-2">
                 {expanded === 'telegram' && 'Telegram Bot Configuration'}
                 {expanded === 'meta' && 'Meta CAPI Configuration'}
+                {expanded === 'googleAnalytics' && 'Google Analytics Configuration'}
                 {expanded === 'googleSheet' && 'Google Sheets Configuration'}
+                {expanded === 'pathao' && 'Pathao Courier Configuration'}
+                {expanded === 'steadfast' && 'Steadfast Courier Configuration'}
               </h2>
               <button 
                 onClick={handleCloseModal}
@@ -475,6 +711,33 @@ export default function IntegrationsPage() {
                 </div>
               )}
 
+              {expanded === 'googleAnalytics' && (
+                <div className="space-y-5">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Measurement ID</label>
+                    <input 
+                      type="text" 
+                      value={googleAnalytics.measurementId}
+                      onChange={e => setGoogleAnalytics({...googleAnalytics, measurementId: e.target.value})}
+                      className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-[#F9AB00]/20 focus:border-[#F9AB00] transition-all outline-none bg-white"
+                      placeholder="G-XXXXXXXXXX"
+                    />
+                    <p className="text-[11px] text-gray-500 mt-1.5 font-medium">Your Google Analytics 4 Measurement ID.</p>
+                  </div>
+
+                  <div className="pt-4 flex justify-end border-t border-gray-100 mt-2">
+                    <button 
+                      onClick={() => handleSave()}
+                      disabled={saving}
+                      className="flex items-center gap-2 bg-[#F9AB00] text-white px-5 py-2 rounded-xl text-sm font-medium hover:bg-[#e09900] transition-colors disabled:opacity-70 shadow-sm"
+                    >
+                      {saving ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+                      Save Config
+                    </button>
+                  </div>
+                </div>
+              )}
+
               {expanded === 'googleSheet' && (
                 <div className="space-y-6">
                   <div className="bg-green-50/50 p-5 rounded-xl border border-green-200">
@@ -529,6 +792,81 @@ export default function IntegrationsPage() {
                       onClick={() => handleSave()}
                       disabled={saving}
                       className="flex items-center gap-2 bg-[#0F9D58] text-white px-5 py-2 rounded-xl text-sm font-medium hover:bg-[#0b8046] transition-colors disabled:opacity-70 shadow-sm"
+                    >
+                      {saving ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+                      Save Config
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {expanded === 'pathao' && (
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Client ID</label>
+                    <input 
+                      type="text" 
+                      value={pathao.clientId}
+                      onChange={e => setPathao({...pathao, clientId: e.target.value})}
+                      className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-[#ED1C24]/20 focus:border-[#ED1C24] transition-all outline-none bg-white"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Client Secret</label>
+                    <input 
+                      type="password" 
+                      value={pathao.clientSecret}
+                      onChange={e => setPathao({...pathao, clientSecret: e.target.value})}
+                      className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-[#ED1C24]/20 focus:border-[#ED1C24] transition-all outline-none bg-white"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Store ID</label>
+                    <input 
+                      type="text" 
+                      value={pathao.storeId}
+                      onChange={e => setPathao({...pathao, storeId: e.target.value})}
+                      className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-[#ED1C24]/20 focus:border-[#ED1C24] transition-all outline-none bg-white"
+                    />
+                  </div>
+                  <div className="pt-4 flex justify-end border-t border-gray-100 mt-2">
+                    <button 
+                      onClick={() => handleSave()}
+                      disabled={saving}
+                      className="flex items-center gap-2 bg-[#ED1C24] text-white px-5 py-2 rounded-xl text-sm font-medium hover:bg-[#c9181f] transition-colors disabled:opacity-70 shadow-sm"
+                    >
+                      {saving ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+                      Save Config
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {expanded === 'steadfast' && (
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">API Key</label>
+                    <input 
+                      type="text" 
+                      value={steadfast.apiKey}
+                      onChange={e => setSteadfast({...steadfast, apiKey: e.target.value})}
+                      className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-[#0a192f]/20 focus:border-[#0a192f] transition-all outline-none bg-white"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Secret Key</label>
+                    <input 
+                      type="password" 
+                      value={steadfast.secretKey}
+                      onChange={e => setSteadfast({...steadfast, secretKey: e.target.value})}
+                      className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-[#0a192f]/20 focus:border-[#0a192f] transition-all outline-none bg-white"
+                    />
+                  </div>
+                  <div className="pt-4 flex justify-end border-t border-gray-100 mt-2">
+                    <button 
+                      onClick={() => handleSave()}
+                      disabled={saving}
+                      className="flex items-center gap-2 bg-[#0a192f] text-white px-5 py-2 rounded-xl text-sm font-medium hover:bg-[#112240] transition-colors disabled:opacity-70 shadow-sm"
                     >
                       {saving ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
                       Save Config

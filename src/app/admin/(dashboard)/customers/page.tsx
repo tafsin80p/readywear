@@ -4,6 +4,7 @@ import User from "@/models/User";
 import { Search, Mail, Calendar, TrendingUp, ShieldBan } from "lucide-react";
 import Image from "next/image";
 import { CustomerActions } from "@/components/admin/CustomerActions";
+import Link from "next/link";
 
 export const dynamic = 'force-dynamic';
 export const fetchCache = 'force-no-store';
@@ -117,7 +118,7 @@ export default async function AdminCustomersPage() {
                   className="hover:bg-gray-50/80 transition-colors group cursor-pointer"
                 >
                   <td className="px-6 py-4">
-                    <div className="flex items-center gap-3">
+                    <Link href={`/admin/customers/${customer._id}`} className="flex items-center gap-3 hover:opacity-80 transition-opacity group-hover:text-primary">
                       {customer.image ? (
                         <div className="relative w-10 h-10 rounded-full overflow-hidden shrink-0 border border-gray-200 shadow-sm">
                           <Image src={customer.image} alt={customer.name} fill className="object-cover" />
@@ -128,7 +129,7 @@ export default async function AdminCustomersPage() {
                         </div>
                       )}
                       <div className="flex flex-col">
-                        <span className="font-bold text-gray-900 text-sm">{customer.name}</span>
+                        <span className="font-bold text-gray-900 text-sm group-hover:text-primary transition-colors">{customer.name}</span>
                         {/* Optional: Add a badge if they are a top spender */}
                         <div className="flex items-center gap-2 mt-0.5">
                           {customer.totalSpent > 5000 && (
@@ -143,7 +144,7 @@ export default async function AdminCustomersPage() {
                           )}
                         </div>
                       </div>
-                    </div>
+                    </Link>
                   </td>
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-1.5 text-sm text-gray-600">
@@ -159,9 +160,9 @@ export default async function AdminCustomersPage() {
                   </td>
                   <td className="px-6 py-4">
                     <div className="flex flex-col items-center justify-center">
-                      <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-blue-50 text-blue-600 font-bold text-sm">
+                      <Link href={`/admin/customers/${customer._id}`} className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-blue-50 text-blue-600 font-bold text-sm hover:bg-blue-100 hover:scale-105 transition-all">
                         {customer.totalOrders}
-                      </span>
+                      </Link>
                     </div>
                   </td>
                   <td className="px-6 py-4">

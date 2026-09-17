@@ -3,35 +3,39 @@ import { NextResponse } from "next/server";
 
 export default withAuth(
   function middleware(req) {
-    // If the user tries to access the login page while already authenticated as admin
-    if (req.nextUrl.pathname === "/admin/login") {
+    const { pathname } = req.nextUrl;
+    
+    // If the user tries to access the admin login page while already authenticated as admin
+    if (pathname === "/admin/login") {
       if (req.nextauth.token?.role === "admin") {
         return NextResponse.redirect(new URL("/admin", req.url));
+      }
+    }
+
+    // If user tries to access /admin pages but is not an admin
+    if (pathname.startsWith("/admin") && pathname !== "/admin/login") {
+      if (req.nextauth.token?.role !== "admin") {
+        return NextResponse.redirect(new URL("/admin/login", req.url));
+      }
+    }
+
+    // If user tries to access /account pages but is not logged in
+    if (pathname.startsWith("/account")) {
+      if (!req.nextauth.token) {
+        // Redirect to home page where the login modal will hopefully be triggered, or just home
+        return NextResponse.redirect(new URL("/?login=true", req.url));
       }
     }
   },
   {
     callbacks: {
-      authorized: ({ req, token }) => {
-        const { pathname } = req.nextUrl;
-        
-        // Let anyone access the login page (we handle redirects in the middleware function above)
-        if (pathname === "/admin/login") {
-          return true;
-        }
-
-        // Only allow admins to access other /admin routes
-        return token?.role === "admin";
-      },
-    },
-    // If not authorized, redirect to the admin login page
-    pages: {
-      signIn: "/admin/login",
+      // Let the middleware function handle the auth logic completely
+      authorized: () => true,
     },
     secret: process.env.NEXTAUTH_SECRET || "fallback-secret-for-development",
   }
 );
 
 export const config = {
-  matcher: ["/admin/:path*"],
+  matcher: ["/admin/:path*", "/account/:path*"],
 };

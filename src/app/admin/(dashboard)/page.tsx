@@ -25,6 +25,7 @@ import { SalesChart } from "@/components/admin/SalesChart";
 import { OrderStatusChart } from "@/components/admin/OrderStatusChart";
 import { InventoryChart } from "@/components/admin/InventoryChart";
 import { AnimatedNumber } from "@/components/admin/AnimatedNumber";
+import { CustomDatePicker } from "@/components/admin/CustomDatePicker";
 
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
@@ -32,15 +33,24 @@ import { useRef, useState, useEffect } from "react";
 
 export default function AdminDashboard() {
   const containerRef = useRef<HTMLDivElement>(null);
+  const dateInputRef = useRef<HTMLInputElement>(null);
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [range, setRange] = useState("7");
+  const [selectedDate, setSelectedDate] = useState<string>("");
 
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
         setLoading(true);
-        const res = await fetch(`/api/admin/dashboard?range=${range}`);
+        const queryParams = new URLSearchParams();
+        if (selectedDate) {
+          queryParams.append("date", selectedDate);
+        } else {
+          queryParams.append("range", range);
+        }
+        
+        const res = await fetch(`/api/admin/dashboard?${queryParams.toString()}`);
         const result = await res.json();
         if (result.success) {
           setData(result.data);
@@ -52,94 +62,122 @@ export default function AdminDashboard() {
       }
     };
     fetchDashboardData();
-  }, [range]);
+  }, [range, selectedDate]);
 
   useGSAP(() => {
+    if (loading) return;
+    
     // 1. Fade and slide in cards
     gsap.fromTo(
       ".dashboard-item",
       { opacity: 0, y: 30, scale: 0.98 },
-      { opacity: 1, y: 0, scale: 1, duration: 0.6, stagger: 0.08, ease: "back.out(1.2)", delay: 0.1 }
+      { opacity: 1, y: 0, scale: 1, duration: 0.6, stagger: 0.08, ease: "back.out(1.2)" }
     );
     
     // 2. Pulse icons in KPI cards
     gsap.fromTo(
       ".kpi-icon-wrapper",
       { scale: 0.5, opacity: 0 },
-      { scale: 1, opacity: 1, duration: 0.5, stagger: 0.1, ease: "back.out(1.5)", delay: 0.4 }
+      { scale: 1, opacity: 1, duration: 0.5, stagger: 0.1, ease: "back.out(1.5)", delay: 0.3 }
     );
-  }, { scope: containerRef });
+  }, { scope: containerRef, dependencies: [loading, data] });
 
   
   const recentOrders: any[] = data?.recentOrders || [];
   const topSelling: any[] = data?.topSelling || [];
   const lowStockItems: any[] = data?.lowStockItems || [];
   
-  const today = new Date().toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' });
+  const today = selectedDate 
+    ? new Date(selectedDate).toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' })
+    : new Date().toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' });
+
+  if (loading && !data) {
+    return (
+      <div className="flex h-[calc(100vh-100px)] items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-12 h-12 border-4 border-gray-200 border-t-[#F5426A] rounded-full animate-spin"></div>
+          <p className="text-gray-500 font-medium animate-pulse">Loading dashboard...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div ref={containerRef} className="p-4 md:p-8 space-y-6 md:space-y-8 max-w-[1600px] mx-auto pb-10">
       
-      {/* 1. WELCOME AREA */}
-      <div className="flex flex-col xl:flex-row gap-6 justify-between items-start xl:items-stretch dashboard-item">
-        
-        {/* Welcome Left */}
-        <div className="flex-1 flex flex-col justify-between">
-          <div>
-            <h1 className="text-2xl md:text-[32px] font-extrabold text-[#1a2b4b] tracking-tight mb-2">Welcome Back, Admin! 👋</h1>
-            <p className="text-gray-500 font-medium">Here's what's happening with your store today.</p>
-          </div>
-          <div className="flex items-center gap-4 bg-white/80 backdrop-blur-xl px-5 py-3.5 rounded-2xl shadow-[0_4px_20px_rgb(0,0,0,0.03)] border border-white w-fit mt-6">
-            <div className="w-10 h-10 bg-pink-50 rounded-xl flex items-center justify-center text-[#F5426A]">
-              <Calendar className="w-5 h-5" />
-            </div>
-            <div>
-              <p className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Today</p>
-              <p className="text-sm font-bold text-gray-900">{today}</p>
-            </div>
-          </div>
+      {/* 1. WELCOME BANNER */}
+      <div className="relative bg-gradient-to-br from-[#F5426A] to-[#d62850] rounded-[2rem] p-8 md:p-10 text-white shadow-xl shadow-pink-200/50 dashboard-item z-10">
+        {/* Abstract background shapes */}
+        <div className="absolute inset-0 overflow-hidden rounded-[2rem] pointer-events-none">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-white rounded-full blur-[100px] opacity-20 -translate-y-1/2 translate-x-1/4"></div>
+          <div className="absolute bottom-0 left-0 w-48 h-48 bg-pink-300 rounded-full blur-[80px] opacity-20 translate-y-1/4 -translate-x-1/4"></div>
         </div>
 
-        {/* Store Insights Right */}
-        <div className="w-full xl:w-[600px] flex gap-4">
-          <div className="flex-1 bg-[#F5426A] p-6 rounded-[2rem] text-white relative overflow-hidden shadow-lg shadow-pink-200">
-            <div className="absolute top-0 right-0 p-4 opacity-20">
-              <BarChart3 className="w-24 h-24 text-white" />
-            </div>
-            <div className="relative z-10 flex flex-col h-full justify-between">
-              <div>
-                <div className="flex items-center gap-2 mb-4">
-                  <div className="w-2 h-2 rounded-full bg-white animate-pulse"></div>
-                  <span className="text-xs font-bold text-pink-100 uppercase tracking-wider">Live Now</span>
-                </div>
-                <h3 className="text-4xl font-black mb-1 text-white">{data?.activeVisitors || 0}</h3>
-                <p className="text-sm text-pink-100 font-medium">Active visitors on site</p>
+        <div className="relative z-10 flex flex-col xl:flex-row gap-8 justify-between items-start xl:items-center">
+          
+          <div className="space-y-4">
+            <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight">
+              Welcome Back, Admin! 👋
+            </h1>
+            <p className="text-pink-100 font-medium text-lg max-w-lg">
+              Here's what's happening with your store today. Keep up the great work!
+            </p>
+            
+            <CustomDatePicker 
+              selectedDate={selectedDate}
+              onSelect={(date) => {
+                setSelectedDate(date);
+                setRange('');
+              }}
+            />
+          </div>
+
+          <div className="flex flex-col sm:flex-row gap-4 w-full xl:w-auto">
+            {/* Live Visitors Card */}
+            <div className="flex-1 sm:w-[200px] bg-white/10 backdrop-blur-md border border-white/20 p-5 rounded-2xl flex flex-col justify-center relative overflow-hidden group hover:bg-white/20 transition-colors">
+              <div className="absolute top-0 right-0 p-3 opacity-20 group-hover:scale-110 transition-transform">
+                <Users className="w-16 h-16 text-white" />
               </div>
+              <div className="flex items-center gap-2 mb-2 relative z-10">
+                <div className="w-2 h-2 rounded-full bg-white animate-pulse shadow-[0_0_8px_rgba(255,255,255,0.8)]"></div>
+                <span className="text-xs font-bold text-pink-100 uppercase tracking-wider">Live Now</span>
+              </div>
+              <h3 className="text-4xl font-black relative z-10 text-white">{data?.activeVisitors || 0}</h3>
+              <p className="text-xs text-pink-100 font-medium mt-1 relative z-10">Active visitors on site</p>
+            </div>
+
+            {/* Pending Orders Card */}
+            <div className="flex-1 sm:w-[200px] bg-white/10 backdrop-blur-md border border-white/20 p-5 rounded-2xl flex flex-col justify-center relative overflow-hidden group hover:bg-white/20 transition-colors">
+              <div className="absolute top-0 right-0 p-3 opacity-20 group-hover:scale-110 transition-transform">
+                <Package className="w-16 h-16 text-white" />
+              </div>
+              <div className="flex items-center gap-2 mb-2 relative z-10">
+                <div className="w-2 h-2 rounded-full bg-amber-300 shadow-[0_0_8px_rgba(252,211,77,0.8)]"></div>
+                <span className="text-xs font-bold text-pink-100 uppercase tracking-wider">To Process</span>
+              </div>
+              <h3 className="text-4xl font-black relative z-10 text-white">{data?.pendingOrders || 0}</h3>
+              <p className="text-xs text-pink-100 font-medium mt-1 relative z-10">Pending orders</p>
+            </div>
+            
+            {/* Low Stock Card */}
+            <div className="flex-1 sm:w-[200px] bg-white/10 backdrop-blur-md border border-white/20 p-5 rounded-2xl flex flex-col justify-center relative overflow-hidden group hover:bg-white/20 transition-colors">
+              <div className="absolute top-0 right-0 p-3 opacity-20 group-hover:scale-110 transition-transform">
+                <AlertCircle className="w-16 h-16 text-white" />
+              </div>
+              <div className="flex items-center gap-2 mb-2 relative z-10">
+                <div className="w-2 h-2 rounded-full bg-white shadow-[0_0_8px_rgba(255,255,255,0.8)]"></div>
+                <span className="text-xs font-bold text-pink-100 uppercase tracking-wider">Low Stock</span>
+              </div>
+              <h3 className="text-4xl font-black relative z-10 text-white">{data?.lowStockItems?.length || 0}</h3>
+              <p className="text-xs text-pink-100 font-medium mt-1 relative z-10">Items need attention</p>
             </div>
           </div>
           
-          <div className="flex-1 flex flex-col gap-4">
-             <div className="bg-white/80 backdrop-blur-xl p-5 rounded-[2rem] border border-white flex-1 flex flex-col justify-center shadow-[0_4px_20px_rgb(0,0,0,0.03)] hover:-translate-y-1 transition-transform">
-                <div className="flex items-center gap-3 mb-2">
-                   <div className="w-8 h-8 rounded-xl bg-pink-50 text-[#F5426A] flex items-center justify-center"><Package className="w-4 h-4"/></div>
-                   <h4 className="font-bold text-[#1a2b4b]">{data?.pendingOrders || 0} Pending</h4>
-                </div>
-                <p className="text-xs text-gray-500 font-medium">Orders to process</p>
-             </div>
-             <div className="bg-white/80 backdrop-blur-xl p-5 rounded-[2rem] border border-white flex-1 flex flex-col justify-center shadow-[0_4px_20px_rgb(0,0,0,0.03)] hover:-translate-y-1 transition-transform">
-                <div className="flex items-center gap-3 mb-2">
-                   <div className="w-8 h-8 rounded-xl bg-pink-50 text-[#F5426A] flex items-center justify-center"><AlertCircle className="w-4 h-4"/></div>
-                   <h4 className="font-bold text-[#1a2b4b]">{data?.lowStockItems?.length || 0} Items</h4>
-                </div>
-                <p className="text-xs text-gray-500 font-medium">Low in stock</p>
-             </div>
-          </div>
         </div>
-
       </div>
 
       {/* 2. KPI CARDS */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-2 2xl:grid-cols-4 gap-6">
         <div className="bg-white/80 backdrop-blur-xl p-6 rounded-[2rem] border border-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] flex flex-col justify-between h-[180px] dashboard-item hover:-translate-y-1 transition-transform duration-300 cursor-default">
           <div className="flex items-start justify-between">
             <div className="kpi-icon-wrapper w-14 h-14 rounded-2xl bg-gradient-to-br from-pink-50 to-pink-100/50 flex items-center justify-center text-[#F5426A] shadow-inner shadow-white">
@@ -208,10 +246,10 @@ export default function AdminDashboard() {
       </div>
 
       {/* 3. MIDDLE SECTION GRID */}
-      <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 2xl:grid-cols-3 gap-6">
         
         {/* Left Column (Span 2) */}
-        <div className="xl:col-span-2 space-y-6 dashboard-item">
+        <div className="2xl:col-span-2 space-y-6 dashboard-item">
           
           {/* Sales Overview */}
           <div className="bg-white/80 backdrop-blur-xl rounded-[2rem] p-6 md:p-8 border border-white shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
@@ -221,9 +259,9 @@ export default function AdminDashboard() {
                 <h2 className="text-xl font-bold text-[#1a2b4b]">Sales Overview</h2>
               </div>
               <div className="flex bg-gray-50 p-1 rounded-xl">
-                <button onClick={() => setRange('7')} className={`px-4 py-1.5 text-xs font-bold rounded-lg transition-colors ${range === '7' ? 'bg-[#F5426A] text-white shadow-sm' : 'text-gray-500 hover:text-gray-900'}`}>7 Days</button>
-                <button onClick={() => setRange('30')} className={`px-4 py-1.5 text-xs font-bold rounded-lg transition-colors ${range === '30' ? 'bg-[#F5426A] text-white shadow-sm' : 'text-gray-500 hover:text-gray-900'}`}>30 Days</button>
-                <button onClick={() => setRange('90')} className={`px-4 py-1.5 text-xs font-bold rounded-lg transition-colors ${range === '90' ? 'bg-[#F5426A] text-white shadow-sm' : 'text-gray-500 hover:text-gray-900'}`}>90 Days</button>
+                <button onClick={() => { setRange('7'); setSelectedDate(''); }} className={`px-4 py-1.5 text-xs font-bold rounded-lg transition-colors ${range === '7' && !selectedDate ? 'bg-[#F5426A] text-white shadow-sm' : 'text-gray-500 hover:text-gray-900'}`}>7 Days</button>
+                <button onClick={() => { setRange('30'); setSelectedDate(''); }} className={`px-4 py-1.5 text-xs font-bold rounded-lg transition-colors ${range === '30' && !selectedDate ? 'bg-[#F5426A] text-white shadow-sm' : 'text-gray-500 hover:text-gray-900'}`}>30 Days</button>
+                <button onClick={() => { setRange('90'); setSelectedDate(''); }} className={`px-4 py-1.5 text-xs font-bold rounded-lg transition-colors ${range === '90' && !selectedDate ? 'bg-[#F5426A] text-white shadow-sm' : 'text-gray-500 hover:text-gray-900'}`}>90 Days</button>
               </div>
             </div>
             <SalesChart data={data?.salesChartData} />
@@ -343,10 +381,10 @@ export default function AdminDashboard() {
       </div>
 
       {/* 4. INVENTORY & TOP SELLING GRID */}
-      <div className="grid grid-cols-1 xl:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 2xl:grid-cols-4 gap-6">
         
         {/* Inventory Overview (Span 3) */}
-        <div className="xl:col-span-3 bg-white/80 backdrop-blur-xl rounded-[2rem] p-6 md:p-8 border border-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] dashboard-item">
+        <div className="2xl:col-span-3 bg-white/80 backdrop-blur-xl rounded-[2rem] p-6 md:p-8 border border-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] dashboard-item">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
             <div className="flex items-center gap-3">
               <Package className="w-6 h-6 text-[#F5426A]" />

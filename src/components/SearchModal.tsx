@@ -3,7 +3,6 @@
 import { useSearch } from "@/context/SearchContext";
 import { Search, X, ShoppingBag, Loader2, ArrowLeft } from "lucide-react";
 import { useEffect, useState, useRef } from "react";
-import { products } from "@/data/mock";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -20,17 +19,31 @@ export function SearchModal() {
   const [isSearching, setIsSearching] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // Simulate network delay for search (debounce)
+  const [filteredProducts, setFilteredProducts] = useState<any[]>([]);
+
+  // Fetch from API
   useEffect(() => {
     if (!query.trim()) {
       setIsSearching(false);
+      setFilteredProducts([]);
       return;
     }
     
     setIsSearching(true);
-    const timeoutId = setTimeout(() => {
-      setIsSearching(false);
-    }, 500); // 500ms delay to simulate loading
+    const timeoutId = setTimeout(async () => {
+      try {
+        const res = await fetch(`/api/products/search?q=${encodeURIComponent(query)}`);
+        const data = await res.json();
+        if (data.success) {
+          setFilteredProducts(data.products);
+        }
+      } catch (error) {
+        console.error("Search error:", error);
+        setFilteredProducts([]);
+      } finally {
+        setIsSearching(false);
+      }
+    }, 300); // 300ms debounce
     
     return () => clearTimeout(timeoutId);
   }, [query]);
@@ -48,17 +61,6 @@ export function SearchModal() {
       document.body.style.overflow = "unset";
     };
   }, [isSearchOpen]);
-
-  // Filter products based on query
-  const filteredProducts = products.filter(p => {
-    if (!query.trim()) return false;
-    const lowerQuery = query.toLowerCase().trim();
-    return (
-      p.title.toLowerCase().includes(lowerQuery) ||
-      p.category.toLowerCase().includes(lowerQuery) ||
-      (p.sku && p.sku.toLowerCase().includes(lowerQuery))
-    );
-  });
 
   return (
     <>
@@ -145,7 +147,7 @@ export function SearchModal() {
               {filteredProducts.map((product) => (
                 <Link
                   key={product.id}
-                  href={`/product/${product.id}`}
+                  href={`/product/${product.slug}`}
                   onClick={closeSearch}
                   className="flex gap-4 bg-white p-3 rounded-xl border border-gray-50 hover:border-primary/20 hover:shadow-sm transition-all group"
                 >

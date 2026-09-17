@@ -57,6 +57,12 @@ const ProductSchema: Schema<IProduct> = new Schema(
   { timestamps: true }
 );
 
+// Indexes for optimized querying
+ProductSchema.index({ createdAt: -1 });
+ProductSchema.index({ category: 1, createdAt: -1 });
+ProductSchema.index({ slug: 1 });
+ProductSchema.index({ sku: 1 });
+
 // Pre-save hook to calculate discount percentage
 ProductSchema.pre("save", function () {
   if (this.oldPrice && this.price < this.oldPrice) {

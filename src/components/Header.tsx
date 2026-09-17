@@ -8,12 +8,14 @@ import { useAuth } from "@/context/AuthContext";
 import { useSearch } from "@/context/SearchContext";
 import { DesktopSearch } from "./DesktopSearch";
 import { useSession, signOut } from "next-auth/react";
+import { useState } from "react";
 
 export function Header() {
   const { openCart, cartCount } = useCart();
   const { openLoginModal } = useAuth();
   const { openSearch } = useSearch();
   const { data: session } = useSession();
+  const [showLogoutDialog, setShowLogoutDialog] = useState(false);
 
   return (
     <header className="bg-white border-b border-gray-100 sticky top-0 z-40">
@@ -25,9 +27,9 @@ export function Header() {
               <Image 
                 src="/readywear logo.png" 
                 alt="ReadyWear Logo" 
-                width={300} 
-                height={100} 
-                className="h-12 md:h-16 w-auto object-contain mix-blend-multiply"
+                width={200} 
+                height={60} 
+                className="h-8 md:h-11 w-auto object-contain mix-blend-multiply"
                 priority
               />
             </Link>
@@ -51,25 +53,27 @@ export function Header() {
 
             {session ? (
               <div className="hidden md:block relative group">
-                <div className="flex items-center gap-2 bg-gray-50 py-1.5 px-3 rounded-full border border-gray-100 cursor-pointer hover:bg-gray-100 transition-colors">
-                  {session.user?.image ? (
-                    <img 
-                      src={session.user.image} 
-                      alt={session.user.name || "User"} 
-                      className="w-6 h-6 rounded-full object-cover"
-                    />
-                  ) : (
-                    <div className="w-6 h-6 bg-primary/10 rounded-full flex items-center justify-center">
-                      <User className="w-3.5 h-3.5 text-primary" />
-                    </div>
-                  )}
-                  <span className="text-[13px] font-semibold text-gray-700 pr-1">{session.user?.name}</span>
+                <div className="flex items-center gap-2.5 bg-gray-50 py-1 px-3 rounded-full border border-gray-100 cursor-pointer hover:bg-gray-100 transition-colors">
+                  <div className="relative w-10 h-10 rounded-full overflow-hidden shrink-0 border border-gray-200 shadow-sm">
+                    {session.user?.image ? (
+                      <img 
+                        src={session.user.image} 
+                        alt={session.user.name || "User"} 
+                        className="w-full h-full object-cover bg-white"
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-primary text-white flex items-center justify-center text-[15px] font-bold">
+                        {session.user?.name ? session.user.name.charAt(0).toUpperCase() : 'U'}
+                      </div>
+                    )}
+                  </div>
+                  <span className="text-[13px] font-bold text-gray-700 pr-1">{session.user?.name}</span>
                 </div>
 
                 {/* Dropdown Menu */}
                 <div className="absolute right-0 top-full pt-2 w-56 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform origin-top-right scale-95 group-hover:scale-100 z-50">
                   <div className="bg-white border border-gray-100 rounded-xl shadow-xl p-2 flex flex-col gap-1">
-                    <Link href="/account" className="w-full flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 hover:text-primary rounded-lg transition-colors">
+                    <Link href="/account/overview" className="w-full flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 hover:text-primary rounded-lg transition-colors">
                       <LayoutDashboard className="w-4 h-4 text-gray-400" />
                       ড্যাশবোর্ড
                     </Link>
@@ -85,7 +89,7 @@ export function Header() {
                     <div className="h-px bg-gray-100 my-1 mx-2"></div>
                     
                     <button 
-                      onClick={() => signOut()} 
+                      onClick={() => setShowLogoutDialog(true)} 
                       className="w-full flex items-center gap-3 px-3 py-2.5 text-sm font-semibold text-red-600 hover:bg-red-50 rounded-lg transition-colors"
                     >
                       <LogOut className="w-4 h-4" />
@@ -115,6 +119,34 @@ export function Header() {
           </div>
         </div>
       </div>
+
+      {/* Logout Confirmation Dialog */}
+      {showLogoutDialog && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+          <div className="bg-white rounded-2xl p-6 md:p-8 max-w-sm w-full shadow-xl animate-in zoom-in-95 duration-200">
+            <h3 className="text-xl font-bold text-gray-900 mb-2">লগআউট করতে চান?</h3>
+            <p className="text-gray-500 mb-6 text-sm">আপনি কি নিশ্চিত যে আপনি আপনার অ্যাকাউন্ট থেকে লগআউট করতে চান?</p>
+            <div className="flex gap-3 justify-end">
+              <button
+                onClick={() => setShowLogoutDialog(false)}
+                className="px-4 py-2 rounded-lg font-medium text-gray-600 hover:bg-gray-100 transition-colors text-sm"
+              >
+                বাতিল করুন
+              </button>
+              <button
+                onClick={() => {
+                  setShowLogoutDialog(false);
+                  signOut({ callbackUrl: "/" });
+                }}
+                className="px-4 py-2 rounded-lg font-medium bg-red-600 text-white hover:bg-red-700 transition-colors flex items-center gap-2 text-sm"
+              >
+                <LogOut className="w-4 h-4" />
+                হ্যাঁ, লগআউট করুন
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </header>
   );
 }

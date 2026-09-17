@@ -1,19 +1,18 @@
 "use client";
 
-import { categoryData } from "@/data/mock";
 import { ProductCard } from "./ProductCard";
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 
-export function CollectionSection({ products = [] }: { products?: any[] }) {
-  const categories = [{ slug: "all", label: "সকল পণ্য" }, ...categoryData];
+export function CollectionSection({ products = [], initialCategories = [] }: { products?: any[], initialCategories?: any[] }) {
+  const categories = [{ slug: "all", label: "সকল পণ্য" }, ...initialCategories];
   
   // On the home page, we will show some default products (e.g., first 10)
   const defaultProducts = products.slice(0, 10);
 
   return (
-    <section className="py-12 bg-white container mx-auto px-4 lg:px-8">
-      <div className="flex flex-col md:flex-row md:items-end justify-between mb-6 gap-4">
+    <section className="pt-4 pb-12 md:py-12 bg-white container mx-auto px-4 lg:px-8">
+      <div className="hidden md:flex flex-col md:flex-row md:items-end justify-between mb-6 gap-4">
         <div>
           <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2 flex items-center gap-2">
             সকল পণ্য <span className="text-gray-500 font-normal text-xl">(Full Collection)</span>
@@ -31,12 +30,12 @@ export function CollectionSection({ products = [] }: { products?: any[] }) {
       </div>
 
       {/* Category Tabs as Direct Page Links */}
-      <div className="flex overflow-x-auto pb-4 mb-4 gap-2 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+      <div className="flex overflow-x-auto pb-6 mb-2 gap-3 px-4 -mx-4 lg:px-0 lg:mx-0 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
         {categories.map((category) => (
           <Link
             key={category.slug}
             href={category.slug === 'all' ? '/categories' : `/category/${category.slug}`}
-            className={`shrink-0 whitespace-nowrap px-5 py-2 rounded-full text-sm font-medium transition-colors bg-gray-100 text-gray-600 hover:bg-gray-200`}
+            className="shrink-0 whitespace-nowrap px-6 py-2.5 rounded-full text-[13px] md:text-sm font-bold transition-all duration-300 bg-white border border-gray-200 text-gray-700 shadow-[0_2px_8px_rgb(0,0,0,0.04)] hover:border-primary hover:text-primary hover:shadow-[0_4px_12px_rgb(0,0,0,0.08)] active:scale-95 flex items-center justify-center"
           >
             {category.label}
           </Link>

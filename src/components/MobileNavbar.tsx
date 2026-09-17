@@ -6,8 +6,8 @@ import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { useCart } from "@/context/CartContext";
 import { useAuth } from "@/context/AuthContext";
+import { useSession } from "next-auth/react";
 import { cn } from "@/lib/utils";
-import { categoryData } from "@/data/mock";
 import { useState, useEffect } from "react";
 import { X, ChevronRight } from "lucide-react";
 
@@ -32,6 +32,7 @@ export function MobileNavbar() {
   const router = useRouter();
   const { openCart } = useCart();
   const { openLoginModal } = useAuth();
+  const { data: session } = useSession();
   const [isCategoryOpen, setIsCategoryOpen] = useState(false);
 
   // Close popup if pathname changes (e.g. back button)
@@ -49,14 +50,35 @@ export function MobileNavbar() {
     return () => { document.body.style.overflow = "unset"; }
   }, [isCategoryOpen]);
 
-  const categories = [
+  const [categories, setCategories] = useState<any[]>([
     { 
       slug: "all", 
       label: "সকল পণ্য", 
-      image: "https://images.unsplash.com/photo-1441986300917-64674bd600d8?q=80&w=800&auto=format&fit=crop" 
-    }, 
-    ...categoryData
-  ];
+    }
+  ]);
+
+  // Fetch live categories
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const res = await fetch('/api/categories');
+        const data = await res.json();
+        if (data.success) {
+          setCategories([
+            { 
+              slug: "all", 
+              label: "সকল পণ্য", 
+            },
+            ...data.categories
+          ]);
+        }
+      } catch (error) {
+        console.error("Failed to fetch categories", error);
+      }
+    };
+    
+    fetchCategories();
+  }, []);
 
   return (
     <>
@@ -73,7 +95,13 @@ export function MobileNavbar() {
                 onClick={(e) => {
                   if (item.href === '#' || item.id === 'category') e.preventDefault();
                   if (item.id === 'cart') openCart();
-                  if (item.id === 'account') openLoginModal();
+                  if (item.id === 'account') {
+                    if (session) {
+                      router.push('/account');
+                    } else {
+                      openLoginModal();
+                    }
+                  }
                   if (item.id === 'category') setIsCategoryOpen(true);
                 }}
                 className={cn(
@@ -81,8 +109,24 @@ export function MobileNavbar() {
                   isActive ? "bg-primary text-white shadow-md shadow-primary/20" : "text-gray-600 hover:text-gray-900"
                 )}
               >
-                <div className="relative">
-                  <Icon className="w-5 h-5" />
+                <div className="relative flex items-center justify-center">
+                  {item.id === 'account' && session?.user ? (
+                    session.user.image ? (
+                      <Image 
+                        src={session.user.image} 
+                        alt="Profile" 
+                        width={28} 
+                        height={28} 
+                        className="rounded-full w-7 h-7 object-cover border-2 border-primary/20"
+                      />
+                    ) : (
+                      <div className="w-7 h-7 rounded-full bg-primary text-white flex items-center justify-center text-[13px] font-bold shadow-sm">
+                        {session.user.name ? session.user.name.charAt(0).toUpperCase() : 'U'}
+                      </div>
+                    )
+                  ) : (
+                    <Icon className="w-5 h-5" />
+                  )}
                   {item.badge && (
                     <span className={cn(
                       "absolute -top-1.5 -right-2 text-[9px] font-bold w-4 h-4 flex items-center justify-center rounded-full border border-white",
@@ -140,15 +184,21 @@ export function MobileNavbar() {
                   }}
                   className="flex flex-col items-center p-2 bg-gray-50 hover:bg-primary/5 rounded-2xl transition-colors group border border-gray-100 hover:border-primary/20 overflow-hidden"
                 >
-                  <div className="relative w-full aspect-square rounded-xl overflow-hidden mb-2 bg-gray-200">
-                    <Image 
-                      src={cat.image} 
-                      alt={cat.label} 
-                      fill 
-                      className="object-cover group-hover:scale-105 transition-transform duration-500"
-                    />
+                  <div className="relative w-full aspect-square rounded-xl overflow-hidden mb-2 bg-gray-200 flex items-center justify-center">
+                    {cat.image ? (
+                      <Image 
+                        src={cat.image} 
+                        alt={cat.label} 
+                        fill 
+                        className="object-cover group-hover:scale-105 transition-transform duration-500"
+                      />
+                    ) : (
+                      <span className="text-4xl font-bold text-gray-400/50 group-hover:text-primary/50 transition-colors uppercase">
+                        {cat.label ? cat.label.charAt(0) : '?'}
+                      </span>
+                    )}
                   </div>
-                  <span className="font-semibold text-gray-800 group-hover:text-primary transition-colors text-sm mb-1">{cat.label}</span>
+                  <span className="font-semibold text-gray-800 group-hover:text-primary transition-colors text-sm mb-1 text-center">{cat.label}</span>
                 </button>
               ))}
             </div>

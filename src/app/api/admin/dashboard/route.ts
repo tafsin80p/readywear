@@ -16,15 +16,34 @@ export async function GET(req: NextRequest) {
     await connectToDatabase();
 
     const url = new URL(req.url);
-    const range = url.searchParams.get("range") || "7"; // '7', '30', or '90'
-    const days = parseInt(range, 10);
+    const range = url.searchParams.get("range") || "7";
+    const dateParam = url.searchParams.get("date");
 
     const now = new Date();
-    const currentPeriodStart = new Date(now.getTime() - days * 24 * 60 * 60 * 1000);
-    const previousPeriodStart = new Date(currentPeriodStart.getTime() - days * 24 * 60 * 60 * 1000);
+    let currentPeriodStart: Date;
+    let currentPeriodEnd: Date;
+    let previousPeriodStart: Date;
+    let daysToChart = parseInt(range, 10);
+
+    if (dateParam) {
+      const targetDate = new Date(dateParam);
+      currentPeriodStart = new Date(targetDate.setHours(0,0,0,0));
+      currentPeriodEnd = new Date(targetDate.setHours(23,59,59,999));
+      
+      const prevDate = new Date(targetDate);
+      prevDate.setDate(prevDate.getDate() - 1);
+      previousPeriodStart = new Date(prevDate.setHours(0,0,0,0));
+      daysToChart = 1; // Only 1 day for the chart
+    } else {
+      currentPeriodEnd = now;
+      currentPeriodStart = new Date(now.getTime() - daysToChart * 24 * 60 * 60 * 1000);
+      previousPeriodStart = new Date(currentPeriodStart.getTime() - daysToChart * 24 * 60 * 60 * 1000);
+    }
 
     // Get current period totals
-    const currentOrders = await Order.find({ createdAt: { $gte: currentPeriodStart } });
+    const currentOrders = await Order.find({ 
+      createdAt: { $gte: currentPeriodStart, $lte: currentPeriodEnd } 
+    });
     const currentRevenue = currentOrders.reduce((sum, order) => sum + (order.pricing?.total || 0), 0);
     
     // Get previous period totals to calculate change percentage
@@ -116,13 +135,21 @@ export async function GET(req: NextRequest) {
     });
 
     // Fill missing days with 0
-    for (let i = days - 1; i >= 0; i--) {
-      const d = new Date(now.getTime() - i * 24 * 60 * 60 * 1000);
-      const dateStr = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    if (dateParam) {
+      const dateStr = currentPeriodStart.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
       salesChartData.push({
         date: dateStr,
         sales: dateMap.get(dateStr) || 0
       });
+    } else {
+      for (let i = daysToChart - 1; i >= 0; i--) {
+        const d = new Date(now.getTime() - i * 24 * 60 * 60 * 1000);
+        const dateStr = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+        salesChartData.push({
+          date: dateStr,
+          sales: dateMap.get(dateStr) || 0
+        });
+      }
     }
 
     const orderStatuses = [
