@@ -75,6 +75,11 @@ export default function IntegrationsPage() {
     measurementId: ""
   });
 
+  const [tiktok, setTiktok] = useState({
+    enabled: false,
+    pixelId: ""
+  });
+
   const [pathao, setPathao] = useState({
     enabled: false,
     clientId: "",
@@ -107,6 +112,7 @@ export default function IntegrationsPage() {
         });
         if (data.settings.meta) setMeta(data.settings.meta);
         if (data.settings.googleAnalytics) setGoogleAnalytics(data.settings.googleAnalytics);
+        if (data.settings.tiktok) setTiktok(data.settings.tiktok);
         if (data.settings.googleSheet) setGoogleSheet(data.settings.googleSheet);
         if (data.settings.pathao) setPathao(data.settings.pathao);
         if (data.settings.steadfast) setSteadfast(data.settings.steadfast);
@@ -129,6 +135,7 @@ export default function IntegrationsPage() {
         },
         meta,
         googleAnalytics,
+        tiktok,
         googleSheet,
         pathao,
         steadfast
@@ -199,11 +206,12 @@ export default function IntegrationsPage() {
     }
   };
 
-  const handleToggle = (type: 'telegram' | 'meta' | 'googleAnalytics' | 'googleSheet' | 'pathao' | 'steadfast', enabled: boolean) => {
+  const handleToggle = (type: 'telegram' | 'meta' | 'googleAnalytics' | 'tiktok' | 'googleSheet' | 'pathao' | 'steadfast', enabled: boolean) => {
     const payload = {
       telegram: { ...telegram, authorizedUsers: telegram.authorizedUsers.split(",").map(u => u.trim()).filter(Boolean) },
       meta,
       googleAnalytics,
+      tiktok,
       googleSheet,
       pathao,
       steadfast
@@ -218,6 +226,9 @@ export default function IntegrationsPage() {
     } else if (type === 'googleAnalytics') {
       setGoogleAnalytics({ ...googleAnalytics, enabled });
       payload.googleAnalytics.enabled = enabled;
+    } else if (type === 'tiktok') {
+      setTiktok({ ...tiktok, enabled });
+      payload.tiktok.enabled = enabled;
     } else if (type === 'googleSheet') {
       setGoogleSheet({ ...googleSheet, enabled });
       payload.googleSheet.enabled = enabled;
@@ -387,6 +398,40 @@ export default function IntegrationsPage() {
           </div>
         </div>
 
+        {/* TikTok Section */}
+        <div className={`bg-white rounded-2xl border relative transition-all duration-300 shadow-sm ${expanded === 'tiktok' ? 'border-pink-400 ring-2 ring-pink-50' : 'border-gray-200'}`}>
+          {tiktok.enabled && tiktok.pixelId && (
+            <div className="absolute top-4 right-4 bg-green-50 border border-green-200 text-green-700 text-[10px] font-bold px-2 py-1 rounded-full flex items-center gap-1.5 shadow-sm">
+              <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span>
+              Connected
+            </div>
+          )}
+          <div className="p-6 flex flex-col items-center text-center gap-3">
+            <svg className="w-14 h-14" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M34 10.9998C31.5 10.9998 29.5 8.99982 29.5 6.49982V4.99982H24.5V30.9998C24.5 34.2998 21.8 36.9998 18.5 36.9998C15.2 36.9998 12.5 34.2998 12.5 30.9998C12.5 27.6998 15.2 24.9998 18.5 24.9998C19 24.9998 19.5 25.0998 20 25.1998V19.9998C19.5 19.8998 19 19.8998 18.5 19.8998C12.4 19.8998 7.5 24.7998 7.5 30.8998C7.5 36.9998 12.4 41.8998 18.5 41.8998C24.6 41.8998 29.5 36.9998 29.5 30.8998V18.1998C32.1 20.3998 35.4 21.6998 39 21.6998V16.6998C36.9 16.5998 35.1 15.6998 34 14.1998V10.9998Z" fill="#000000"/>
+              <path d="M34 11C35.1 12.5 36.9 13.4 39 13.5V18.5C35.4 18.5 32.1 17.2 29.5 15V11.8C29.5 11.8 30 11 34 11Z" fill="#FE2C55"/>
+              <path d="M29.5 30.9001C29.5 37.0001 24.6 41.9001 18.5 41.9001C12.4 41.9001 7.5 37.0001 7.5 30.9001C7.5 24.8001 12.4 19.9001 18.5 19.9001C19 19.9001 19.5 19.9001 20 20.0001V25.2001C19.5 25.1001 19 25.0001 18.5 25.0001C15.2 25.0001 12.5 27.7001 12.5 31.0001C12.5 34.3001 15.2 37.0001 18.5 37.0001C21.8 37.0001 24.5 34.3001 24.5 31.0001V15.0001C24.5 15.0001 28.5 16.0001 29.5 16.0001V30.9001Z" fill="#25F4EE"/>
+            </svg>
+            <div>
+              <h2 className="text-lg font-bold text-gray-900">TikTok Pixel</h2>
+              <p className="text-xs text-gray-500 mt-1 line-clamp-2">Track TikTok ad conversions and website visitors.</p>
+            </div>
+            
+            <div className="w-full flex items-center justify-between mt-3 pt-4 border-t border-gray-100">
+              <label className="relative inline-flex items-center cursor-pointer">
+                <input type="checkbox" className="sr-only peer" checked={tiktok.enabled} onChange={e => handleToggle('tiktok', e.target.checked)} />
+                <div className="w-10 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-[#FE2C55]"></div>
+              </label>
+              <button 
+                onClick={() => setExpanded(expanded === 'tiktok' ? null : 'tiktok')}
+                className="px-3 py-1.5 bg-gray-50 border border-gray-200 text-gray-700 rounded-lg text-xs font-medium hover:bg-gray-100 transition-colors"
+              >
+                {expanded === 'tiktok' ? 'Close' : 'Configure'}
+              </button>
+            </div>
+          </div>
+        </div>
+
         {/* Google Sheet Section */}
         <div className={`bg-white rounded-2xl border relative transition-all duration-300 shadow-sm ${expanded === 'googleSheet' ? 'border-green-400 ring-2 ring-green-50' : 'border-gray-200'}`}>
           {googleSheet.enabled && googleSheet.webhookUrl && (
@@ -551,6 +596,7 @@ export default function IntegrationsPage() {
                 {expanded === 'telegram' && 'Telegram Bot Configuration'}
                 {expanded === 'meta' && 'Meta CAPI Configuration'}
                 {expanded === 'googleAnalytics' && 'Google Analytics Configuration'}
+                {expanded === 'tiktok' && 'TikTok Pixel Configuration'}
                 {expanded === 'googleSheet' && 'Google Sheets Configuration'}
                 {expanded === 'pathao' && 'Pathao Courier Configuration'}
                 {expanded === 'steadfast' && 'Steadfast Courier Configuration'}
@@ -730,6 +776,33 @@ export default function IntegrationsPage() {
                       onClick={() => handleSave()}
                       disabled={saving}
                       className="flex items-center gap-2 bg-[#F9AB00] text-white px-5 py-2 rounded-xl text-sm font-medium hover:bg-[#e09900] transition-colors disabled:opacity-70 shadow-sm"
+                    >
+                      {saving ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+                      Save Config
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {expanded === 'tiktok' && (
+                <div className="space-y-5">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Pixel ID</label>
+                    <input 
+                      type="text" 
+                      value={tiktok.pixelId}
+                      onChange={e => setTiktok({...tiktok, pixelId: e.target.value})}
+                      className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-[#FE2C55]/20 focus:border-[#FE2C55] transition-all outline-none bg-white"
+                      placeholder="C...12345"
+                    />
+                    <p className="text-[11px] text-gray-500 mt-1.5 font-medium">Your TikTok Pixel ID.</p>
+                  </div>
+
+                  <div className="pt-4 flex justify-end border-t border-gray-100 mt-2">
+                    <button 
+                      onClick={() => handleSave()}
+                      disabled={saving}
+                      className="flex items-center gap-2 bg-[#FE2C55] text-white px-5 py-2 rounded-xl text-sm font-medium hover:bg-[#e02047] transition-colors disabled:opacity-70 shadow-sm"
                     >
                       {saving ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
                       Save Config

@@ -33,6 +33,7 @@ export async function POST(req: NextRequest) {
       settings.pathao = body.pathao;
       settings.steadfast = body.steadfast;
       settings.googleAnalytics = body.googleAnalytics;
+      if (body.tiktok) settings.tiktok = body.tiktok;
     }
     
     await settings.save();

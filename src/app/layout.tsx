@@ -3,6 +3,7 @@ import { Hind_Siliguri } from "next/font/google";
 import { Toaster } from "react-hot-toast";
 import "./globals.css";
 import GoogleAnalytics from "@/components/GoogleAnalytics";
+import TikTokPixel from "@/components/TikTokPixel";
 
 
 const bengaliFont = Hind_Siliguri({
@@ -56,6 +57,7 @@ export default function RootLayout({
       </head>
       <body className={`${bengaliFont.variable} antialiased font-sans`} suppressHydrationWarning>
         <GoogleAnalytics />
+        <TikTokPixel />
         <Toaster position="top-right" />
         {children}
       </body>

@@ -4,6 +4,7 @@ import Image from "next/image";
 import connectToDatabase from "@/lib/mongodb";
 import Order from "@/models/Order";
 import { notFound } from "next/navigation";
+import Script from "next/script";
 
 const toBengaliNumber = (num: number | string) => {
   const bengaliDigits = ["০", "১", "২", "৩", "৪", "৫", "৬", "৭", "৮", "৯"];
@@ -60,6 +61,19 @@ export default async function OrderSuccessPage({ params }: { params: Promise<{ i
         }
       `}</style>
       
+      <Script id="tiktok-complete-payment" strategy="afterInteractive" dangerouslySetInnerHTML={{
+        __html: `
+          if (typeof ttq !== 'undefined') {
+            ttq.track('CompletePayment', {
+              value: ${pricing.total},
+              currency: 'BDT',
+              content_id: '${orderId}',
+              content_type: 'product'
+            });
+          }
+        `
+      }} />
+
       <main className="flex-1 bg-[#f8fafc] py-12 sm:py-20 min-h-[calc(100vh-200px)] flex items-center">
         <div className="container mx-auto px-4 lg:px-8">
           

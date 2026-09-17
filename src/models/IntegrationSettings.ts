@@ -42,6 +42,10 @@ export interface IIntegrationSettings extends Document {
     enabled: boolean;
     measurementId: string;
   };
+  tiktok: {
+    enabled: boolean;
+    pixelId: string;
+  };
   createdAt: Date;
   updatedAt: Date;
 }
@@ -90,6 +94,10 @@ const IntegrationSettingsSchema: Schema<IIntegrationSettings> = new Schema(
     googleAnalytics: {
       enabled: { type: Boolean, default: false },
       measurementId: { type: String, default: "" },
+    },
+    tiktok: {
+      enabled: { type: Boolean, default: false },
+      pixelId: { type: String, default: "" },
     },
   },
   { timestamps: true }
