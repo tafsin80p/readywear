@@ -80,6 +80,12 @@ export default function IntegrationsPage() {
     pixelId: ""
   });
 
+  const [pushNotification, setPushNotification] = useState({
+    enabled: false,
+    appId: "",
+    apiKey: ""
+  });
+
   const [pathao, setPathao] = useState({
     enabled: false,
     clientId: "",
@@ -113,6 +119,7 @@ export default function IntegrationsPage() {
         if (data.settings.meta) setMeta(data.settings.meta);
         if (data.settings.googleAnalytics) setGoogleAnalytics(data.settings.googleAnalytics);
         if (data.settings.tiktok) setTiktok(data.settings.tiktok);
+        if (data.settings.pushNotification) setPushNotification(data.settings.pushNotification);
         if (data.settings.googleSheet) setGoogleSheet(data.settings.googleSheet);
         if (data.settings.pathao) setPathao(data.settings.pathao);
         if (data.settings.steadfast) setSteadfast(data.settings.steadfast);
@@ -136,6 +143,7 @@ export default function IntegrationsPage() {
         meta,
         googleAnalytics,
         tiktok,
+        pushNotification,
         googleSheet,
         pathao,
         steadfast
@@ -206,12 +214,13 @@ export default function IntegrationsPage() {
     }
   };
 
-  const handleToggle = (type: 'telegram' | 'meta' | 'googleAnalytics' | 'tiktok' | 'googleSheet' | 'pathao' | 'steadfast', enabled: boolean) => {
+  const handleToggle = (type: 'telegram' | 'meta' | 'googleAnalytics' | 'tiktok' | 'pushNotification' | 'googleSheet' | 'pathao' | 'steadfast', enabled: boolean) => {
     const payload = {
       telegram: { ...telegram, authorizedUsers: telegram.authorizedUsers.split(",").map(u => u.trim()).filter(Boolean) },
       meta,
       googleAnalytics,
       tiktok,
+      pushNotification,
       googleSheet,
       pathao,
       steadfast
@@ -229,6 +238,9 @@ export default function IntegrationsPage() {
     } else if (type === 'tiktok') {
       setTiktok({ ...tiktok, enabled });
       payload.tiktok.enabled = enabled;
+    } else if (type === 'pushNotification') {
+      setPushNotification({ ...pushNotification, enabled });
+      payload.pushNotification.enabled = enabled;
     } else if (type === 'googleSheet') {
       setGoogleSheet({ ...googleSheet, enabled });
       payload.googleSheet.enabled = enabled;
@@ -432,6 +444,39 @@ export default function IntegrationsPage() {
           </div>
         </div>
 
+        {/* Push Notification Section */}
+        <div className={`bg-white rounded-2xl border relative transition-all duration-300 shadow-sm ${expanded === 'pushNotification' ? 'border-purple-400 ring-2 ring-purple-50' : 'border-gray-200'}`}>
+          {pushNotification.enabled && pushNotification.appId && pushNotification.apiKey && (
+            <div className="absolute top-4 right-4 bg-green-50 border border-green-200 text-green-700 text-[10px] font-bold px-2 py-1 rounded-full flex items-center gap-1.5 shadow-sm">
+              <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span>
+              Connected
+            </div>
+          )}
+          <div className="p-6 flex flex-col items-center text-center gap-3">
+            <svg className="w-14 h-14" viewBox="0 0 24 24" fill="none" stroke="#8B5CF6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+              <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+            </svg>
+            <div>
+              <h2 className="text-lg font-bold text-gray-900">Push Notifications</h2>
+              <p className="text-xs text-gray-500 mt-1 line-clamp-2">Send web push notifications to your customers.</p>
+            </div>
+            
+            <div className="w-full flex items-center justify-between mt-3 pt-4 border-t border-gray-100">
+              <label className="relative inline-flex items-center cursor-pointer">
+                <input type="checkbox" className="sr-only peer" checked={pushNotification.enabled} onChange={e => handleToggle('pushNotification', e.target.checked)} />
+                <div className="w-10 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-[#8B5CF6]"></div>
+              </label>
+              <button 
+                onClick={() => setExpanded(expanded === 'pushNotification' ? null : 'pushNotification')}
+                className="px-3 py-1.5 bg-gray-50 border border-gray-200 text-gray-700 rounded-lg text-xs font-medium hover:bg-gray-100 transition-colors"
+              >
+                {expanded === 'pushNotification' ? 'Close' : 'Configure'}
+              </button>
+            </div>
+          </div>
+        </div>
+
         {/* Google Sheet Section */}
         <div className={`bg-white rounded-2xl border relative transition-all duration-300 shadow-sm ${expanded === 'googleSheet' ? 'border-green-400 ring-2 ring-green-50' : 'border-gray-200'}`}>
           {googleSheet.enabled && googleSheet.webhookUrl && (
@@ -597,6 +642,7 @@ export default function IntegrationsPage() {
                 {expanded === 'meta' && 'Meta CAPI Configuration'}
                 {expanded === 'googleAnalytics' && 'Google Analytics Configuration'}
                 {expanded === 'tiktok' && 'TikTok Pixel Configuration'}
+                {expanded === 'pushNotification' && 'Push Notification Configuration'}
                 {expanded === 'googleSheet' && 'Google Sheets Configuration'}
                 {expanded === 'pathao' && 'Pathao Courier Configuration'}
                 {expanded === 'steadfast' && 'Steadfast Courier Configuration'}
@@ -803,6 +849,42 @@ export default function IntegrationsPage() {
                       onClick={() => handleSave()}
                       disabled={saving}
                       className="flex items-center gap-2 bg-[#FE2C55] text-white px-5 py-2 rounded-xl text-sm font-medium hover:bg-[#e02047] transition-colors disabled:opacity-70 shadow-sm"
+                    >
+                      {saving ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+                      Save Config
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {expanded === 'pushNotification' && (
+                <div className="space-y-5">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">App ID</label>
+                    <input 
+                      type="text" 
+                      value={pushNotification.appId}
+                      onChange={e => setPushNotification({...pushNotification, appId: e.target.value})}
+                      className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-[#8B5CF6]/20 focus:border-[#8B5CF6] transition-all outline-none bg-white"
+                      placeholder="Enter App ID"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">API Key</label>
+                    <input 
+                      type="text" 
+                      value={pushNotification.apiKey}
+                      onChange={e => setPushNotification({...pushNotification, apiKey: e.target.value})}
+                      className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-[#8B5CF6]/20 focus:border-[#8B5CF6] transition-all outline-none bg-white"
+                      placeholder="Enter API Key / REST API Key"
+                    />
+                  </div>
+
+                  <div className="pt-4 flex justify-end border-t border-gray-100 mt-2">
+                    <button 
+                      onClick={() => handleSave()}
+                      disabled={saving}
+                      className="flex items-center gap-2 bg-[#8B5CF6] text-white px-5 py-2 rounded-xl text-sm font-medium hover:bg-[#7c3aed] transition-colors disabled:opacity-70 shadow-sm"
                     >
                       {saving ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
                       Save Config

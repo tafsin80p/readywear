@@ -34,6 +34,7 @@ export async function POST(req: NextRequest) {
       settings.steadfast = body.steadfast;
       settings.googleAnalytics = body.googleAnalytics;
       if (body.tiktok) settings.tiktok = body.tiktok;
+      if (body.pushNotification) settings.pushNotification = body.pushNotification;
     }
     
     await settings.save();

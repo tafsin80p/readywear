@@ -46,6 +46,11 @@ export interface IIntegrationSettings extends Document {
     enabled: boolean;
     pixelId: string;
   };
+  pushNotification: {
+    enabled: boolean;
+    appId: string;
+    apiKey: string;
+  };
   createdAt: Date;
   updatedAt: Date;
 }
@@ -98,6 +103,11 @@ const IntegrationSettingsSchema: Schema<IIntegrationSettings> = new Schema(
     tiktok: {
       enabled: { type: Boolean, default: false },
       pixelId: { type: String, default: "" },
+    },
+    pushNotification: {
+      enabled: { type: Boolean, default: false },
+      appId: { type: String, default: "" },
+      apiKey: { type: String, default: "" },
     },
   },
   { timestamps: true }
