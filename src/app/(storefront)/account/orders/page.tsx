@@ -90,7 +90,7 @@ export default function AccountOrders() {
 
                 {/* Order Items */}
                 <div className="p-4 md:px-6 divide-y divide-gray-100">
-                  {order.items.map((item, idx) => (
+                  {order.items.map((item: any, idx: number) => (
                     <div key={idx} className="py-4 first:pt-0 last:pb-0 flex items-start sm:items-center gap-4">
                       <div className="w-20 h-20 bg-gray-100 rounded-xl relative overflow-hidden shrink-0">
                         <Image src={item.image || "https://placehold.co/400x600/f3f4f6/a1a1aa?text=No+Image"} alt={item.name} fill className="object-cover" />

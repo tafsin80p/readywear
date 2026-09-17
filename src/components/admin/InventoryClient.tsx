@@ -319,7 +319,7 @@ export default function InventoryClient({ products }: { products: Product[] }) {
                         fill="#111827"
                         fontSize={13}
                         fontWeight={700}
-                        formatter={(value: number) => `${value} units`}
+                        formatter={(value: any) => `${value} units`}
                       />
                     </Bar>
                   </BarChart>
