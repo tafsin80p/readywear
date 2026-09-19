@@ -104,9 +104,9 @@ export function ProductCard({ product, priority = false }: ProductProps) {
           {product.category}
         </span>
         <Link href={`/product/${product.slug}`} className="block mb-2 hover:text-primary transition-colors">
-          <h3 className="text-[15px] font-semibold text-gray-800 line-clamp-1">
+          <h2 className="text-[15px] font-semibold text-gray-800 line-clamp-1">
             {product.name}
-          </h3>
+          </h2>
         </Link>
         <div className="flex items-center justify-between mb-3">
           {product.sku ? (
