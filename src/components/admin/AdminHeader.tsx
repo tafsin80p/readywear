@@ -279,8 +279,8 @@ export function AdminHeader() {
         </button>
 
         {/* Mobile Logo */}
-        <Link href="/admin" className="lg:hidden font-black text-xl tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-primary to-primary/80">
-          ReadyWear
+        <Link href="/admin" className="lg:hidden font-black text-xl tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-primary to-primary/80 font-bengali">
+          মেহজাবিন অফারস
         </Link>
         
         <div ref={searchRef} className="relative max-w-md w-full hidden md:block">

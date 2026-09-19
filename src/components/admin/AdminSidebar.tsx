@@ -185,7 +185,7 @@ export function AdminSidebar({
         >
           <Image 
             src={logo || "/readywear logo.png"} 
-            alt="ReadyWear Logo" 
+            alt="Mehzin Offers Logo" 
             width={240} 
             height={60} 
             className="h-9 sm:h-10 w-auto object-contain object-left"
