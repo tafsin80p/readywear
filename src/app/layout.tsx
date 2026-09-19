@@ -25,9 +25,9 @@ export async function generateMetadata(): Promise<Metadata> {
     console.error("Failed to fetch store settings for metadata", error);
   }
 
-  const storeName = settings?.storeName || "ReadyWear";
+  const storeName = settings?.storeName || "Mehzin Offers";
   const storeTagline = settings?.storeTagline || "Premium E-commerce in Bangladesh";
-  const storeDescription = settings?.storeDescription || "ReadyWear - স্টাইলের দেখা নতুন যাত্রা। সেরা মানের পোশাক ও প্রিমিয়াম ই-কমার্স অভিজ্ঞতা।";
+  const storeDescription = settings?.storeDescription || "Mehzin Offers - স্টাইলের দেখা নতুন যাত্রা। সেরা মানের পোশাক ও প্রিমিয়াম ই-কমার্স অভিজ্ঞতা।";
   const favicon = settings?.favicon || "/favicon.ico";
   const ogImage = settings?.headerLogo || "/readywear logo.png";
 

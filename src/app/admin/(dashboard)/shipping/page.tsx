@@ -2,8 +2,8 @@ import ShippingClient from "@/components/admin/ShippingClient";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Shipping Configuration | ReadyWear Admin",
-  description: "Manage shipping zones and rates for ReadyWear",
+  title: "Shipping Configuration | Mehzin Offers Admin",
+  description: "Manage shipping zones and rates for Mehzin Offers",
 };
 
 export default function ShippingPage() {

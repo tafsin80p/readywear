@@ -4,7 +4,7 @@ import { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "রিটার্ন এবং রিফান্ড পলিসি | Return & Refund Policy",
-  description: "ReadyWear-এর রিটার্ন এবং রিফান্ড নীতিমালা।",
+  description: "Mehzin Offers-এর রিটার্ন এবং রিফান্ড নীতিমালা।",
 };
 
 export default function RefundPolicyPage() {

@@ -22,7 +22,7 @@ export default async function Home() {
   return (
     <>
       <main className="flex-1 bg-gray-50/30">
-        <h1 className="sr-only">ReadyWear - Premium E-commerce in Bangladesh</h1>
+        <h1 className="sr-only">Mehzin Offers - Premium E-commerce in Bangladesh</h1>
         
         <div className="pt-2 pb-8 md:py-8 bg-gray-50/50">
           <CollectionSection products={products} initialCategories={categories} />

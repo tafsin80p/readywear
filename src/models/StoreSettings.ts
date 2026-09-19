@@ -18,7 +18,7 @@ const StoreSettingsSchema: Schema<IStoreSettings> = new Schema(
     headerLogo: { type: String, default: "" },
     footerLogo: { type: String, default: "" },
     favicon: { type: String, default: "" },
-    storeName: { type: String, default: "ReadyWear" },
+    storeName: { type: String, default: "Mehzin Offers" },
     storeTagline: { type: String, default: "Premium E-commerce in Bangladesh" },
     storeDescription: { type: String, default: "Premium E-commerce in Bangladesh" },
     primaryColor: { type: String, default: "#F5426A" },

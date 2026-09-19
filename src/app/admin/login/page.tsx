@@ -76,7 +76,7 @@ export default function AdminLogin() {
               <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow-lg">
                 <span className="text-primary font-black text-xl">R</span>
               </div>
-              <span className="font-extrabold text-2xl tracking-tight">ReadyWear</span>
+              <span className="font-extrabold text-2xl tracking-tight">Mehzin Offers</span>
             </div>
 
             <div>

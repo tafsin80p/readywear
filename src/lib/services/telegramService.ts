@@ -131,7 +131,7 @@ export const telegramService = {
       let statusText = isConfirmed ? "✅ *CONFIRMED*" : isLead ? "🎯 *REAL ORDER (LEAD)*" : "❌ *FAKE / CANCELLED*";
       
       const message = `
-${headerIcon} *READYWEAR ORDER*
+${headerIcon} *MEHZIN OFFERS ORDER*
 
 Order: #${escapeMarkdown(order.orderId)}
 
@@ -204,8 +204,8 @@ ${escapeMarkdown(new Date().toLocaleString())}
       // Send a reply message mimicking the requested format
       if (isConfirmed || isLead) {
         const replyText = isConfirmed
-          ? `✅ *Order confirmed and Purchase sent to Meta*\n\nOrder ID: ${escapeMarkdown(order.orderId)}\nConfirmed by: ${escapeMarkdown(order.confirmedBy || "Admin")}\nMeta Dataset: ${escapeMarkdown(settings.meta?.datasetName || "ReadyWear")}\nStatus: Purchase event processed by server`
-          : `✅ *Real Order — Lead sent to Meta*\n\nOrder ID: ${escapeMarkdown(order.orderId)}\nReviewed by: ${escapeMarkdown(order.confirmedBy || "Admin")}\nMeta Dataset: ${escapeMarkdown(settings.meta?.datasetName || "ReadyWear")}\nStatus: Lead event processed by server`;
+          ? `✅ *Order confirmed and Purchase sent to Meta*\n\nOrder ID: ${escapeMarkdown(order.orderId)}\nConfirmed by: ${escapeMarkdown(order.confirmedBy || "Admin")}\nMeta Dataset: ${escapeMarkdown(settings.meta?.datasetName || "Mehzin Offers")}\nStatus: Purchase event processed by server`
+          : `✅ *Real Order — Lead sent to Meta*\n\nOrder ID: ${escapeMarkdown(order.orderId)}\nReviewed by: ${escapeMarkdown(order.confirmedBy || "Admin")}\nMeta Dataset: ${escapeMarkdown(settings.meta?.datasetName || "Mehzin Offers")}\nStatus: Lead event processed by server`;
 
         await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
           method: "POST",
@@ -234,7 +234,7 @@ ${escapeMarkdown(new Date().toLocaleString())}
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           chat_id: chatId,
-          text: "🟢 *ReadyWear Telegram Integration Test*\n\nConnection successful.",
+          text: "🟢 *Mehzin Offers Telegram Integration Test*\n\nConnection successful.",
           parse_mode: "Markdown"
         })
       });

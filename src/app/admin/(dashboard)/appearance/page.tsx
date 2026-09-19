@@ -12,7 +12,7 @@ export default function AppearanceSettings() {
   const [headerLogo, setHeaderLogo] = useState("");
   const [footerLogo, setFooterLogo] = useState("");
   const [favicon, setFavicon] = useState("");
-  const [storeName, setStoreName] = useState("ReadyWear");
+  const [storeName, setStoreName] = useState("Mehzin Offers");
   const [storeTagline, setStoreTagline] = useState("Premium E-commerce in Bangladesh");
   const [storeDescription, setStoreDescription] = useState("");
   const [primaryColor, setPrimaryColor] = useState("#f52d68");
@@ -147,7 +147,7 @@ export default function AppearanceSettings() {
                 value={storeName}
                 onChange={(e) => setStoreName(e.target.value)}
                 className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm"
-                placeholder="ReadyWear"
+                placeholder="Mehzin Offers"
               />
             </div>
             <div>
