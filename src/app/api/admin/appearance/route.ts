@@ -44,6 +44,9 @@ export async function POST(req: NextRequest) {
       settings.storeDescription = body.storeDescription;
       settings.primaryColor = body.primaryColor;
       settings.notificationTone = body.notificationTone;
+      if (body.socialImage !== undefined) {
+        settings.socialImage = body.socialImage;
+      }
     }
     
     await settings.save();

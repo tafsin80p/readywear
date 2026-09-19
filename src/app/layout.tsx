@@ -29,7 +29,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const storeTagline = settings?.storeTagline || "Premium E-commerce in Bangladesh";
   const storeDescription = settings?.storeDescription || "Mehzin Offers - স্টাইলের দেখা নতুন যাত্রা। সেরা মানের পোশাক ও প্রিমিয়াম ই-কমার্স অভিজ্ঞতা।";
   const favicon = settings?.favicon || "/favicon.ico";
-  const ogImage = settings?.headerLogo || "/readywear logo.png";
+  const ogImage = settings?.socialImage || settings?.headerLogo || "/readywear logo.png";
 
   return {
     metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://readywear.com.bd'),

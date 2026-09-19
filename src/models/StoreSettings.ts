@@ -9,6 +9,7 @@ export interface IStoreSettings extends Document {
   storeDescription?: string;
   primaryColor?: string;
   notificationTone?: string;
+  socialImage?: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -22,7 +23,8 @@ const StoreSettingsSchema: Schema<IStoreSettings> = new Schema(
     storeTagline: { type: String, default: "Premium E-commerce in Bangladesh" },
     storeDescription: { type: String, default: "Premium E-commerce in Bangladesh" },
     primaryColor: { type: String, default: "#F5426A" },
-    notificationTone: { type: String, default: "" }
+    notificationTone: { type: String, default: "" },
+    socialImage: { type: String, default: "" }
   },
   { timestamps: true }
 );

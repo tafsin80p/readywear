@@ -35,7 +35,7 @@ export async function generateMetadata(
     openGraph: {
       title: product.name,
       description: description,
-      url: `https://readywear.com.bd/product/${product.slug}`,
+      url: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://readywear.com.bd'}/product/${product.slug}`,
       siteName: 'Mehzin Offers',
       images: [
         {

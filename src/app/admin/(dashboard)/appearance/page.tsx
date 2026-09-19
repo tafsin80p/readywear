@@ -17,6 +17,7 @@ export default function AppearanceSettings() {
   const [storeDescription, setStoreDescription] = useState("");
   const [primaryColor, setPrimaryColor] = useState("#f52d68");
   const [notificationTone, setNotificationTone] = useState("");
+  const [socialImage, setSocialImage] = useState("");
 
   useEffect(() => {
     const fetchSettings = async () => {
@@ -32,6 +33,7 @@ export default function AppearanceSettings() {
           if (data.settings.storeDescription) setStoreDescription(data.settings.storeDescription);
           if (data.settings.primaryColor) setPrimaryColor(data.settings.primaryColor);
           if (data.settings.notificationTone) setNotificationTone(data.settings.notificationTone);
+          if (data.settings.socialImage) setSocialImage(data.settings.socialImage);
         }
       } catch (error) {
         console.error("Failed to load appearance settings:", error);
@@ -42,7 +44,7 @@ export default function AppearanceSettings() {
     fetchSettings();
   }, []);
 
-  const handleFileUpload = async (file: File, type: 'header' | 'footer' | 'favicon' | 'tone') => {
+  const handleFileUpload = async (file: File, type: 'header' | 'footer' | 'favicon' | 'tone' | 'social') => {
     try {
       const base64File = await new Promise<string>((resolve, reject) => {
         const reader = new FileReader();
@@ -68,6 +70,7 @@ export default function AppearanceSettings() {
       if (type === 'header') setHeaderLogo(url);
       else if (type === 'footer') setFooterLogo(url);
       else if (type === 'favicon') setFavicon(url);
+      else if (type === 'social') setSocialImage(url);
       else if (type === 'tone') setNotificationTone(url);
       
       toast.success(type === 'tone' ? "Audio uploaded successfully" : "Image uploaded successfully");
@@ -90,7 +93,8 @@ export default function AppearanceSettings() {
           storeTagline,
           storeDescription,
           primaryColor,
-          notificationTone
+          notificationTone,
+          socialImage
         }),
       });
 
@@ -264,6 +268,34 @@ export default function AppearanceSettings() {
               </div>
             </div>
             </div>
+            
+          {/* Social Sharing Image */}
+          <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm md:col-span-2 mt-6">
+            <h3 className="font-bold text-gray-900 mb-4">Social Sharing Image (OG Image)</h3>
+            <div className="flex items-center gap-6">
+              <div className="bg-gray-50 rounded-xl border border-dashed border-gray-200 w-48 h-24 flex items-center justify-center relative overflow-hidden shrink-0">
+                {socialImage ? (
+                  <Image src={socialImage} alt="Social Image" fill sizes="192px" priority className="object-contain p-2" />
+                ) : (
+                  <ImageIcon className="w-6 h-6 text-gray-300" />
+                )}
+              </div>
+              <div className="flex-1">
+                <p className="text-sm text-gray-500 mb-4">
+                  Upload an image (recommended size: 1200x630px) to be displayed when your website link is shared on Facebook, WhatsApp, Telegram, etc.
+                </p>
+                <label className="inline-block px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold text-sm rounded-xl cursor-pointer transition-colors">
+                  <span>Upload Social Image</span>
+                  <input 
+                    type="file" 
+                    className="hidden" 
+                    accept="image/*"
+                    onChange={(e) => e.target.files?.[0] && handleFileUpload(e.target.files[0], 'social')}
+                  />
+                </label>
+              </div>
+            </div>
+          </div>
 
           {/* Notification Tone */}
           <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm md:col-span-2">
