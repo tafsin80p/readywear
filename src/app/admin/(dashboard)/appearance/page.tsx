@@ -18,6 +18,10 @@ export default function AppearanceSettings() {
   const [primaryColor, setPrimaryColor] = useState("#f52d68");
   const [notificationTone, setNotificationTone] = useState("");
   const [socialImage, setSocialImage] = useState("");
+  const [facebookUrl, setFacebookUrl] = useState("");
+  const [instagramUrl, setInstagramUrl] = useState("");
+  const [youtubeUrl, setYoutubeUrl] = useState("");
+  const [whatsappUrl, setWhatsappUrl] = useState("");
 
   useEffect(() => {
     const fetchSettings = async () => {
@@ -34,6 +38,10 @@ export default function AppearanceSettings() {
           if (data.settings.primaryColor) setPrimaryColor(data.settings.primaryColor);
           if (data.settings.notificationTone) setNotificationTone(data.settings.notificationTone);
           if (data.settings.socialImage) setSocialImage(data.settings.socialImage);
+          if (data.settings.facebookUrl) setFacebookUrl(data.settings.facebookUrl);
+          if (data.settings.instagramUrl) setInstagramUrl(data.settings.instagramUrl);
+          if (data.settings.youtubeUrl) setYoutubeUrl(data.settings.youtubeUrl);
+          if (data.settings.whatsappUrl) setWhatsappUrl(data.settings.whatsappUrl);
         }
       } catch (error) {
         console.error("Failed to load appearance settings:", error);
@@ -94,7 +102,11 @@ export default function AppearanceSettings() {
           storeDescription,
           primaryColor,
           notificationTone,
-          socialImage
+          socialImage,
+          facebookUrl,
+          instagramUrl,
+          youtubeUrl,
+          whatsappUrl
         }),
       });
 
@@ -173,8 +185,51 @@ export default function AppearanceSettings() {
                 className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm resize-none"
               />
             </div>
-            <div>
-              <label className="block text-sm font-bold text-gray-700 mb-1">Primary Color (Hex)</label>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">Facebook URL</label>
+                <input
+                  type="url"
+                  value={facebookUrl}
+                  onChange={(e) => setFacebookUrl(e.target.value)}
+                  className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm"
+                  placeholder="https://facebook.com/..."
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">Instagram URL</label>
+                <input
+                  type="url"
+                  value={instagramUrl}
+                  onChange={(e) => setInstagramUrl(e.target.value)}
+                  className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm"
+                  placeholder="https://instagram.com/..."
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">YouTube URL</label>
+                <input
+                  type="url"
+                  value={youtubeUrl}
+                  onChange={(e) => setYoutubeUrl(e.target.value)}
+                  className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm"
+                  placeholder="https://youtube.com/..."
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">WhatsApp URL</label>
+                <input
+                  type="url"
+                  value={whatsappUrl}
+                  onChange={(e) => setWhatsappUrl(e.target.value)}
+                  className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm"
+                  placeholder="https://wa.me/..."
+                />
+              </div>
+            </div>
+            
+            <div className="mt-6 border-t border-gray-100 pt-6">
+              <label className="block text-sm font-semibold text-gray-700 mb-2">Primary Color (Hex)</label>
               <div className="flex items-center gap-3">
                 <input 
                   type="color" 

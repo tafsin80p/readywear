@@ -13,6 +13,7 @@ export default async function StorefrontLayout({
 }) {
   let headerLogo = "";
   let footerLogo = "";
+  let socialLinks = {};
 
   try {
     const StoreSettings = (await import("@/models/StoreSettings")).default;
@@ -21,6 +22,12 @@ export default async function StorefrontLayout({
     if (settings) {
       headerLogo = settings.headerLogo || "";
       footerLogo = settings.footerLogo || "";
+      socialLinks = {
+        facebook: settings.facebookUrl || "",
+        instagram: settings.instagramUrl || "",
+        youtube: settings.youtubeUrl || "",
+        whatsapp: settings.whatsappUrl || "",
+      };
     }
   } catch (error) {
     console.error("Failed to fetch store settings for logos", error);
@@ -34,7 +41,7 @@ export default async function StorefrontLayout({
         <main className="flex-1 bg-gray-50/50">
           {children}
         </main>
-        <Footer logoUrl={footerLogo || headerLogo} />
+        <Footer logoUrl={footerLogo || headerLogo} socialLinks={socialLinks} />
         <MobileNavbar />
         <ClientModals />
       </div>

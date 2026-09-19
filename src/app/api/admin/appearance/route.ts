@@ -47,6 +47,10 @@ export async function POST(req: NextRequest) {
       if (body.socialImage !== undefined) {
         settings.socialImage = body.socialImage;
       }
+      if (body.facebookUrl !== undefined) settings.facebookUrl = body.facebookUrl;
+      if (body.instagramUrl !== undefined) settings.instagramUrl = body.instagramUrl;
+      if (body.youtubeUrl !== undefined) settings.youtubeUrl = body.youtubeUrl;
+      if (body.whatsappUrl !== undefined) settings.whatsappUrl = body.whatsappUrl;
     }
     
     await settings.save();

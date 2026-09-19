@@ -10,6 +10,10 @@ export interface IStoreSettings extends Document {
   primaryColor?: string;
   notificationTone?: string;
   socialImage?: string;
+  facebookUrl?: string;
+  instagramUrl?: string;
+  youtubeUrl?: string;
+  whatsappUrl?: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -24,7 +28,11 @@ const StoreSettingsSchema: Schema<IStoreSettings> = new Schema(
     storeDescription: { type: String, default: "Premium E-commerce in Bangladesh" },
     primaryColor: { type: String, default: "#F5426A" },
     notificationTone: { type: String, default: "" },
-    socialImage: { type: String, default: "" }
+    socialImage: { type: String, default: "" },
+    facebookUrl: { type: String, default: "" },
+    instagramUrl: { type: String, default: "" },
+    youtubeUrl: { type: String, default: "" },
+    whatsappUrl: { type: String, default: "" }
   },
   { timestamps: true }
 );
