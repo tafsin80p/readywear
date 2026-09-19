@@ -73,10 +73,14 @@ export default function AdminLogin() {
           
           <div className="relative z-20 flex flex-col justify-between h-full p-12 text-white">
             <div className="flex items-center gap-2">
-              <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow-lg">
-                <span className="text-primary font-black text-xl">R</span>
-              </div>
-              <span className="font-extrabold text-2xl tracking-tight">Mehzin Offers</span>
+              <Image 
+                 src="/readywear logo.png" 
+                 alt="Mehzin Offers" 
+                 width={180} 
+                 height={60} 
+                 className="h-10 w-auto mix-blend-screen brightness-200 contrast-200" 
+                 priority 
+              />
             </div>
 
             <div>
