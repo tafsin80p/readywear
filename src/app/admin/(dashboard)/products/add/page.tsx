@@ -306,7 +306,7 @@ export default function AddProduct() {
           <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
             <div className="p-6 border-b border-gray-100 bg-gray-50/50">
               <h2 className="text-lg font-bold text-gray-900 flex items-center gap-2">
-                <Info className="w-5 h-5 text-[#F5426A]" />
+                <Info className="w-5 h-5 text-primary" />
                 General Information
               </h2>
             </div>
@@ -321,7 +321,7 @@ export default function AddProduct() {
                   onChange={handleInputChange}
                   required
                   placeholder="e.g., Exclusive Cotton Saree"
-                  className="w-full px-4 py-3 bg-gray-50/50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#F5426A]/20 focus:border-[#F5426A] transition-all text-lg font-medium"
+                  className="w-full px-4 py-3 bg-gray-50/50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-lg font-medium"
                 />
               </div>
 
@@ -334,7 +334,7 @@ export default function AddProduct() {
                   onChange={handleInputChange}
                   required
                   placeholder="exclusive-cotton-saree"
-                  className="w-full px-4 py-2.5 bg-gray-50/50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#F5426A]/20 focus:border-[#F5426A] transition-all"
+                  className="w-full px-4 py-2.5 bg-gray-50/50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
                 />
                 <p className="text-xs text-gray-500 mt-1">Unique URL for this product. Auto-generated from name.</p>
               </div>
@@ -347,7 +347,7 @@ export default function AddProduct() {
                   onChange={handleInputChange}
                   rows={6}
                   placeholder="Describe your product beautifully..."
-                  className="w-full px-4 py-3 bg-gray-50/50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#F5426A]/20 focus:border-[#F5426A] transition-all resize-y"
+                  className="w-full px-4 py-3 bg-gray-50/50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all resize-y"
                 ></textarea>
               </div>
             </div>
@@ -357,7 +357,7 @@ export default function AddProduct() {
           <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
             <div className="p-5 border-b border-gray-100 bg-gray-50/50">
               <h2 className="text-lg font-bold text-gray-900 flex items-center gap-2">
-                <DollarSign className="w-5 h-5 text-[#F5426A]" />
+                <DollarSign className="w-5 h-5 text-primary" />
                 Pricing
               </h2>
             </div>
@@ -376,7 +376,7 @@ export default function AddProduct() {
                       required
                       min="0"
                       placeholder="0.00"
-                      className="w-full pl-10 pr-4 py-2.5 bg-gray-50/50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#F5426A]/20 focus:border-[#F5426A] transition-all font-bold text-gray-900"
+                      className="w-full pl-10 pr-4 py-2.5 bg-gray-50/50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all font-bold text-gray-900"
                     />
                   </div>
                 </div>
@@ -392,7 +392,7 @@ export default function AddProduct() {
                       onChange={handleInputChange}
                       min="0"
                       placeholder="0.00"
-                      className="w-full pl-10 pr-4 py-2.5 bg-gray-50/50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#F5426A]/20 focus:border-[#F5426A] transition-all font-bold text-[#F5426A]"
+                      className="w-full pl-10 pr-4 py-2.5 bg-gray-50/50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all font-bold text-primary"
                     />
                   </div>
                   <p className="text-xs text-gray-500 mt-1">If provided, the regular price will be crossed out automatically.</p>
@@ -405,7 +405,7 @@ export default function AddProduct() {
           <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
             <div className="p-5 border-b border-gray-100 bg-gray-50/50">
               <h2 className="text-lg font-bold text-gray-900 flex items-center gap-2">
-                <Package className="w-5 h-5 text-[#F5426A]" />
+                <Package className="w-5 h-5 text-primary" />
                 Inventory
               </h2>
             </div>
@@ -423,7 +423,7 @@ export default function AddProduct() {
                       onChange={handleInputChange}
                       required
                       placeholder="e.g. RW-1001"
-                      className="w-full pl-10 pr-4 py-2.5 bg-gray-50/50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#F5426A]/20 focus:border-[#F5426A] transition-all uppercase"
+                      className="w-full pl-10 pr-4 py-2.5 bg-gray-50/50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all uppercase"
                     />
                   </div>
                 </div>
@@ -438,7 +438,7 @@ export default function AddProduct() {
                     required
                     min="0"
                     placeholder="e.g. 50"
-                    className="w-full px-4 py-2.5 bg-gray-50/50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#F5426A]/20 focus:border-[#F5426A] transition-all"
+                    className="w-full px-4 py-2.5 bg-gray-50/50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
                   />
                 </div>
               </div>
@@ -452,13 +452,13 @@ export default function AddProduct() {
           <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
             <div className="p-6 border-b border-gray-100 bg-gray-50/50 flex items-center justify-between">
               <h2 className="text-lg font-bold text-gray-900 flex items-center gap-2">
-                <List className="w-5 h-5 text-[#F5426A]" />
+                <List className="w-5 h-5 text-primary" />
                 Specifications
               </h2>
               <button 
                 type="button" 
                 onClick={addSpec}
-                className="text-sm font-bold text-[#F5426A] flex items-center gap-1 hover:underline bg-[#F5426A]/10 px-3 py-1.5 rounded-lg"
+                className="text-sm font-bold text-primary flex items-center gap-1 hover:underline bg-primary/10 px-3 py-1.5 rounded-lg"
               >
                 <Plus className="w-4 h-4" /> Add Row
               </button>
@@ -473,14 +473,14 @@ export default function AddProduct() {
                       placeholder="Label (e.g., Fabric)"
                       value={spec.label}
                       onChange={(e) => handleSpecChange(idx, 'label', e.target.value)}
-                      className="w-full px-4 py-2.5 bg-gray-50/50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#F5426A]/20 focus:border-[#F5426A] transition-all text-sm"
+                      className="w-full px-4 py-2.5 bg-gray-50/50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm"
                     />
                     <input 
                       type="text" 
                       placeholder="Value (e.g., Pure Cotton)"
                       value={spec.value}
                       onChange={(e) => handleSpecChange(idx, 'value', e.target.value)}
-                      className="w-full px-4 py-2.5 bg-gray-50/50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#F5426A]/20 focus:border-[#F5426A] transition-all text-sm"
+                      className="w-full px-4 py-2.5 bg-gray-50/50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm"
                     />
                   </div>
                   <button 
@@ -498,7 +498,7 @@ export default function AddProduct() {
           {/* Product Note */}
           <div className="bg-red-50/50 rounded-2xl border border-red-100 shadow-sm overflow-hidden">
             <div className="p-6 border-b border-red-100 bg-red-50/80">
-              <h2 className="text-lg font-bold text-[#F5426A] flex items-center gap-2">
+              <h2 className="text-lg font-bold text-primary flex items-center gap-2">
                 <Info className="w-5 h-5" />
                 Product Note (বিঃদ্রঃ)
               </h2>
@@ -510,7 +510,7 @@ export default function AddProduct() {
                 onChange={handleInputChange}
                 rows={6}
                 placeholder="Write any special notes here..."
-                className="w-full px-4 py-3 bg-white border border-red-100 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#F5426A]/20 focus:border-[#F5426A] transition-all resize-y text-sm text-gray-700 leading-relaxed"
+                className="w-full px-4 py-3 bg-white border border-red-100 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all resize-y text-sm text-gray-700 leading-relaxed"
               ></textarea>
               <p className="text-xs text-gray-500 mt-2">This note will be displayed on the product single page exactly as typed.</p>
             </div>
@@ -549,7 +549,7 @@ export default function AddProduct() {
                     </div>
                   </>
                 ) : (
-                  <div className="w-full h-full text-gray-400 hover:text-[#F5426A] hover:bg-[#F5426A]/5 transition-colors cursor-pointer border-2 border-dashed border-gray-200 hover:border-[#F5426A]/50 rounded-xl">
+                  <div className="w-full h-full text-gray-400 hover:text-primary hover:bg-primary/5 transition-colors cursor-pointer border-2 border-dashed border-gray-200 hover:border-primary/50 rounded-xl">
                     <ImageUpload onUpload={handleFeaturedImageUpload} folder={`readywear/products/${formData.slug || 'untitled'}/featured`}>
                       <div className="w-full h-full flex flex-col items-center justify-center gap-2">
                         <ImageIcon className="w-8 h-8 opacity-50" />
@@ -576,7 +576,7 @@ export default function AddProduct() {
                 ))}
                 
                 {galleryImages.length < 3 && (
-                  <div className="aspect-square border-2 border-dashed border-gray-200 hover:border-[#F5426A]/50 bg-gray-50 hover:bg-[#F5426A]/5 rounded-lg transition-all overflow-hidden cursor-pointer">
+                  <div className="aspect-square border-2 border-dashed border-gray-200 hover:border-primary/50 bg-gray-50 hover:bg-primary/5 rounded-lg transition-all overflow-hidden cursor-pointer">
                     <ImageUpload onUpload={handleGalleryImageUpload} folder={`readywear/products/${formData.slug || 'untitled'}/gallery`}>
                       <div className="w-full h-full flex flex-col items-center justify-center text-emerald-400 bg-emerald-50 hover:bg-emerald-100 transition-colors">
                         <div className="w-6 h-6 rounded-full bg-emerald-400 text-white flex items-center justify-center">
@@ -602,7 +602,7 @@ export default function AddProduct() {
                     name="category"
                     value={formData.category}
                     onChange={handleInputChange}
-                    className="w-full pl-4 pr-10 py-3 bg-gray-100/70 border border-transparent hover:border-gray-200 rounded-xl focus:outline-none focus:bg-white focus:ring-2 focus:ring-[#F5426A]/20 focus:border-[#F5426A] transition-all appearance-none cursor-pointer font-medium text-gray-900 text-sm"
+                    className="w-full pl-4 pr-10 py-3 bg-gray-100/70 border border-transparent hover:border-gray-200 rounded-xl focus:outline-none focus:bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all appearance-none cursor-pointer font-medium text-gray-900 text-sm"
                   >
                     {categories.map(cat => (
                       <option key={cat.value} value={cat.value}>{cat.label}</option>
@@ -614,7 +614,7 @@ export default function AddProduct() {
                 </div>
               </div>
 
-              <Link href="/admin/categories" className="bg-[#F5426A] hover:bg-[#ff5a7f] text-white px-5 py-2.5 rounded-xl font-bold transition-all text-sm shadow-md shadow-[#F5426A]/20 text-center block w-full">
+              <Link href="/admin/categories" className="bg-primary hover:bg-[#ff5a7f] text-white px-5 py-2.5 rounded-xl font-bold transition-all text-sm shadow-md shadow-primary/20 text-center block w-full">
                 Add Category
               </Link>
             </div>
@@ -625,7 +625,7 @@ export default function AddProduct() {
             <div className="flex items-center justify-between mb-5">
               <div>
                 <h2 className="text-[16px] font-bold text-gray-900 flex items-center gap-2">
-                  <Tag className="w-4.5 h-4.5 text-[#F5426A]" />
+                  <Tag className="w-4.5 h-4.5 text-primary" />
                   Attributes
                 </h2>
                 <p className="text-xs text-gray-400 mt-1">Select attributes and their values for this product</p>
@@ -633,7 +633,7 @@ export default function AddProduct() {
               <button 
                 type="button"
                 onClick={addAttribute}
-                className="bg-[#F5426A]/10 hover:bg-[#F5426A]/20 text-[#F5426A] px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1.5 text-xs font-bold"
+                className="bg-primary/10 hover:bg-primary/20 text-primary px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1.5 text-xs font-bold"
               >
                 <Plus className="w-3.5 h-3.5" /> Add Attribute
               </button>
@@ -649,11 +649,11 @@ export default function AddProduct() {
                     {/* Attribute Header */}
                     <div className="flex items-center justify-between px-4 py-3 bg-white border-b border-gray-100">
                       <div className="flex items-center gap-3 flex-1 min-w-0" ref={el => { dropdownRefs.current[idx] = el; }}>
-                        <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${attr.name ? "bg-[#F5426A]/10" : "bg-gray-100"}`}>
+                        <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${attr.name ? "bg-primary/10" : "bg-gray-100"}`}>
                           {isColorType ? (
-                            <Palette className="w-4 h-4 text-[#F5426A]" />
+                            <Palette className="w-4 h-4 text-primary" />
                           ) : (
-                            <Tag className={`w-4 h-4 ${attr.name ? "text-[#F5426A]" : "text-gray-400"}`} />
+                            <Tag className={`w-4 h-4 ${attr.name ? "text-primary" : "text-gray-400"}`} />
                           )}
                         </div>
                         {globalAttributes.length > 0 ? (
@@ -667,14 +667,14 @@ export default function AddProduct() {
                               }}
                               className={`w-full flex items-center justify-between gap-2 px-3 py-2 rounded-lg border transition-all text-left ${
                                 openAttrDropdown === idx 
-                                  ? "border-[#F5426A] ring-2 ring-[#F5426A]/20 bg-white" 
+                                  ? "border-primary ring-2 ring-primary/20 bg-white" 
                                   : "border-gray-200 hover:border-gray-300 bg-gray-50/50"
                               }`}
                             >
                               <span className={`text-sm font-bold truncate ${attr.name ? "text-gray-900" : "text-gray-400"}`}>
                                 {attr.name || "Select Attribute..."}
                               </span>
-                              <ChevronDown className={`w-4 h-4 text-gray-400 shrink-0 transition-transform duration-200 ${openAttrDropdown === idx ? "rotate-180 text-[#F5426A]" : ""}`} />
+                              <ChevronDown className={`w-4 h-4 text-gray-400 shrink-0 transition-transform duration-200 ${openAttrDropdown === idx ? "rotate-180 text-primary" : ""}`} />
                             </button>
 
                             {/* Dropdown Panel */}
@@ -696,7 +696,7 @@ export default function AddProduct() {
                                           }}
                                           className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-left transition-all mb-0.5 ${
                                             isSelected 
-                                              ? "bg-[#F5426A]/5 border border-[#F5426A]/20" 
+                                              ? "bg-primary/5 border border-primary/20" 
                                               : "hover:bg-gray-50 border border-transparent"
                                           }`}
                                         >
@@ -719,7 +719,7 @@ export default function AddProduct() {
                                             </div>
                                           </div>
                                           {isSelected && (
-                                            <div className="w-5 h-5 rounded-full bg-[#F5426A] flex items-center justify-center shrink-0">
+                                            <div className="w-5 h-5 rounded-full bg-primary flex items-center justify-center shrink-0">
                                               <Check className="w-3 h-3 text-white" />
                                             </div>
                                           )}
@@ -802,7 +802,7 @@ export default function AddProduct() {
                                   placeholder="0"
                                   value={v.stock}
                                   onChange={(e) => handleAttributeValueChange(idx, vIdx, 'stock', e.target.value)}
-                                  className="w-16 px-2 py-1 bg-gray-50 border border-gray-200 rounded-md focus:outline-none focus:ring-1 focus:ring-[#F5426A]/30 focus:border-[#F5426A] transition-all text-xs text-center font-semibold"
+                                  className="w-16 px-2 py-1 bg-gray-50 border border-gray-200 rounded-md focus:outline-none focus:ring-1 focus:ring-primary/30 focus:border-primary transition-all text-xs text-center font-semibold"
                                 />
                               </div>
                             </div>

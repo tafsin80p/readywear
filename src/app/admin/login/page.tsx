@@ -60,7 +60,7 @@ export default function AdminLogin() {
     <div ref={containerRef} className="min-h-screen w-full flex flex-col md:flex-row bg-white">
         
         {/* Left Side: Brand Imagery */}
-        <div className="hidden md:flex md:w-1/2 relative bg-[#F5426A] overflow-hidden min-h-screen">
+        <div className="hidden md:flex md:w-1/2 relative bg-primary overflow-hidden min-h-screen">
           <div className="absolute inset-0 z-0">
              <Image 
                 src="https://images.unsplash.com/photo-1441984904996-e0b6ba687e04?q=80&w=1200&auto=format&fit=crop" 
@@ -69,12 +69,12 @@ export default function AdminLogin() {
                 className="object-cover opacity-40 mix-blend-multiply"
              />
           </div>
-          <div className="login-overlay absolute inset-0 bg-gradient-to-tr from-[#1a2b4b]/80 to-[#F5426A]/80 z-10"></div>
+          <div className="login-overlay absolute inset-0 bg-gradient-to-tr from-[#1a2b4b]/80 to-primary/80 z-10"></div>
           
           <div className="relative z-20 flex flex-col justify-between h-full p-12 text-white">
             <div className="flex items-center gap-2">
               <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow-lg">
-                <span className="text-[#F5426A] font-black text-xl">R</span>
+                <span className="text-primary font-black text-xl">R</span>
               </div>
               <span className="font-extrabold text-2xl tracking-tight">ReadyWear</span>
             </div>
@@ -113,7 +113,7 @@ export default function AdminLogin() {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
-                    className="w-full pl-11 pr-4 py-3.5 bg-gray-50 border border-gray-100 rounded-xl text-gray-900 font-medium focus:ring-2 focus:ring-[#F5426A]/20 focus:border-[#F5426A] outline-none transition-all"
+                    className="w-full pl-11 pr-4 py-3.5 bg-gray-50 border border-gray-100 rounded-xl text-gray-900 font-medium focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all"
                   />
                 </div>
               </div>
@@ -121,7 +121,7 @@ export default function AdminLogin() {
               <div className="login-element space-y-2">
                 <div className="flex justify-between items-center">
                   <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">Password</label>
-                  <a href="#" className="text-xs font-bold text-[#F5426A] hover:underline">Forgot password?</a>
+                  <a href="#" className="text-xs font-bold text-primary hover:underline">Forgot password?</a>
                 </div>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
@@ -132,7 +132,7 @@ export default function AdminLogin() {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
-                    className="w-full pl-11 pr-4 py-3.5 bg-gray-50 border border-gray-100 rounded-xl text-gray-900 font-medium focus:ring-2 focus:ring-[#F5426A]/20 focus:border-[#F5426A] outline-none transition-all"
+                    className="w-full pl-11 pr-4 py-3.5 bg-gray-50 border border-gray-100 rounded-xl text-gray-900 font-medium focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all"
                   />
                 </div>
               </div>
@@ -140,7 +140,7 @@ export default function AdminLogin() {
               <button 
                 type="submit" 
                 disabled={isLoading}
-                className="login-element w-full bg-[#F5426A] hover:bg-[#F5426A]/90 text-white font-bold py-4 rounded-xl shadow-lg shadow-pink-200 transition-all flex items-center justify-center gap-2 group disabled:opacity-70 disabled:cursor-not-allowed"
+                className="login-element w-full bg-primary hover:bg-primary/90 text-white font-bold py-4 rounded-xl shadow-lg shadow-pink-200 transition-all flex items-center justify-center gap-2 group disabled:opacity-70 disabled:cursor-not-allowed"
               >
                 {isLoading ? (
                   <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>

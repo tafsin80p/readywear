@@ -1,12 +1,20 @@
 import { NextResponse, NextRequest } from "next/server";
 import connectToDatabase from "@/lib/mongodb";
 import Attribute from "@/models/Attribute";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
+
 
 export async function PUT(
   req: NextRequest,
   context: { params: Promise<{ id: string }> }
 ) {
   try {
+    const session = await getServerSession(authOptions);
+    if (!session || session.user.role !== "admin") {
+      return NextResponse.json({ success: false, message: "Unauthorized" }, { status: 401 });
+    }
+
     await connectToDatabase();
     const { id } = await context.params;
     const body = await req.json();
@@ -41,6 +49,11 @@ export async function DELETE(
   context: { params: Promise<{ id: string }> }
 ) {
   try {
+    const session = await getServerSession(authOptions);
+    if (!session || session.user.role !== "admin") {
+      return NextResponse.json({ success: false, message: "Unauthorized" }, { status: 401 });
+    }
+
     await connectToDatabase();
     const { id } = await context.params;
 

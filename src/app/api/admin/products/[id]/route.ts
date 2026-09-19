@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 import connectToDatabase from "@/lib/mongodb";
 import Product from "@/models/Product";
+import { activityLogService } from "@/lib/services/activityLogService";
 
 // Check if user is admin
 async function isAdmin() {
@@ -95,6 +96,14 @@ export async function PUT(
     Object.assign(product, body);
     await product.save();
     
+    // Log Activity
+    activityLogService.logActivity({
+      title: "Product Updated",
+      message: `${product.name} (SKU: ${product.sku}) has been updated.`,
+      type: "product",
+      link: `/admin/products/edit/${product._id}`,
+    });
+
     return NextResponse.json(product);
   } catch (error: any) {
     console.error("Update product error:", error);
@@ -132,6 +141,14 @@ export async function DELETE(
       return NextResponse.json({ error: "Product not found" }, { status: 404 });
     }
     
+    // Log Activity
+    activityLogService.logActivity({
+      title: "Product Deleted",
+      message: `${deletedProduct.name} (SKU: ${deletedProduct.sku}) has been deleted.`,
+      type: "product",
+      link: `/admin/products`,
+    });
+
     return NextResponse.json({ message: "Product deleted successfully" });
   } catch (error: any) {
     console.error("Delete product error:", error);

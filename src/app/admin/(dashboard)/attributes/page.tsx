@@ -31,7 +31,7 @@ export default function AttributesPage() {
 
   // Form State: Add Term
   const [termName, setTermName] = useState("");
-  const [termMeta, setTermMeta] = useState("#F5426A");
+  const [termMeta, setTermMeta] = useState("#000000");
 
   useEffect(() => {
     fetchAttributes();
@@ -127,7 +127,7 @@ export default function AttributesPage() {
       if (data.success) {
         toast("Term added", "success");
         setTermName("");
-        setTermMeta("#F5426A");
+        setTermMeta("#000000");
         fetchAttributes();
       } else {
         toast(data.error || "Failed to add term", "error");
@@ -219,7 +219,7 @@ export default function AttributesPage() {
                       placeholder={activeAttr.type === "color" ? "e.g. Red, Navy Blue" : "e.g. S, M, XL"}
                       value={termName}
                       onChange={(e) => setTermName(e.target.value)}
-                      className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#F5426A]/20 focus:border-[#F5426A] transition-all"
+                      className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
                       required
                     />
                   </div>
@@ -238,7 +238,7 @@ export default function AttributesPage() {
                           type="text"
                           value={termMeta}
                           onChange={(e) => setTermMeta(e.target.value)}
-                          className="flex-1 px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#F5426A]/20 focus:border-[#F5426A] transition-all uppercase font-medium"
+                          className="flex-1 px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all uppercase font-medium"
                           required
                         />
                       </div>
@@ -270,7 +270,7 @@ export default function AttributesPage() {
                       placeholder="e.g. Size, Color, Fabric"
                       value={attrName}
                       onChange={(e) => setAttrName(e.target.value)}
-                      className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#F5426A]/20 focus:border-[#F5426A] transition-all"
+                      className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
                       required
                     />
                   </div>

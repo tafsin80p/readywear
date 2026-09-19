@@ -4,9 +4,17 @@ import Product from '@/models/Product';
 import Order from '@/models/Order';
 import User from '@/models/User';
 import Category from '@/models/Category';
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
+
 
 export async function GET(req: Request) {
   try {
+    const session = await getServerSession(authOptions);
+    if (!session || session.user.role !== "admin") {
+      return NextResponse.json({ success: false, message: "Unauthorized" }, { status: 401 });
+    }
+
     const { searchParams } = new URL(req.url);
     const query = searchParams.get('q');
 

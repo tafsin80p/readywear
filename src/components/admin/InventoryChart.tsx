@@ -39,7 +39,7 @@ export function InventoryChart({ data }: { data?: any[] }) {
           />
           <Bar dataKey="stock" radius={[6, 6, 0, 0]}>
             {chartData.map((entry, index) => (
-              <Cell key={`cell-${index}`} fill={index % 2 === 0 ? '#F5426A' : '#fbcfe8'} />
+              <Cell key={`cell-${index}`} fill={index % 2 === 0 ? 'var(--primary)' : '#fbcfe8'} />
             ))}
           </Bar>
         </BarChart>

@@ -72,14 +72,14 @@ export const telegramService = {
       const keyboard = {
         inline_keyboard: [
           ...(settings.googleSheet?.sheetUrl ? [[
-            { text: "📑 Open in Google Sheet", url: settings.googleSheet.sheetUrl }
+            { text: "Open in Google Sheet", url: settings.googleSheet.sheetUrl }
           ]] : []),
           [
-            { text: "🎯 Real Order", callback_data: `ask-lead_${order._id}` }
+            { text: "❌ Fake Order", callback_data: `ask-fake_${order._id}` },
+            { text: "✅ Real Order — Send Lead", callback_data: `ask-lead_${order._id}` }
           ],
           [
-            { text: "❌ Fake Order", callback_data: `ask-fake_${order._id}` },
-            { text: "✅ Confirm Order", callback_data: `ask-confirm_${order._id}` }
+            { text: "✅ Confirm Order — Send Purchase to FB", callback_data: `ask-confirm_${order._id}` }
           ]
         ]
       };
@@ -165,22 +165,24 @@ ${escapeMarkdown(new Date().toLocaleString())}
 
       if (settings.googleSheet?.sheetUrl) {
         keyboard.inline_keyboard.push([
-          { text: "📑 Open in Google Sheet", url: settings.googleSheet.sheetUrl }
+          { text: "Open in Google Sheet", url: settings.googleSheet.sheetUrl }
         ]);
       }
 
-      // Add Real Order if lead is not sent yet
-      if (order.metaLeadEventStatus !== "sent") {
-        keyboard.inline_keyboard.push([
-          { text: "🎯 Real Order", callback_data: `ask-lead_${order._id}` }
-        ]);
-      }
-
-      // Add Confirm/Fake if order is not yet confirmed or fake
+      // Add Confirm/Fake/Lead if order is not yet confirmed or fake
       if (order.verificationStatus !== "confirmed" && order.verificationStatus !== "fake") {
+        let actionRow = [
+          { text: "❌ Fake Order", callback_data: `ask-fake_${order._id}` }
+        ];
+        
+        if (order.metaLeadEventStatus !== "sent") {
+          actionRow.push({ text: "✅ Real Order — Send Lead", callback_data: `ask-lead_${order._id}` });
+        }
+        
+        keyboard.inline_keyboard.push(actionRow);
+        
         keyboard.inline_keyboard.push([
-          { text: "❌ Fake Order", callback_data: `ask-fake_${order._id}` },
-          { text: "✅ Confirm Order", callback_data: `ask-confirm_${order._id}` }
+          { text: "✅ Confirm Order — Send Purchase to FB", callback_data: `ask-confirm_${order._id}` }
         ]);
       }
 
@@ -202,8 +204,8 @@ ${escapeMarkdown(new Date().toLocaleString())}
       // Send a reply message mimicking the requested format
       if (isConfirmed || isLead) {
         const replyText = isConfirmed
-          ? `✅ *Order confirmed and Purchase sent to Meta*\n\n*Order ID:* ${escapeMarkdown(order.orderId)}\n*Confirmed by:* ${escapeMarkdown(order.confirmedBy || "Admin")}\n*Meta Dataset:* ReadyWear\n*Status:* Purchase event processed by server`
-          : `✅ *Real Order — Lead sent to Meta*\n\n*Order ID:* ${escapeMarkdown(order.orderId)}\n*Reviewed by:* ${escapeMarkdown(order.confirmedBy || "Admin")}\n*Meta Dataset:* ReadyWear\n*Status:* Lead event processed by server`;
+          ? `✅ *Order confirmed and Purchase sent to Meta*\n\nOrder ID: ${escapeMarkdown(order.orderId)}\nConfirmed by: ${escapeMarkdown(order.confirmedBy || "Admin")}\nMeta Dataset: ${escapeMarkdown(settings.meta?.datasetName || "ReadyWear")}\nStatus: Purchase event processed by server`
+          : `✅ *Real Order — Lead sent to Meta*\n\nOrder ID: ${escapeMarkdown(order.orderId)}\nReviewed by: ${escapeMarkdown(order.confirmedBy || "Admin")}\nMeta Dataset: ${escapeMarkdown(settings.meta?.datasetName || "ReadyWear")}\nStatus: Lead event processed by server`;
 
         await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
           method: "POST",
@@ -310,17 +312,22 @@ ${escapeMarkdown(new Date().toLocaleString())}
       };
 
       if (settings.googleSheet?.sheetUrl) {
-        keyboard.inline_keyboard.push([{ text: "📑 Open in Google Sheet", url: settings.googleSheet.sheetUrl }]);
-      }
-
-      if (order.metaLeadEventStatus !== "sent") {
-        keyboard.inline_keyboard.push([{ text: "🎯 Real Order", callback_data: `ask-lead_${order._id}` }]);
+        keyboard.inline_keyboard.push([{ text: "Open in Google Sheet", url: settings.googleSheet.sheetUrl }]);
       }
 
       if (order.verificationStatus !== "confirmed" && order.verificationStatus !== "fake") {
+        let actionRow = [
+          { text: "❌ Fake Order", callback_data: `ask-fake_${order._id}` }
+        ];
+        
+        if (order.metaLeadEventStatus !== "sent") {
+          actionRow.push({ text: "✅ Real Order — Send Lead", callback_data: `ask-lead_${order._id}` });
+        }
+        
+        keyboard.inline_keyboard.push(actionRow);
+        
         keyboard.inline_keyboard.push([
-          { text: "❌ Fake Order", callback_data: `ask-fake_${order._id}` },
-          { text: "✅ Confirm Order", callback_data: `ask-confirm_${order._id}` }
+          { text: "✅ Confirm Order — Send Purchase to FB", callback_data: `ask-confirm_${order._id}` }
         ]);
       }
 
@@ -366,17 +373,22 @@ ${escapeMarkdown(new Date().toLocaleString())}
       };
 
       if (settings.googleSheet?.sheetUrl) {
-        keyboard.inline_keyboard.push([{ text: "📑 Open in Google Sheet", url: settings.googleSheet.sheetUrl }]);
-      }
-
-      if (order.metaLeadEventStatus !== "sent") {
-        keyboard.inline_keyboard.push([{ text: "🎯 Real Order", callback_data: `ask-lead_${order._id}` }]);
+        keyboard.inline_keyboard.push([{ text: "Open in Google Sheet", url: settings.googleSheet.sheetUrl }]);
       }
 
       if (order.verificationStatus !== "confirmed" && order.verificationStatus !== "fake") {
+        let actionRow = [
+          { text: "❌ Fake Order", callback_data: `ask-fake_${order._id}` }
+        ];
+        
+        if (order.metaLeadEventStatus !== "sent") {
+          actionRow.push({ text: "✅ Real Order — Send Lead", callback_data: `ask-lead_${order._id}` });
+        }
+        
+        keyboard.inline_keyboard.push(actionRow);
+        
         keyboard.inline_keyboard.push([
-          { text: "❌ Fake Order", callback_data: `ask-fake_${order._id}` },
-          { text: "✅ Confirm Order", callback_data: `ask-confirm_${order._id}` }
+          { text: "✅ Confirm Order — Send Purchase to FB", callback_data: `ask-confirm_${order._id}` }
         ]);
       }
 

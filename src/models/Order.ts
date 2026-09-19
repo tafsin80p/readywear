@@ -58,6 +58,9 @@ export interface IOrder extends Document {
 
   source?: string; // Track if order came from Facebook, TikTok, Instagram, etc.
 
+  isDeleted?: boolean;
+  deletedAt?: Date;
+
   createdAt: Date;
   updatedAt: Date;
 }
@@ -148,6 +151,9 @@ const OrderSchema: Schema<IOrder> = new Schema(
     metaLeadEventSentAt: { type: Date },
     
     source: { type: String, default: "Website" },
+    
+    isDeleted: { type: Boolean, default: false },
+    deletedAt: { type: Date },
   },
   {
     timestamps: true,

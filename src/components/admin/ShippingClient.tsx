@@ -108,7 +108,7 @@ export default function ShippingClient() {
       <div className="flex items-center justify-between bg-white p-6 rounded-2xl shadow-sm border border-gray-100 stagger-card">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-            <Truck className="w-6 h-6 text-[#F5426A]" />
+            <Truck className="w-6 h-6 text-primary" />
             Shipping Configuration
           </h1>
           <p className="text-gray-500 text-sm mt-1">Manage your delivery zones, rates, and pickup options.</p>
@@ -127,7 +127,7 @@ export default function ShippingClient() {
         {/* Delivery Zones */}
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden stagger-card">
           <div className="p-6 border-b border-gray-100 bg-gray-50/50 flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-pink-50 text-[#F5426A] flex items-center justify-center shrink-0">
+            <div className="w-10 h-10 rounded-xl bg-pink-50 text-primary flex items-center justify-center shrink-0">
               <MapPin className="w-5 h-5" />
             </div>
             <div>
@@ -148,7 +148,7 @@ export default function ShippingClient() {
                     checked={settings.zones.insideDhaka.enabled} 
                     onChange={e => handleZoneChange('insideDhaka', 'enabled', e.target.checked)} 
                   />
-                  <div className="w-10 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-[#F5426A]"></div>
+                  <div className="w-10 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary"></div>
                 </label>
               </div>
               <div className="grid grid-cols-2 gap-4">
@@ -161,7 +161,7 @@ export default function ShippingClient() {
                       value={settings.zones.insideDhaka.rate}
                       onChange={e => handleZoneChange('insideDhaka', 'rate', Number(e.target.value))}
                       disabled={!settings.zones.insideDhaka.enabled}
-                      className="w-full pl-7 pr-4 py-2 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-[#F5426A]/20 focus:border-[#F5426A] transition-all outline-none bg-white disabled:bg-gray-50 disabled:text-gray-400 font-medium"
+                      className="w-full pl-7 pr-4 py-2 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all outline-none bg-white disabled:bg-gray-50 disabled:text-gray-400 font-medium"
                     />
                   </div>
                 </div>
@@ -172,7 +172,7 @@ export default function ShippingClient() {
                     value={settings.zones.insideDhaka.estimatedDays}
                     onChange={e => handleZoneChange('insideDhaka', 'estimatedDays', e.target.value)}
                     disabled={!settings.zones.insideDhaka.enabled}
-                    className="w-full px-4 py-2 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-[#F5426A]/20 focus:border-[#F5426A] transition-all outline-none bg-white disabled:bg-gray-50 disabled:text-gray-400"
+                    className="w-full px-4 py-2 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all outline-none bg-white disabled:bg-gray-50 disabled:text-gray-400"
                     placeholder="e.g. 1-2 Business Days"
                   />
                 </div>
@@ -192,7 +192,7 @@ export default function ShippingClient() {
                     checked={settings.zones.outsideDhaka.enabled} 
                     onChange={e => handleZoneChange('outsideDhaka', 'enabled', e.target.checked)} 
                   />
-                  <div className="w-10 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-[#F5426A]"></div>
+                  <div className="w-10 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary"></div>
                 </label>
               </div>
               <div className="grid grid-cols-2 gap-4">
@@ -205,7 +205,7 @@ export default function ShippingClient() {
                       value={settings.zones.outsideDhaka.rate}
                       onChange={e => handleZoneChange('outsideDhaka', 'rate', Number(e.target.value))}
                       disabled={!settings.zones.outsideDhaka.enabled}
-                      className="w-full pl-7 pr-4 py-2 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-[#F5426A]/20 focus:border-[#F5426A] transition-all outline-none bg-white disabled:bg-gray-50 disabled:text-gray-400 font-medium"
+                      className="w-full pl-7 pr-4 py-2 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all outline-none bg-white disabled:bg-gray-50 disabled:text-gray-400 font-medium"
                     />
                   </div>
                 </div>
@@ -216,7 +216,7 @@ export default function ShippingClient() {
                     value={settings.zones.outsideDhaka.estimatedDays}
                     onChange={e => handleZoneChange('outsideDhaka', 'estimatedDays', e.target.value)}
                     disabled={!settings.zones.outsideDhaka.enabled}
-                    className="w-full px-4 py-2 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-[#F5426A]/20 focus:border-[#F5426A] transition-all outline-none bg-white disabled:bg-gray-50 disabled:text-gray-400"
+                    className="w-full px-4 py-2 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all outline-none bg-white disabled:bg-gray-50 disabled:text-gray-400"
                     placeholder="e.g. 3-5 Business Days"
                   />
                 </div>
@@ -232,7 +232,7 @@ export default function ShippingClient() {
             <div className={`absolute inset-0 border-2 rounded-2xl pointer-events-none transition-colors ${settings.freeShipping.enabled ? 'border-pink-200' : 'border-transparent'}`}></div>
             <div className="p-6 border-b border-gray-100 bg-gray-50/50 flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 transition-colors ${settings.freeShipping.enabled ? 'bg-pink-100 text-[#F5426A]' : 'bg-gray-100 text-gray-500'}`}>
+                <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 transition-colors ${settings.freeShipping.enabled ? 'bg-pink-100 text-primary' : 'bg-gray-100 text-gray-500'}`}>
                   <Gift className="w-5 h-5" />
                 </div>
                 <div>
@@ -247,13 +247,13 @@ export default function ShippingClient() {
                   checked={settings.freeShipping.enabled} 
                   onChange={e => setSettings({...settings, freeShipping: {...settings.freeShipping, enabled: e.target.checked}})} 
                 />
-                <div className="w-10 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-[#F5426A]"></div>
+                <div className="w-10 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary"></div>
               </label>
             </div>
             
             <div className="p-6">
               <div className="p-4 rounded-xl border border-pink-100 bg-pink-50/30 mb-4 flex gap-3">
-                <Info className="w-5 h-5 text-[#F5426A] shrink-0 mt-0.5" />
+                <Info className="w-5 h-5 text-primary shrink-0 mt-0.5" />
                 <p className="text-sm text-gray-700 leading-relaxed">
                   When enabled, any order subtotal equal to or greater than the minimum amount will automatically get free shipping at checkout.
                 </p>
@@ -268,7 +268,7 @@ export default function ShippingClient() {
                     value={settings.freeShipping.minAmount}
                     onChange={e => setSettings({...settings, freeShipping: {...settings.freeShipping, minAmount: Number(e.target.value)}})}
                     disabled={!settings.freeShipping.enabled}
-                    className="w-full pl-7 pr-4 py-2 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-[#F5426A]/20 focus:border-[#F5426A] transition-all outline-none bg-white disabled:bg-gray-50 disabled:text-gray-400 font-bold"
+                    className="w-full pl-7 pr-4 py-2 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all outline-none bg-white disabled:bg-gray-50 disabled:text-gray-400 font-bold"
                   />
                 </div>
               </div>

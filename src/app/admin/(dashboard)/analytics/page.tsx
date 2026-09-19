@@ -58,7 +58,7 @@ export default function AnalyticsDashboardPage() {
   if (loading) {
     return (
       <div className="w-full h-[60vh] flex items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#F5426A]"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
       </div>
     );
   }
@@ -79,7 +79,7 @@ export default function AnalyticsDashboardPage() {
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
           <div className="border-b border-gray-100 bg-gray-50/50 p-6">
             <h2 className="text-lg font-bold text-gray-900 flex items-center gap-2">
-              <Key className="w-5 h-5 text-[#F5426A]" />
+              <Key className="w-5 h-5 text-primary" />
               Step-by-Step Setup Guide
             </h2>
           </div>
@@ -90,7 +90,7 @@ export default function AnalyticsDashboardPage() {
               <div>
                 <h3 className="font-bold text-gray-900 mb-2">Create a Google Cloud Project & Enable API</h3>
                 <p className="text-sm text-gray-600 mb-3">Go to Google Cloud Console, create a new project, and enable the <b>Google Analytics Data API</b>.</p>
-                <a href="https://console.cloud.google.com/" target="_blank" rel="noreferrer" className="text-sm text-[#F5426A] font-medium hover:underline inline-flex items-center gap-1">
+                <a href="https://console.cloud.google.com/" target="_blank" rel="noreferrer" className="text-sm text-primary font-medium hover:underline inline-flex items-center gap-1">
                   Open Google Cloud Console <ArrowRight className="w-4 h-4" />
                 </a>
               </div>
@@ -113,7 +113,7 @@ export default function AnalyticsDashboardPage() {
             </div>
 
             <div className="flex gap-4">
-              <div className="w-8 h-8 rounded-full bg-[#F5426A]/10 text-[#F5426A] font-bold flex items-center justify-center shrink-0">4</div>
+              <div className="w-8 h-8 rounded-full bg-primary/10 text-primary font-bold flex items-center justify-center shrink-0">4</div>
               <div className="w-full">
                 <h3 className="font-bold text-gray-900 mb-2">Add Credentials to your .env file</h3>
                 <p className="text-sm text-gray-600 mb-4">Open your project's <code>.env</code> file and add the following keys using the details from your downloaded JSON and Google Analytics:</p>
@@ -149,7 +149,7 @@ export default function AnalyticsDashboardPage() {
       <div className="flex items-center justify-between bg-white p-6 rounded-2xl shadow-sm border border-gray-100 mb-6">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-            <BarChart2 className="w-6 h-6 text-[#F5426A]" />
+            <BarChart2 className="w-6 h-6 text-primary" />
             Visitors Analytics
           </h1>
           <p className="text-gray-500 text-sm mt-1">Monitor your website traffic and user engagement (Last 7 Days).</p>
@@ -237,7 +237,7 @@ export default function AnalyticsDashboardPage() {
             <div className="flex items-center justify-between mb-8">
               <div>
                 <h2 className="text-xl font-extrabold text-gray-900 flex items-center gap-2">
-                  <TrendingUp className="w-5 h-5 text-[#F5426A]" />
+                  <TrendingUp className="w-5 h-5 text-primary" />
                   Traffic Overview
                 </h2>
                 <p className="text-sm text-gray-500 mt-1 font-medium">Daily visitors vs page views for the last 7 days</p>

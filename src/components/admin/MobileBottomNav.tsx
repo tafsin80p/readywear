@@ -30,17 +30,17 @@ export function MobileBottomNav() {
               className="flex flex-col items-center justify-center w-full h-full space-y-1 relative group"
             >
               {isActive && (
-                <div className="absolute top-0 w-8 h-1 bg-[#F5426A] rounded-b-full"></div>
+                <div className="absolute top-0 w-8 h-1 bg-primary rounded-b-full"></div>
               )}
               <div className={cn(
                 "p-1.5 rounded-xl transition-all duration-300",
-                isActive ? "text-[#F5426A] bg-pink-50" : "text-gray-400 group-hover:text-gray-600 group-hover:bg-gray-50"
+                isActive ? "text-primary bg-pink-50" : "text-gray-400 group-hover:text-gray-600 group-hover:bg-gray-50"
               )}>
-                <Icon className={cn("w-5 h-5", isActive && "fill-[#F5426A]/20")} />
+                <Icon className={cn("w-5 h-5", isActive && "fill-primary/20")} />
               </div>
               <span className={cn(
                 "text-[10px] font-medium transition-colors duration-300",
-                isActive ? "text-[#F5426A] font-bold" : "text-gray-500"
+                isActive ? "text-primary font-bold" : "text-gray-500"
               )}>
                 {item.name}
               </span>

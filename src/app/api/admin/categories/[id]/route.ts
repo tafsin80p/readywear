@@ -3,7 +3,8 @@ import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 import connectToDatabase from "@/lib/mongodb";
 import Category from "@/models/Category";
-import Product from "@/models/Product"; // To check if category is in use
+import Product from "@/models/Product";
+import { activityLogService } from "@/lib/services/activityLogService"; // To check if category is in use
 
 // Check if user is admin
 async function isAdmin() {

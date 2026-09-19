@@ -2,9 +2,18 @@ import { NextRequest, NextResponse } from "next/server";
 import connectToDatabase from "@/lib/mongodb";
 import IntegrationSettings from "@/models/IntegrationSettings";
 import { getIntegrationSettings, telegramService } from "@/lib/services/telegramService";
+import { activityLogService } from "@/lib/services/activityLogService";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
+
 
 export async function GET() {
   try {
+    const session = await getServerSession(authOptions);
+    if (!session || session.user.role !== "admin") {
+      return NextResponse.json({ success: false, message: "Unauthorized" }, { status: 401 });
+    }
+
     await connectToDatabase();
     const settings = await getIntegrationSettings();
     return NextResponse.json({ success: true, settings });
@@ -15,6 +24,11 @@ export async function GET() {
 
 export async function POST(req: NextRequest) {
   try {
+    const session = await getServerSession(authOptions);
+    if (!session || session.user.role !== "admin") {
+      return NextResponse.json({ success: false, message: "Unauthorized" }, { status: 401 });
+    }
+
     const body = await req.json();
     await connectToDatabase();
     
@@ -38,6 +52,15 @@ export async function POST(req: NextRequest) {
     }
     
     await settings.save();
+
+    // Log Activity
+    activityLogService.logActivity({
+      title: "Settings Updated",
+      message: `System integrations and settings have been modified.`,
+      type: "setting",
+      link: `/admin/integrations`,
+    });
+
     return NextResponse.json({ success: true, settings });
   } catch (error: any) {
     return NextResponse.json({ success: false, error: error.message }, { status: 500 });

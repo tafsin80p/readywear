@@ -25,7 +25,8 @@ import {
   Link as LinkIcon,
   ChevronLeft,
   ChevronRight,
-  BarChart2
+  BarChart2,
+  Trash2
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
@@ -48,6 +49,7 @@ const ICON_MAP: Record<string, LucideIcon> = {
   Appearance: Palette,
   Settings: Settings,
   Integrations: LinkIcon,
+  Trash: Trash2,
   Visitors: BarChart2,
 };
 
@@ -58,10 +60,12 @@ function renderIcon(name: string, className: string) {
 
 export function AdminSidebar({ 
   unreadOrdersCount: initialCount = 0,
-  totalProductsCount = 0
+  totalProductsCount = 0,
+  logo
 }: { 
   unreadOrdersCount?: number,
-  totalProductsCount?: number
+  totalProductsCount?: number,
+  logo?: string
 }) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -140,6 +144,7 @@ export function AdminSidebar({
         { name: "Appearance", href: "/admin/appearance" },
         { name: "Settings", href: "/admin/settings" },
         { name: "Integrations", href: "/admin/integrations" },
+        { name: "Trash", href: "/admin/integrations/trash" },
       ]
     }
   ];
@@ -171,7 +176,7 @@ export function AdminSidebar({
 
         {/* Logo Area */}
       <div suppressHydrationWarning className="h-[72px] relative flex items-center shrink-0 border-b border-gray-100 px-6">
-        <Link 
+        <a 
           href="/admin" 
           className={cn(
             "flex items-center transition-all duration-300 origin-left", 
@@ -179,32 +184,32 @@ export function AdminSidebar({
           )}
         >
           <Image 
-            src="/readywear logo.png" 
+            src={logo || "/readywear logo.png"} 
             alt="ReadyWear Logo" 
             width={240} 
             height={60} 
             className="h-9 sm:h-10 w-auto object-contain object-left"
             priority
           />
-        </Link>
+        </a>
 
         {/* Collapsed Logo (R) */}
-        <Link 
+        <a 
           href="/admin" 
           className={cn(
             "absolute left-1/2 -translate-x-1/2 flex items-center justify-center transition-all duration-300", 
             isCollapsed ? "opacity-100 scale-100" : "opacity-0 pointer-events-none scale-90"
           )}
         >
-          <div className="w-9 h-9 bg-gradient-to-br from-[#F5426A] to-[#ff6b8b] rounded-xl flex items-center justify-center text-white font-black text-lg shadow-sm">
+          <div suppressHydrationWarning className="w-9 h-9 bg-gradient-to-br from-primary to-primary/80 rounded-xl flex items-center justify-center text-white font-black text-lg shadow-sm">
             R
           </div>
-        </Link>
+        </a>
       </div>
 
       <button 
         onClick={() => setIsCollapsed(!isCollapsed)}
-        className="hidden lg:flex absolute top-[28px] -right-[14px] z-50 bg-white border border-gray-200 rounded-full p-1.5 shadow-sm text-gray-400 hover:text-[#F5426A] transition-all hover:scale-110"
+        className="hidden lg:flex absolute top-[28px] -right-[14px] z-50 bg-white border border-gray-200 rounded-full p-1.5 shadow-sm text-gray-400 hover:text-primary transition-all hover:scale-110"
       >
         {isCollapsed ? <ChevronRight className="w-3.5 h-3.5" /> : <ChevronLeft className="w-3.5 h-3.5" />}
       </button>
@@ -217,11 +222,11 @@ export function AdminSidebar({
             "flex items-center py-3 rounded-xl font-medium mb-6 group transition-all duration-300 relative",
             isCollapsed ? "justify-center" : "px-4",
             pathname === "/admin" 
-              ? "bg-gradient-to-r from-[#F5426A] to-[#ff6b8b] text-white shadow-lg shadow-[#F5426A]/25 font-bold" 
-              : "text-gray-500 hover:bg-pink-50/50 hover:text-[#F5426A]"
+              ? "bg-gradient-to-r from-primary to-primary/80 text-white shadow-lg shadow-primary/25 font-bold" 
+              : "text-gray-500 hover:bg-pink-50/50 hover:text-primary"
           )}
         >
-          <Home className={cn("w-5 h-5 shrink-0 transition-transform duration-300", !isCollapsed && "group-hover:scale-110", pathname === "/admin" ? "text-white" : "text-gray-400 group-hover:text-[#F5426A]")} />
+          <Home className={cn("w-5 h-5 shrink-0 transition-transform duration-300", !isCollapsed && "group-hover:scale-110", pathname === "/admin" ? "text-white" : "text-gray-400 group-hover:text-primary")} />
           <span className={cn(
             "transition-all duration-300 overflow-hidden whitespace-nowrap",
             isCollapsed ? "max-w-0 opacity-0 ml-0" : "max-w-[200px] opacity-100 ml-3 group-hover:translate-x-1"
@@ -234,7 +239,7 @@ export function AdminSidebar({
         <div className="space-y-8">
           {navigation.map((section, idx) => (
             <div key={idx} suppressHydrationWarning>
-              <div className={cn("transition-all duration-300 overflow-hidden", isCollapsed ? "h-0 opacity-0 mb-0" : "h-6 opacity-100 mb-3")}>
+              <div suppressHydrationWarning className={cn("transition-all duration-300 overflow-hidden", isCollapsed ? "h-0 opacity-0 mb-0" : "h-6 opacity-100 mb-3")}>
                 <h4 className="px-4 text-xs font-bold text-gray-400 uppercase tracking-wider whitespace-nowrap">
                   {section.title}
                 </h4>
@@ -263,12 +268,12 @@ export function AdminSidebar({
                             "flex items-center justify-between py-2.5 rounded-xl text-[15px] w-full group transition-all duration-300 overflow-hidden",
                             isCollapsed ? "px-0 justify-center" : "px-4",
                             isActive
-                              ? "bg-gradient-to-r from-[#F5426A] to-[#ff6b8b] text-white shadow-lg shadow-[#F5426A]/25 font-bold"
-                              : "text-gray-500 hover:bg-pink-50/50 hover:text-[#F5426A] font-medium"
+                              ? "bg-gradient-to-r from-primary to-primary/80 text-white shadow-lg shadow-primary/25 font-bold"
+                              : "text-gray-500 hover:bg-pink-50/50 hover:text-primary font-medium"
                           )}
                         >
                           <div className={cn("flex items-center", isCollapsed ? "justify-center" : "")}>
-                            {renderIcon(item.name, cn("w-[20px] h-[20px] shrink-0 transition-all duration-300", !isCollapsed && "group-hover:scale-110", isActive ? "text-white" : "text-gray-400 group-hover:text-[#F5426A]"))}
+                            {renderIcon(item.name, cn("w-[20px] h-[20px] shrink-0 transition-all duration-300", !isCollapsed && "group-hover:scale-110", isActive ? "text-white" : "text-gray-400 group-hover:text-primary"))}
                             <span className={cn(
                               "transition-all duration-300 overflow-hidden whitespace-nowrap text-left",
                               isCollapsed ? "max-w-0 opacity-0 ml-0" : "max-w-[150px] opacity-100 ml-3 group-hover:translate-x-1"
@@ -286,14 +291,14 @@ export function AdminSidebar({
                               <div className={cn(
                                 "flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full text-[11px] font-bold shrink-0",
                                 isActive 
-                                  ? "bg-white text-[#F5426A]" 
-                                  : "bg-[#F5426A] text-white shadow-sm shadow-[#F5426A]/30"
+                                  ? "bg-white text-primary" 
+                                  : "bg-primary text-white shadow-sm shadow-primary/30"
                               )}>
                                 {totalProductsCount}
                               </div>
                             )}
                             <svg 
-                              className={cn("w-4 h-4 shrink-0 transition-transform duration-200", isExpanded ? "rotate-90" : "", isActive ? "text-white" : "text-gray-400 group-hover:text-[#F5426A]")} 
+                              className={cn("w-4 h-4 shrink-0 transition-transform duration-200", isExpanded ? "rotate-90" : "", isActive ? "text-white" : "text-gray-400 group-hover:text-primary")} 
                               fill="none" 
                               viewBox="0 0 24 24" 
                               stroke="currentColor"
@@ -310,12 +315,12 @@ export function AdminSidebar({
                             "flex items-center justify-between py-2.5 rounded-xl text-[15px] group transition-all duration-300 relative overflow-hidden",
                             isCollapsed ? "px-0 justify-center" : "px-4",
                             isActive
-                              ? "bg-gradient-to-r from-[#F5426A] to-[#ff6b8b] text-white shadow-lg shadow-[#F5426A]/25 font-bold"
-                              : "text-gray-500 hover:bg-pink-50/50 hover:text-[#F5426A] font-medium"
+                              ? "bg-gradient-to-r from-primary to-primary/80 text-white shadow-lg shadow-primary/25 font-bold"
+                              : "text-gray-500 hover:bg-pink-50/50 hover:text-primary font-medium"
                           )}
                         >
                           <div className={cn("flex items-center", isCollapsed ? "justify-center" : "")}>
-                            {renderIcon(item.name, cn("w-[20px] h-[20px] shrink-0 transition-all duration-300", !isCollapsed && "group-hover:scale-110", isActive ? "text-white" : "text-gray-400 group-hover:text-[#F5426A]"))}
+                            {renderIcon(item.name, cn("w-[20px] h-[20px] shrink-0 transition-all duration-300", !isCollapsed && "group-hover:scale-110", isActive ? "text-white" : "text-gray-400 group-hover:text-primary"))}
                             <span className={cn(
                               "transition-all duration-300 overflow-hidden whitespace-nowrap",
                               isCollapsed ? "max-w-0 opacity-0 ml-0" : "max-w-[150px] opacity-100 ml-3 group-hover:translate-x-1"
@@ -330,8 +335,8 @@ export function AdminSidebar({
                               "flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full text-[11px] font-bold shrink-0 transition-all duration-300",
                               isCollapsed ? "absolute top-1 right-2 border-2 border-white min-w-[16px] h-4 text-[9px] px-1 shadow-md" : "ml-2",
                               isActive 
-                                ? (isCollapsed ? "bg-white text-[#F5426A]" : "bg-white text-[#F5426A]") 
-                                : "bg-[#F5426A] text-white shadow-sm shadow-[#F5426A]/30"
+                                ? (isCollapsed ? "bg-white text-primary" : "bg-white text-primary") 
+                                : "bg-primary text-white shadow-sm shadow-primary/30"
                             )}>
                               {unreadCount > 99 ? '99+' : unreadCount}
                             </div>
@@ -351,12 +356,12 @@ export function AdminSidebar({
                                   className={cn(
                                     "flex items-center px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 relative group",
                                     isSubActive
-                                      ? "text-[#F5426A] bg-pink-50/50 font-bold"
+                                      ? "text-primary bg-pink-50/50 font-bold"
                                       : "text-gray-500 hover:text-gray-900 hover:bg-gray-50"
                                   )}
                                 >
                                   {isSubActive && (
-                                    <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-4 bg-[#F5426A] rounded-r-full"></div>
+                                    <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-4 bg-primary rounded-r-full"></div>
                                   )}
                                   <span className="flex-1 transition-transform duration-300 group-hover:translate-x-1">{subItem.name}</span>
                                   
@@ -365,8 +370,8 @@ export function AdminSidebar({
                                     <div className={cn(
                                       "flex items-center justify-center min-w-[20px] h-4 px-1.5 rounded-full text-[10px] font-bold ml-2",
                                       isSubActive 
-                                        ? "bg-[#F5426A] text-white" 
-                                        : "bg-[#F5426A] text-white shadow-sm shadow-[#F5426A]/30"
+                                        ? "bg-primary text-white" 
+                                        : "bg-primary text-white shadow-sm shadow-primary/30"
                                     )}>
                                       {totalProductsCount}
                                     </div>
@@ -390,10 +395,10 @@ export function AdminSidebar({
       <div className={cn("transition-all duration-300 overflow-hidden", isCollapsed ? "h-0 opacity-0 p-0" : "h-[100px] opacity-100 p-6")}>
         <div className="bg-gradient-to-br from-pink-50 via-white to-pink-100/50 rounded-2xl p-4 flex items-center justify-between border border-pink-100/50 shadow-sm hover:shadow-md transition-shadow cursor-pointer group">
           <div>
-            <h4 className="font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-[#F5426A] to-[#ff6b8b] text-sm">ReadyWear</h4>
+            <h4 className="font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-primary to-primary/80 text-sm">ReadyWear</h4>
             <p className="text-xs text-gray-500 mt-0.5 font-medium whitespace-nowrap">Fashion for Every You</p>
           </div>
-          <div className="w-10 h-10 bg-gradient-to-br from-[#F5426A] to-[#ff6b8b] rounded-full flex items-center justify-center text-white shrink-0 shadow-lg shadow-pink-200 group-hover:scale-110 transition-transform duration-300">
+          <div className="w-10 h-10 bg-gradient-to-br from-primary to-primary/80 rounded-full flex items-center justify-center text-white shrink-0 shadow-lg shadow-pink-200 group-hover:scale-110 transition-transform duration-300">
             <ShoppingBag className="w-4 h-4" />
           </div>
         </div>

@@ -95,7 +95,7 @@ export function ImageUpload({ onUpload, disabled, className, children, folder }:
           {children}
           {isUploading && (
             <div className="absolute inset-0 bg-white/70 flex flex-col items-center justify-center z-10 rounded-[inherit]">
-              <Loader2 className="w-8 h-8 animate-spin text-[#F5426A]" />
+              <Loader2 className="w-8 h-8 animate-spin text-primary" />
             </div>
           )}
         </div>
@@ -107,7 +107,7 @@ export function ImageUpload({ onUpload, disabled, className, children, folder }:
           className={`flex flex-col items-center justify-center gap-2 p-6 border-2 border-dashed rounded-xl transition-all w-full h-full ${
             isBusy
               ? "border-gray-200 bg-gray-50 opacity-70 cursor-not-allowed"
-              : "border-[#F5426A]/30 bg-[#F5426A]/5 hover:bg-[#F5426A]/10 text-[#F5426A] cursor-pointer"
+              : "border-primary/30 bg-primary/5 hover:bg-primary/10 text-primary cursor-pointer"
           } ${className || ""}`}
         >
           {isUploading ? (

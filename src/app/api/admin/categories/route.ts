@@ -3,6 +3,8 @@ import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 import connectToDatabase from "@/lib/mongodb";
 import Category from "@/models/Category";
+import { Types } from "mongoose";
+import { activityLogService } from "@/lib/services/activityLogService";
 
 // Check if user is admin
 async function isAdmin() {
@@ -67,10 +69,18 @@ export async function POST(req: NextRequest) {
     }
 
     const newCategory = new Category({ name, slug, image });
-    await newCategory.save();
+    const savedCategory = await newCategory.save();
+
+    // Log Activity
+    activityLogService.logActivity({
+      title: "New Category Added",
+      message: `${savedCategory.name} category has been created.`,
+      type: "category",
+      link: `/admin/categories`,
+    });
 
     return NextResponse.json(
-      { success: true, message: "Category created successfully", category: newCategory },
+      { success: true, message: "Category created successfully", category: savedCategory },
       { status: 201 }
     );
   } catch (error: any) {

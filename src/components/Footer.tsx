@@ -2,7 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { Phone, Mail, MapPin } from "lucide-react";
 
-export function Footer() {
+export function Footer({ logoUrl }: { logoUrl?: string }) {
   return (
     <footer className="bg-[#1c212e] text-white pt-16 pb-6">
       <div className="container mx-auto px-4 lg:px-8">
@@ -12,11 +12,11 @@ export function Footer() {
           <div>
             <Link href="/" className="inline-block bg-white p-2 rounded-xl mb-5">
               <Image 
-                src="/readywear logo.png" 
+                src={logoUrl || "/readywear logo.png"} 
                 alt="ReadyWear Logo" 
                 width={200} 
                 height={60} 
-                className="h-10 w-auto object-contain mix-blend-multiply"
+                className={`h-10 w-auto object-contain ${!logoUrl ? 'mix-blend-multiply' : ''}`}
               />
             </Link>
             <p className="text-gray-400 text-sm mb-6">স্টাইল মানেই তুমি</p>

@@ -303,7 +303,7 @@ export default function InventoryClient({ products }: { products: Product[] }) {
                       itemStyle={{ fontWeight: 600 }}
                       cursor={{ fill: '#f9fafb' }}
                     />
-                    <Bar dataKey="stock" name="Total Stock Units" fill="#F5426A" radius={4} barSize={32}>
+                    <Bar dataKey="stock" name="Total Stock Units" fill="var(--primary)" radius={4} barSize={32}>
                       <LabelList
                         dataKey="name"
                         position="insideLeft"

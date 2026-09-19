@@ -4,7 +4,7 @@ import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
 
 export function OrderStatusChart({ data }: { data?: any[] }) {
   const chartData = data && data.length > 0 ? data : [
-    { name: 'Pending', value: 0, color: '#F5426A' },
+    { name: 'Pending', value: 0, color: 'var(--primary)' },
     { name: 'Processing', value: 0, color: '#F59E0B' },
     { name: 'Shipped', value: 0, color: '#3B82F6' },
     { name: 'Delivered', value: 0, color: '#10B981' },

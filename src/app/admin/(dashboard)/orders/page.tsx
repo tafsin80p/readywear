@@ -5,27 +5,16 @@ import User from "@/models/User";
 import { Eye, Clock, Truck, CheckCircle, XCircle, Search } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
-import { OrderRow } from "@/components/admin/OrderRow";
+import { OrdersTableClient } from "@/components/admin/OrdersTableClient";
 
 export const dynamic = 'force-dynamic';
 export const fetchCache = 'force-no-store';
-
-const formatDate = (date: Date) => {
-  const dateObj = new Date(date);
-  return dateObj.toLocaleDateString("en-US", {
-    day: "numeric",
-    month: "short",
-    year: "numeric"
-  });
-};
-
-
 
 export default async function AdminOrdersPage() {
   await connectToDatabase();
   // We just reference User to ensure the model is loaded for populate
   const _ = User; 
-  const rawOrders = await Order.find().populate('userId', 'image name').sort({ createdAt: -1 }).lean();
+  const rawOrders = await Order.find({ isDeleted: { $ne: true } }).populate('userId', 'image name').sort({ createdAt: -1 }).lean();
   
   // Serialize complex types (like MongoDB ObjectId) so they can be passed to the Client Component
   const orders = JSON.parse(JSON.stringify(rawOrders));
@@ -50,41 +39,7 @@ export default async function AdminOrdersPage() {
         </div>
       </div>
 
-      {/* Orders Table - No side gaps inside the container */}
-      <div className="w-full bg-white border-y border-gray-200 overflow-x-auto">
-        <table className="w-full text-left border-collapse">
-          <thead>
-            <tr className="bg-gray-50/80 border-b border-gray-200 text-sm font-semibold text-gray-600">
-              <th className="px-6 py-4 whitespace-nowrap">Customer Info</th>
-              <th className="px-6 py-4 whitespace-nowrap">Order ID</th>
-              <th className="px-6 py-4 whitespace-nowrap">Product</th>
-              <th className="px-6 py-4 whitespace-nowrap">Date</th>
-              <th className="px-6 py-4 whitespace-nowrap">Total Bill</th>
-              <th className="px-6 py-4 whitespace-nowrap">Payment</th>
-              <th className="px-6 py-4 whitespace-nowrap">Status</th>
-              <th className="px-6 py-4 whitespace-nowrap">Verification & Meta</th>
-              <th className="px-6 py-4 whitespace-nowrap text-right">Action</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-100">
-            {orders.length === 0 ? (
-              <tr>
-                <td colSpan={9} className="px-6 py-16 text-center text-gray-500">
-                  No orders found.
-                </td>
-              </tr>
-            ) : (
-              orders.map((order: any) => (
-                <OrderRow 
-                  key={order._id.toString()}
-                  order={order}
-                  formattedDate={formatDate(order.createdAt)}
-                />
-              ))
-            )}
-          </tbody>
-        </table>
-      </div>
+      <OrdersTableClient orders={orders} />
     </div>
   );
 }

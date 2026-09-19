@@ -98,9 +98,9 @@ export default function AccountOrders() {
                       <div className="flex-1 min-w-0">
                         <h4 className="font-bold text-gray-900 truncate">{item.name}</h4>
                         <p className="text-sm text-gray-500 mt-1">Quantity: {item.quantity}</p>
-                        <p className="text-sm font-semibold text-[#F5426A] mt-1">৳{item.price}</p>
+                        <p className="text-sm font-semibold text-primary mt-1">৳{item.price}</p>
                       </div>
-                      <button className="hidden sm:flex items-center gap-1 text-sm font-medium text-gray-600 hover:text-[#F5426A] transition-colors p-2">
+                      <button className="hidden sm:flex items-center gap-1 text-sm font-medium text-gray-600 hover:text-primary transition-colors p-2">
                         View Product <ChevronRight className="w-4 h-4" />
                       </button>
                     </div>

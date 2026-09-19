@@ -133,7 +133,7 @@ export default function CategoriesPage() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-            <LayoutList className="w-6 h-6 text-[#F5426A]" />
+            <LayoutList className="w-6 h-6 text-primary" />
             Categories
           </h1>
           <p className="text-gray-500 text-sm mt-1">Manage product categories and collections</p>
@@ -160,7 +160,7 @@ export default function CategoriesPage() {
                 onChange={handleInputChange}
                 required
                 placeholder="e.g., Summer Collection"
-                className="w-full px-4 py-2.5 bg-gray-50/50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#F5426A]/20 focus:border-[#F5426A] transition-all font-medium"
+                className="w-full px-4 py-2.5 bg-gray-50/50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all font-medium"
               />
             </div>
 
@@ -173,14 +173,14 @@ export default function CategoriesPage() {
                 onChange={handleInputChange}
                 required
                 placeholder="summer-collection"
-                className="w-full px-4 py-2.5 bg-gray-50/50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#F5426A]/20 focus:border-[#F5426A] transition-all"
+                className="w-full px-4 py-2.5 bg-gray-50/50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
               />
             </div>
 
             <div className="space-y-2">
               <label className="text-sm font-semibold text-gray-700">Category Image</label>
               
-              <div className="relative w-full aspect-video rounded-xl overflow-hidden group bg-gray-50 flex flex-col items-center justify-center border-2 border-dashed border-gray-200 hover:border-[#F5426A]/50 transition-all">
+              <div className="relative w-full aspect-video rounded-xl overflow-hidden group bg-gray-50 flex flex-col items-center justify-center border-2 border-dashed border-gray-200 hover:border-primary/50 transition-all">
                 {formData.image ? (
                   <>
                     <Image src={formData.image} alt="Category" fill className="object-cover" />
@@ -200,7 +200,7 @@ export default function CategoriesPage() {
                     </div>
                   </>
                 ) : (
-                  <div className="w-full h-full text-gray-400 hover:text-[#F5426A] transition-colors cursor-pointer">
+                  <div className="w-full h-full text-gray-400 hover:text-primary transition-colors cursor-pointer">
                     <ImageUpload onUpload={(url) => setFormData(prev => ({ ...prev, image: url }))} folder="readywear/categories">
                       <div className="w-full h-full flex flex-col items-center justify-center gap-2">
                         <ImageIcon className="w-8 h-8 opacity-50" />
@@ -313,7 +313,7 @@ export default function CategoriesPage() {
                           </button>
                           <button 
                             onClick={() => handleDelete(category._id, category.name)}
-                            className="p-2 text-gray-400 hover:text-[#F5426A] hover:bg-[#F5426A]/10 rounded-lg transition-colors" 
+                            className="p-2 text-gray-400 hover:text-primary hover:bg-primary/10 rounded-lg transition-colors" 
                             title="Delete"
                           >
                             <Trash2 className="w-4 h-4" />

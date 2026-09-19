@@ -63,7 +63,7 @@ export function AccountSidebar() {
               className={cn(
                 "flex items-center justify-between px-4 py-3.5 md:py-3 rounded-xl font-medium transition-all duration-200",
                 isActive
-                  ? "bg-[#F5426A] text-white shadow-md shadow-[#F5426A]/20"
+                  ? "bg-primary text-white shadow-md shadow-primary/20"
                   : "text-gray-700 hover:bg-gray-50 hover:text-gray-900"
               )}
             >

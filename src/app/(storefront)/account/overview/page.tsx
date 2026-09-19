@@ -58,21 +58,21 @@ export default function AccountOverview() {
         <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4 md:gap-6">
           <div>
             <div className="inline-flex items-center gap-2 px-3 py-1 bg-white/10 rounded-full text-[10px] md:text-xs font-semibold tracking-wider mb-3 md:mb-4 border border-white/10 backdrop-blur-md">
-              <span className="w-1.5 h-1.5 md:w-2 md:h-2 rounded-full bg-[#F5426A] animate-pulse"></span>
+              <span className="w-1.5 h-1.5 md:w-2 md:h-2 rounded-full bg-primary animate-pulse"></span>
               DASHBOARD
             </div>
-            <h1 className="text-2xl md:text-4xl font-bold mb-1 md:mb-2">Welcome, <span className="text-[#F5426A]">{session?.user?.name || "Customer"}</span>!</h1>
+            <h1 className="text-2xl md:text-4xl font-bold mb-1 md:mb-2">Welcome, <span className="text-primary">{session?.user?.name || "Customer"}</span>!</h1>
             <p className="hidden md:block text-gray-400 max-w-md">Track your recent orders, manage your account settings, and discover new products.</p>
           </div>
           
-          <Link href="/category/saree" className="shrink-0 bg-[#F5426A] hover:bg-[#ff5a7f] text-white px-4 py-2.5 md:px-6 md:py-3 rounded-lg md:rounded-xl text-sm md:text-base font-bold transition-all shadow-lg shadow-[#F5426A]/30 flex items-center justify-center gap-2 hover:-translate-y-1 w-max">
+          <Link href="/category/saree" className="shrink-0 bg-primary hover:bg-[#ff5a7f] text-white px-4 py-2.5 md:px-6 md:py-3 rounded-lg md:rounded-xl text-sm md:text-base font-bold transition-all shadow-lg shadow-primary/30 flex items-center justify-center gap-2 hover:-translate-y-1 w-max">
             Shop New Arrivals
             <ChevronRight className="w-4 h-4 md:w-5 md:h-5" />
           </Link>
         </div>
 
         {/* Decorative elements */}
-        <div className="absolute top-0 right-0 w-64 md:w-96 h-64 md:h-96 bg-[#F5426A]/20 rounded-full blur-[80px] md:blur-[100px] -translate-y-1/2 translate-x-1/3 group-hover:bg-[#F5426A]/30 transition-colors duration-1000"></div>
+        <div className="absolute top-0 right-0 w-64 md:w-96 h-64 md:h-96 bg-primary/20 rounded-full blur-[80px] md:blur-[100px] -translate-y-1/2 translate-x-1/3 group-hover:bg-primary/30 transition-colors duration-1000"></div>
         <div className="absolute bottom-0 left-0 w-48 md:w-64 h-48 md:h-64 bg-blue-500/10 rounded-full blur-[60px] md:blur-[80px] translate-y-1/2 -translate-x-1/4"></div>
       </div>
 
@@ -96,7 +96,7 @@ export default function AccountOverview() {
             </div>
 
             {/* Hover decorative gradient */}
-            <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-[#F5426A] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-primary to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
           </div>
         ))}
       </div>
@@ -108,7 +108,7 @@ export default function AccountOverview() {
             <h2 className="text-xl font-bold text-gray-900">Recent Orders</h2>
             <p className="text-sm text-gray-500 mt-1">Your latest purchases and their status.</p>
           </div>
-          <Link href="/account/orders" className="hidden sm:flex items-center gap-1 text-[#F5426A] text-sm font-bold hover:bg-[#F5426A]/10 px-4 py-2 rounded-lg transition-colors">
+          <Link href="/account/orders" className="hidden sm:flex items-center gap-1 text-primary text-sm font-bold hover:bg-primary/10 px-4 py-2 rounded-lg transition-colors">
             View All History
             <ChevronRight className="w-4 h-4" />
           </Link>

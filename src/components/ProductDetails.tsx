@@ -359,7 +359,7 @@ export function ProductDetails({ product, relatedProducts }: { product: Product,
 
                 {/* Special Note */}
                 <div className="bg-red-50/70 rounded-xl border border-red-100 p-5 mt-2 shadow-sm shadow-red-500/5">
-                  <h3 className="text-[15px] font-bold text-[#F5426A] mb-3">বিঃদ্রঃ</h3>
+                  <h3 className="text-[15px] font-bold text-primary mb-3">বিঃদ্রঃ</h3>
                   <div className="text-[13px] text-gray-700 leading-relaxed whitespace-pre-wrap">
                     {product.note || `১। ডেলিভারি চার্জ সম্পর্কিত তথ্যঃ ঢাকা সিটির ভেতরে ডেলিভারি চার্জ ৮০ টাকা, ঢাকা সিটির বাইরে ডেলিভারি চার্জ ১৫০ টাকা।
 ২। বুকিং মানি সম্পর্কিত তথ্যঃ সারা বাংলাদেশে থানা লেভেল পর্যন্ত ক্যাশ অন ডেলিভারি, ১০০০ টাকা অগ্রিম। বাকি টাকা পণ্য বুঝে পেয়ে পরিশোধ করতে পারবেন।

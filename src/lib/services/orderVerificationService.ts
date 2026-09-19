@@ -38,6 +38,9 @@ export const orderVerificationService = {
        await telegramService.updateOrderNotification(order, "confirmed");
     }
 
+    // 4. Sync status update to Google Sheet
+    await (await import("./googleSheetService")).googleSheetService.sendOrderToSheet(order);
+
     return order;
   },
 
@@ -60,6 +63,9 @@ export const orderVerificationService = {
     if (order.telegramMessageId) {
        await telegramService.updateOrderNotification(order, "fake");
     }
+
+    // 3. Sync status update to Google Sheet
+    await (await import("./googleSheetService")).googleSheetService.sendOrderToSheet(order);
 
     return order;
   },

@@ -18,6 +18,7 @@ export interface IIntegrationSettings extends Document {
     pixelId: string;
     accessToken: string;
     testEventCode?: string;
+    datasetName?: string;
     currency: string;
   };
   googleSheet: {
@@ -50,6 +51,13 @@ export interface IIntegrationSettings extends Document {
     enabled: boolean;
     appId: string;
     apiKey: string;
+    authDomain: string;
+    projectId: string;
+    storageBucket: string;
+    messagingSenderId: string;
+    vapidKey: string;
+    serviceAccountJson: string;
+    adminFcmTokens: string[];
   };
   createdAt: Date;
   updatedAt: Date;
@@ -76,6 +84,7 @@ const IntegrationSettingsSchema: Schema<IIntegrationSettings> = new Schema(
       pixelId: { type: String, default: "" },
       accessToken: { type: String, default: "" },
       testEventCode: { type: String, default: "" },
+      datasetName: { type: String, default: "ReadyWear" },
       currency: { type: String, default: "BDT" },
     },
     googleSheet: {
@@ -108,6 +117,13 @@ const IntegrationSettingsSchema: Schema<IIntegrationSettings> = new Schema(
       enabled: { type: Boolean, default: false },
       appId: { type: String, default: "" },
       apiKey: { type: String, default: "" },
+      authDomain: { type: String, default: "" },
+      projectId: { type: String, default: "" },
+      storageBucket: { type: String, default: "" },
+      messagingSenderId: { type: String, default: "" },
+      vapidKey: { type: String, default: "" },
+      serviceAccountJson: { type: String, default: "" },
+      adminFcmTokens: [{ type: String }],
     },
   },
   { timestamps: true }

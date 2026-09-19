@@ -17,7 +17,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { file, folder } = await request.json();
+    const { file, folder, type } = await request.json();
 
     if (!file) {
       return NextResponse.json({ error: "File is required" }, { status: 400 });
@@ -29,11 +29,19 @@ export async function POST(request: Request) {
     const uploadFolder = folder || "readywear";
 
     // Upload to Cloudinary
-    const uploadResponse = await cloudinary.uploader.upload(file, {
+    const uploadOptions: any = {
       folder: uploadFolder,
-      format: "webp",
       resource_type: "auto",
-    });
+    };
+
+    // If it's explicitly not an audio file, we force webp optimization
+    if (type !== "audio") {
+      uploadOptions.format = "webp";
+    } else {
+      uploadOptions.resource_type = "video"; // Cloudinary uses video for audio
+    }
+
+    const uploadResponse = await cloudinary.uploader.upload(file, uploadOptions);
 
     return NextResponse.json({ url: uploadResponse.secure_url }, { status: 200 });
 

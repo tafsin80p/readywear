@@ -16,6 +16,7 @@ export async function GET() {
 
     await connectToDatabase();
     const count = await Order.countDocuments({ 
+      isDeleted: { $ne: true },
       $or: [
         { isRead: false },
         { isRead: { $exists: false } }

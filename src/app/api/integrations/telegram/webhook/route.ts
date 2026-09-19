@@ -17,6 +17,18 @@ export async function POST(req: NextRequest) {
 
       console.log(`[Webhook] Received message from ${name} (${fromId}): ${text}`);
 
+      if (text.startsWith("/id")) {
+        await connectToDatabase();
+        const settings = await getIntegrationSettings();
+        const chatId = update.message.chat.id.toString();
+        await fetch(`https://api.telegram.org/bot${settings.telegram.botToken}/sendMessage`, {
+           method: "POST",
+           headers: { "Content-Type": "application/json" },
+           body: JSON.stringify({ chat_id: update.message.chat.id, text: `✅ This Chat ID is:\n\n\`${chatId}\`\n\nTap to copy.` })
+        });
+        return new NextResponse("OK");
+      }
+
       if (text.startsWith("/start")) {
         await connectToDatabase();
         const settings = await getIntegrationSettings();
@@ -100,7 +112,9 @@ export async function POST(req: NextRequest) {
       } else if (data.startsWith("confirm_") || data.startsWith("fake_") || data.startsWith("lead_")) {
         const action = data.split("_")[0];
         const orderId = data.split("_")[1];
-        const adminName = callbackQuery.from.first_name || "Telegram Admin";
+        const adminName = callbackQuery.from.username 
+          ? `@${callbackQuery.from.username}` 
+          : callbackQuery.from.first_name || "Telegram Admin";
 
         try {
           if (action === "confirm") {

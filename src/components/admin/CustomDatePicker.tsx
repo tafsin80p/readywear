@@ -122,8 +122,8 @@ export function CustomDatePicker({ selectedDate, onSelect, className = "" }: Cus
                   onClick={() => handleDateClick(day)}
                   className={`
                     h-8 rounded-full flex items-center justify-center text-sm font-medium transition-all
-                    ${isSelected ? 'bg-[#F5426A] text-white shadow-md shadow-pink-200' : 
-                      isToday ? 'bg-pink-50 text-[#F5426A]' : 
+                    ${isSelected ? 'bg-primary text-white shadow-md shadow-pink-200' : 
+                      isToday ? 'bg-pink-50 text-primary' : 
                       'text-gray-600 hover:bg-gray-100'}
                   `}
                 >
@@ -139,7 +139,7 @@ export function CustomDatePicker({ selectedDate, onSelect, className = "" }: Cus
                 onSelect("");
                 setIsOpen(false);
               }}
-              className="w-full mt-4 text-xs font-bold text-gray-400 hover:text-[#F5426A] transition-colors py-1"
+              className="w-full mt-4 text-xs font-bold text-gray-400 hover:text-primary transition-colors py-1"
             >
               Clear Selection
             </button>

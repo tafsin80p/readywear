@@ -3,6 +3,8 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import connectToDatabase from "@/lib/mongodb";
 import Product from "@/models/Product";
+import Category from "@/models/Category";
+import { activityLogService } from "@/lib/services/activityLogService";
 
 export const dynamic = 'force-dynamic';
 
@@ -59,10 +61,18 @@ export async function POST(req: Request) {
 
     // Create the product
     const product = new Product(body);
-    await product.save();
+    const savedProduct = await product.save();
+
+    // Log Activity
+    activityLogService.logActivity({
+      title: "New Product Added",
+      message: `${savedProduct.name} (SKU: ${savedProduct.sku}) has been added.`,
+      type: "product",
+      link: `/admin/products/edit/${savedProduct._id}`,
+    });
 
     return NextResponse.json(
-      { message: "Product created successfully", product },
+      { message: "Product created successfully", product: savedProduct },
       { status: 201 }
     );
 

@@ -91,7 +91,7 @@ export default function ReportsClient() {
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between bg-white p-6 rounded-2xl shadow-sm border border-gray-100 stagger-item gap-4">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-            <TrendingUp className="w-6 h-6 text-[#F5426A]" />
+            <TrendingUp className="w-6 h-6 text-primary" />
             Reports & Analytics
           </h1>
           <p className="text-gray-500 text-sm mt-1">Monitor your store's performance and sales metrics.</p>
@@ -102,7 +102,7 @@ export default function ReportsClient() {
             <select 
               value={range}
               onChange={(e) => setRange(e.target.value)}
-              className="appearance-none bg-gray-50 border border-gray-200 text-gray-700 text-sm font-medium rounded-xl pl-10 pr-8 py-2.5 focus:outline-none focus:ring-2 focus:ring-[#F5426A]/20 focus:border-[#F5426A] transition-colors cursor-pointer"
+              className="appearance-none bg-gray-50 border border-gray-200 text-gray-700 text-sm font-medium rounded-xl pl-10 pr-8 py-2.5 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors cursor-pointer"
             >
               <option value="7">Last 7 Days</option>
               <option value="30">Last 30 Days</option>
@@ -125,7 +125,7 @@ export default function ReportsClient() {
 
       {loading ? (
         <div className="h-[400px] flex items-center justify-center">
-          <RefreshCw className="animate-spin w-8 h-8 text-[#F5426A]" />
+          <RefreshCw className="animate-spin w-8 h-8 text-primary" />
         </div>
       ) : (
         <>
@@ -133,9 +133,9 @@ export default function ReportsClient() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm stagger-item relative overflow-hidden group">
               <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:scale-110 transition-transform">
-                <DollarSign className="w-16 h-16 text-[#F5426A]" />
+                <DollarSign className="w-16 h-16 text-primary" />
               </div>
-              <div className="w-10 h-10 rounded-xl bg-pink-50 text-[#F5426A] flex items-center justify-center mb-4">
+              <div className="w-10 h-10 rounded-xl bg-pink-50 text-primary flex items-center justify-center mb-4">
                 <DollarSign className="w-5 h-5" />
               </div>
               <p className="text-sm font-medium text-gray-500">Total Revenue</p>
@@ -186,8 +186,8 @@ export default function ReportsClient() {
                     <AreaChart data={data.trendData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                       <defs>
                         <linearGradient id="fillRevenue" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="5%" stopColor="#F5426A" stopOpacity={0.4} />
-                          <stop offset="95%" stopColor="#F5426A" stopOpacity={0.0} />
+                          <stop offset="5%" stopColor="var(--primary)" stopOpacity={0.4} />
+                          <stop offset="95%" stopColor="var(--primary)" stopOpacity={0.0} />
                         </linearGradient>
                         <linearGradient id="fillOrders" x1="0" y1="0" x2="0" y2="1">
                           <stop offset="5%" stopColor="#111827" stopOpacity={0.2} />
@@ -227,10 +227,10 @@ export default function ReportsClient() {
                         type="monotone" 
                         dataKey="revenue" 
                         name="Revenue"
-                        stroke="#F5426A" 
+                        stroke="var(--primary)" 
                         strokeWidth={3}
                         fill="url(#fillRevenue)" 
-                        activeDot={{ r: 6, strokeWidth: 0, fill: '#F5426A' }}
+                        activeDot={{ r: 6, strokeWidth: 0, fill: 'var(--primary)' }}
                       />
                       <Area 
                         yAxisId="right"
@@ -331,7 +331,7 @@ export default function ReportsClient() {
                             {product.sold}
                           </span>
                         </td>
-                        <td className="px-6 py-4 text-right font-bold text-[#F5426A]">
+                        <td className="px-6 py-4 text-right font-bold text-primary">
                           {formatCurrency(product.revenue)}
                         </td>
                       </tr>

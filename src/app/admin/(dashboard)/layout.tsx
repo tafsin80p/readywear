@@ -32,11 +32,19 @@ export default async function AdminLayout({
   });
   
   const totalProductsCount = await Product.countDocuments();
+  
+  const mongoose = (await import("mongoose")).default;
+  let settings = null;
+  try {
+    settings = await mongoose.connection.db?.collection('storesettings').findOne();
+  } catch (e) {
+    console.error("Failed to fetch store settings for admin layout", e);
+  }
 
   return (
     <Providers>
       <div className="flex h-screen bg-gray-50/50 font-sans overflow-hidden" suppressHydrationWarning>
-        <AdminSidebar unreadOrdersCount={unreadOrdersCount} totalProductsCount={totalProductsCount} />
+        <AdminSidebar unreadOrdersCount={unreadOrdersCount} totalProductsCount={totalProductsCount} logo={settings?.headerLogo || "/readywear logo.png"} />
         <div className="flex-1 flex flex-col h-screen overflow-hidden relative">
           <AdminHeader />
           <main className="flex-1 overflow-y-auto pb-20 lg:pb-0">

@@ -5,7 +5,17 @@ import Link from "next/link";
 import { Eye, Clock, Truck, CheckCircle, XCircle, AlertCircle, Send, CheckCircle2, ShieldAlert } from "lucide-react";
 import { useRouter } from "next/navigation";
 
-export function OrderRow({ order, formattedDate }: { order: any, formattedDate: string }) {
+export function OrderRow({ 
+  order, 
+  formattedDate,
+  isSelected,
+  onSelect
+}: { 
+  order: any, 
+  formattedDate: string,
+  isSelected?: boolean,
+  onSelect?: () => void
+}) {
   const router = useRouter();
 
   const getStatusBadge = (status: string) => {
@@ -129,8 +139,22 @@ export function OrderRow({ order, formattedDate }: { order: any, formattedDate: 
   return (
     <tr 
       onClick={handleRowClick}
-      className="hover:bg-gray-50/80 transition-colors group cursor-pointer"
+      className={`hover:bg-gray-50/80 transition-colors group cursor-pointer ${isSelected ? 'bg-red-50/30' : ''}`}
     >
+      {onSelect && (
+        <td className="px-6 py-4 w-10">
+          <input 
+            type="checkbox" 
+            checked={isSelected}
+            onChange={(e) => {
+              e.stopPropagation();
+              onSelect();
+            }}
+            onClick={(e) => e.stopPropagation()}
+            className="rounded border-gray-300 text-primary focus:ring-primary cursor-pointer"
+          />
+        </td>
+      )}
       <td className="px-6 py-4">
         <div className="flex items-center gap-3">
           {order.userId?.image ? (

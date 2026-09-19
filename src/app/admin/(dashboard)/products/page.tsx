@@ -91,7 +91,7 @@ export default function ProductsList() {
         </div>
         <Link 
           href="/admin/products/add"
-          className="bg-[#F5426A] hover:bg-[#ff5a7f] text-white px-5 py-2.5 rounded-xl font-bold transition-all shadow-lg shadow-[#F5426A]/30 flex items-center justify-center gap-2 hover:-translate-y-0.5"
+          className="bg-primary hover:bg-[#ff5a7f] text-white px-5 py-2.5 rounded-xl font-bold transition-all shadow-lg shadow-primary/30 flex items-center justify-center gap-2 hover:-translate-y-0.5"
         >
           <Plus className="w-5 h-5" />
           Add Product
@@ -107,7 +107,7 @@ export default function ProductsList() {
             placeholder="Search by product name or SKU..." 
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-11 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#F5426A]/20 focus:border-[#F5426A] transition-all text-sm"
+            className="w-full pl-11 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm"
           />
         </div>
         
@@ -116,7 +116,7 @@ export default function ProductsList() {
             onClick={() => setShowFilters(!showFilters)}
             className={`flex items-center justify-center gap-2 px-5 py-2.5 border rounded-xl font-medium text-sm transition-colors md:w-auto ${
               showFilters || categoryFilter !== "all" || stockFilter !== "all" 
-                ? "bg-pink-50 border-pink-200 text-[#F5426A]" 
+                ? "bg-pink-50 border-pink-200 text-primary" 
                 : "border-gray-200 hover:bg-gray-50 text-gray-700"
             }`}
           >
@@ -192,7 +192,7 @@ export default function ProductsList() {
                 <tr>
                   <td colSpan={6} className="px-6 py-12 text-center">
                     <div className="flex flex-col items-center justify-center">
-                      <div className="w-8 h-8 border-4 border-[#F5426A]/20 border-t-[#F5426A] rounded-full animate-spin"></div>
+                      <div className="w-8 h-8 border-4 border-primary/20 border-t-primary rounded-full animate-spin"></div>
                       <p className="mt-4 text-gray-500 font-medium">Loading products...</p>
                     </div>
                   </td>
@@ -207,7 +207,7 @@ export default function ProductsList() {
                       <h3 className="text-lg font-bold text-gray-900">No products found</h3>
                       <p className="text-gray-500 mt-1 max-w-sm">We couldn't find any products matching your search or your store is currently empty.</p>
                       {searchQuery && (
-                        <button onClick={() => setSearchQuery("")} className="mt-4 text-[#F5426A] font-semibold hover:underline">
+                        <button onClick={() => setSearchQuery("")} className="mt-4 text-primary font-semibold hover:underline">
                           Clear search
                         </button>
                       )}
@@ -264,7 +264,7 @@ export default function ProductsList() {
                         </Link>
                         <button 
                           onClick={() => handleDelete(product._id, product.name)}
-                          className="p-2 text-gray-400 hover:text-[#F5426A] hover:bg-[#F5426A]/10 rounded-lg transition-colors" title="Delete"
+                          className="p-2 text-gray-400 hover:text-primary hover:bg-primary/10 rounded-lg transition-colors" title="Delete"
                         >
                           <Trash2 className="w-4 h-4" />
                         </button>

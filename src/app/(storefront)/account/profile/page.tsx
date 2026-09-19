@@ -87,7 +87,7 @@ export default function AccountProfile() {
       {/* Header Section */}
       <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 md:p-8 flex flex-col md:flex-row gap-8 items-center md:items-start relative overflow-hidden">
         {/* Decorative bg */}
-        <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-[#F5426A]/5 to-[#F5426A]/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3"></div>
+        <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-primary/5 to-primary/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3"></div>
         
         {/* Avatar Upload */}
         <div className="relative shrink-0 z-10">
@@ -96,7 +96,7 @@ export default function AccountProfile() {
               onUpload={(url) => setFormData(prev => ({ ...prev, image: url }))}
               disabled={isLoading}
             >
-              <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-[#F5426A]/10 to-[#F5426A]/20 text-[#F5426A] font-bold text-5xl uppercase relative group cursor-pointer">
+              <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary/10 to-primary/20 text-primary font-bold text-5xl uppercase relative group cursor-pointer">
                 {formData.image ? (
                   <Image src={formData.image} alt="Profile" fill className="object-cover" />
                 ) : (
@@ -124,7 +124,7 @@ export default function AccountProfile() {
       <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
         <div className="p-6 md:p-8 border-b border-gray-100 bg-gray-50/50">
           <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
-            <User className="w-5 h-5 text-[#F5426A]" />
+            <User className="w-5 h-5 text-primary" />
             Account Details
           </h2>
           <p className="text-sm text-gray-500 mt-1">Update your personal information and security settings.</p>
@@ -146,7 +146,7 @@ export default function AccountProfile() {
                     value={formData.name}
                     onChange={handleChange}
                     required
-                    className="w-full pl-12 pr-4 py-3.5 bg-gray-50/50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#F5426A]/20 focus:border-[#F5426A] transition-all text-gray-900"
+                    className="w-full pl-12 pr-4 py-3.5 bg-gray-50/50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-gray-900"
                   />
                 </div>
               </div>
@@ -161,7 +161,7 @@ export default function AccountProfile() {
                     value={formData.email}
                     onChange={handleChange}
                     required
-                    className="w-full pl-12 pr-4 py-3.5 bg-gray-50/50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#F5426A]/20 focus:border-[#F5426A] transition-all text-gray-900"
+                    className="w-full pl-12 pr-4 py-3.5 bg-gray-50/50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-gray-900"
                   />
                 </div>
               </div>
@@ -184,7 +184,7 @@ export default function AccountProfile() {
                     value={formData.currentPassword}
                     onChange={handleChange}
                     placeholder="Enter to change password"
-                    className="w-full pl-12 pr-4 py-3.5 bg-gray-50/50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#F5426A]/20 focus:border-[#F5426A] transition-all text-gray-900 placeholder:text-gray-400"
+                    className="w-full pl-12 pr-4 py-3.5 bg-gray-50/50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-gray-900 placeholder:text-gray-400"
                   />
                 </div>
               </div>
@@ -199,7 +199,7 @@ export default function AccountProfile() {
                     value={formData.newPassword}
                     onChange={handleChange}
                     placeholder="Min. 6 characters"
-                    className="w-full pl-12 pr-4 py-3.5 bg-gray-50/50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#F5426A]/20 focus:border-[#F5426A] transition-all text-gray-900 placeholder:text-gray-400"
+                    className="w-full pl-12 pr-4 py-3.5 bg-gray-50/50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-gray-900 placeholder:text-gray-400"
                   />
                 </div>
               </div>
@@ -211,7 +211,7 @@ export default function AccountProfile() {
             <button
               type="submit"
               disabled={isLoading}
-              className="bg-[#F5426A] hover:bg-[#ff5a7f] text-white px-6 py-2.5 rounded-lg text-sm font-bold transition-all flex items-center justify-center gap-2 hover:-translate-y-0.5 disabled:opacity-70 disabled:hover:translate-y-0 w-full md:w-auto shadow-sm shadow-[#F5426A]/20"
+              className="bg-primary hover:bg-[#ff5a7f] text-white px-6 py-2.5 rounded-lg text-sm font-bold transition-all flex items-center justify-center gap-2 hover:-translate-y-0.5 disabled:opacity-70 disabled:hover:translate-y-0 w-full md:w-auto shadow-sm shadow-primary/20"
             >
               {isLoading ? (
                 <Loader2 className="w-4 h-4 animate-spin" />

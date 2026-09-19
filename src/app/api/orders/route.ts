@@ -5,6 +5,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { telegramService } from "@/lib/services/telegramService";
 import { googleSheetService } from "@/lib/services/googleSheetService";
+import { activityLogService } from "@/lib/services/activityLogService";
 
 export async function POST(req: NextRequest) {
   try {
@@ -20,14 +21,14 @@ export async function POST(req: NextRequest) {
 
     await connectToDatabase();
 
-    // Generate Order ID (RW001, RW002, etc.)
+    // Generate Order ID (MZO-0001, MZO-0002, etc.)
     // Find the order with the highest orderId
     const lastOrder = await Order.findOne({}, { orderId: 1 }).sort({ createdAt: -1 });
     
     let nextNum = 1;
     if (lastOrder && lastOrder.orderId) {
-      // Extract the numeric part from e.g. "RW005"
-      const match = lastOrder.orderId.match(/^RW(\d+)$/);
+      // Extract the numeric part from e.g. "RW005" or "MZ00005" or "MZO-0005"
+      const match = lastOrder.orderId.match(/^(?:RW|MZ|MZO)-?(\d+)$/);
       if (match && match[1]) {
         nextNum = parseInt(match[1], 10) + 1;
       } else {
@@ -37,9 +38,9 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    // Pad with leading zeros to ensure at least 3 digits
-    const paddedNum = String(nextNum).padStart(3, '0');
-    const orderId = `RW${paddedNum}`;
+    // Pad with leading zeros to ensure at least 4 digits
+    const paddedNum = String(nextNum).padStart(4, '0');
+    const orderId = `MZO-${paddedNum}`;
 
     // Create the order
     const orderData: any = {
@@ -85,6 +86,15 @@ export async function POST(req: NextRequest) {
       }
       await newOrder.save();
     });
+
+    // Trigger Admin Push Notification asynchronously
+    activityLogService.logActivity({
+      title: "New Order Received! 🛍️",
+      message: `Order ${orderId} has been placed for ${pricing.total} BDT.`,
+      type: "order",
+      link: `/admin/orders/${newOrder._id}`,
+      sendPush: true
+    }).catch(err => console.error("Failed to log activity and send admin push notification", err));
 
     return NextResponse.json(
       { success: true, message: "Order created successfully", orderId: newOrder._id, displayId: orderId },

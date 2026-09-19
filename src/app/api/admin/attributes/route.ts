@@ -1,11 +1,19 @@
 import { NextResponse } from "next/server";
 import connectToDatabase from "@/lib/mongodb";
 import Attribute from "@/models/Attribute";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
+
 
 export const dynamic = 'force-dynamic';
 
 export async function GET() {
   try {
+    const session = await getServerSession(authOptions);
+    if (!session || session.user.role !== "admin") {
+      return NextResponse.json({ success: false, message: "Unauthorized" }, { status: 401 });
+    }
+
     await connectToDatabase();
     const attributes = await Attribute.find({}).sort({ createdAt: -1 });
     return NextResponse.json({ success: true, attributes });
@@ -19,6 +27,11 @@ export async function GET() {
 
 export async function POST(req: Request) {
   try {
+    const session = await getServerSession(authOptions);
+    if (!session || session.user.role !== "admin") {
+      return NextResponse.json({ success: false, message: "Unauthorized" }, { status: 401 });
+    }
+
     await connectToDatabase();
     const body = await req.json();
     

@@ -95,7 +95,7 @@ export default function AdminDashboard() {
     return (
       <div className="flex h-[calc(100vh-100px)] items-center justify-center">
         <div className="flex flex-col items-center gap-4">
-          <div className="w-12 h-12 border-4 border-gray-200 border-t-[#F5426A] rounded-full animate-spin"></div>
+          <div className="w-12 h-12 border-4 border-gray-200 border-t-primary rounded-full animate-spin"></div>
           <p className="text-gray-500 font-medium animate-pulse">Loading dashboard...</p>
         </div>
       </div>
@@ -106,7 +106,7 @@ export default function AdminDashboard() {
     <div ref={containerRef} className="p-4 md:p-8 space-y-6 md:space-y-8 max-w-[1600px] mx-auto pb-10">
       
       {/* 1. WELCOME BANNER */}
-      <div className="relative bg-gradient-to-br from-[#F5426A] to-[#d62850] rounded-[2rem] p-8 md:p-10 text-white shadow-xl shadow-pink-200/50 dashboard-item z-10">
+      <div className="relative bg-gradient-to-br from-primary to-[#d62850] rounded-[2rem] p-8 md:p-10 text-white shadow-xl shadow-pink-200/50 dashboard-item z-10">
         {/* Abstract background shapes */}
         <div className="absolute inset-0 overflow-hidden rounded-[2rem] pointer-events-none">
           <div className="absolute top-0 right-0 w-64 h-64 bg-white rounded-full blur-[100px] opacity-20 -translate-y-1/2 translate-x-1/4"></div>
@@ -180,7 +180,7 @@ export default function AdminDashboard() {
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-2 2xl:grid-cols-4 gap-6">
         <div className="bg-white/80 backdrop-blur-xl p-6 rounded-[2rem] border border-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] flex flex-col justify-between h-[180px] dashboard-item hover:-translate-y-1 transition-transform duration-300 cursor-default">
           <div className="flex items-start justify-between">
-            <div className="kpi-icon-wrapper w-14 h-14 rounded-2xl bg-gradient-to-br from-pink-50 to-pink-100/50 flex items-center justify-center text-[#F5426A] shadow-inner shadow-white">
+            <div className="kpi-icon-wrapper w-14 h-14 rounded-2xl bg-gradient-to-br from-pink-50 to-pink-100/50 flex items-center justify-center text-primary shadow-inner shadow-white">
               <ShoppingBag className="w-6 h-6" />
             </div>
           </div>
@@ -199,7 +199,7 @@ export default function AdminDashboard() {
         </div>
         <div className="bg-white/80 backdrop-blur-xl p-6 rounded-[2rem] border border-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] flex flex-col justify-between h-[180px] hover:-translate-y-1 transition-transform duration-300 cursor-default">
           <div className="flex items-start justify-between">
-            <div className="kpi-icon-wrapper w-14 h-14 rounded-2xl bg-gradient-to-br from-pink-50 to-pink-100/50 flex items-center justify-center text-[#F5426A] shadow-inner shadow-white">
+            <div className="kpi-icon-wrapper w-14 h-14 rounded-2xl bg-gradient-to-br from-pink-50 to-pink-100/50 flex items-center justify-center text-primary shadow-inner shadow-white">
               <DollarSign className="w-6 h-6" />
             </div>
           </div>
@@ -218,7 +218,7 @@ export default function AdminDashboard() {
         </div>
         <div className="bg-white/80 backdrop-blur-xl p-6 rounded-[2rem] border border-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] flex flex-col justify-between h-[180px] hover:-translate-y-1 transition-transform duration-300 cursor-default">
           <div className="flex items-start justify-between">
-            <div className="kpi-icon-wrapper w-14 h-14 rounded-2xl bg-gradient-to-br from-pink-50 to-pink-100/50 flex items-center justify-center text-[#F5426A] shadow-inner shadow-white">
+            <div className="kpi-icon-wrapper w-14 h-14 rounded-2xl bg-gradient-to-br from-pink-50 to-pink-100/50 flex items-center justify-center text-primary shadow-inner shadow-white">
               <Users className="w-6 h-6" />
             </div>
           </div>
@@ -231,7 +231,7 @@ export default function AdminDashboard() {
         </div>
         <div className="bg-white/80 backdrop-blur-xl p-6 rounded-[2rem] border border-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] flex flex-col justify-between h-[180px] hover:-translate-y-1 transition-transform duration-300 cursor-default">
           <div className="flex items-start justify-between">
-            <div className="kpi-icon-wrapper w-14 h-14 rounded-2xl bg-gradient-to-br from-pink-50 to-pink-100/50 flex items-center justify-center text-[#F5426A] shadow-inner shadow-white">
+            <div className="kpi-icon-wrapper w-14 h-14 rounded-2xl bg-gradient-to-br from-pink-50 to-pink-100/50 flex items-center justify-center text-primary shadow-inner shadow-white">
               <Package className="w-6 h-6" />
             </div>
           </div>
@@ -255,13 +255,13 @@ export default function AdminDashboard() {
           <div className="bg-white/80 backdrop-blur-xl rounded-[2rem] p-6 md:p-8 border border-white shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
               <div className="flex items-center gap-3">
-                <BarChart3 className="w-6 h-6 text-[#F5426A]" />
+                <BarChart3 className="w-6 h-6 text-primary" />
                 <h2 className="text-xl font-bold text-[#1a2b4b]">Sales Overview</h2>
               </div>
               <div className="flex bg-gray-50 p-1 rounded-xl">
-                <button onClick={() => { setRange('7'); setSelectedDate(''); }} className={`px-4 py-1.5 text-xs font-bold rounded-lg transition-colors ${range === '7' && !selectedDate ? 'bg-[#F5426A] text-white shadow-sm' : 'text-gray-500 hover:text-gray-900'}`}>7 Days</button>
-                <button onClick={() => { setRange('30'); setSelectedDate(''); }} className={`px-4 py-1.5 text-xs font-bold rounded-lg transition-colors ${range === '30' && !selectedDate ? 'bg-[#F5426A] text-white shadow-sm' : 'text-gray-500 hover:text-gray-900'}`}>30 Days</button>
-                <button onClick={() => { setRange('90'); setSelectedDate(''); }} className={`px-4 py-1.5 text-xs font-bold rounded-lg transition-colors ${range === '90' && !selectedDate ? 'bg-[#F5426A] text-white shadow-sm' : 'text-gray-500 hover:text-gray-900'}`}>90 Days</button>
+                <button onClick={() => { setRange('7'); setSelectedDate(''); }} className={`px-4 py-1.5 text-xs font-bold rounded-lg transition-colors ${range === '7' && !selectedDate ? 'bg-primary text-white shadow-sm' : 'text-gray-500 hover:text-gray-900'}`}>7 Days</button>
+                <button onClick={() => { setRange('30'); setSelectedDate(''); }} className={`px-4 py-1.5 text-xs font-bold rounded-lg transition-colors ${range === '30' && !selectedDate ? 'bg-primary text-white shadow-sm' : 'text-gray-500 hover:text-gray-900'}`}>30 Days</button>
+                <button onClick={() => { setRange('90'); setSelectedDate(''); }} className={`px-4 py-1.5 text-xs font-bold rounded-lg transition-colors ${range === '90' && !selectedDate ? 'bg-primary text-white shadow-sm' : 'text-gray-500 hover:text-gray-900'}`}>90 Days</button>
               </div>
             </div>
             <SalesChart data={data?.salesChartData} />
@@ -271,10 +271,10 @@ export default function AdminDashboard() {
           <div className="bg-white/80 backdrop-blur-xl rounded-[2rem] p-6 md:p-8 border border-white shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
             <div className="flex justify-between items-center mb-6">
               <div className="flex items-center gap-3">
-                <ListOrdered className="w-6 h-6 text-[#F5426A]" />
+                <ListOrdered className="w-6 h-6 text-primary" />
                 <h2 className="text-xl font-bold text-[#1a2b4b]">Recent Orders</h2>
               </div>
-              <button className="text-[#F5426A] text-sm font-bold flex items-center gap-1 hover:underline">
+              <button className="text-primary text-sm font-bold flex items-center gap-1 hover:underline">
                 View All <ArrowUpRight className="w-4 h-4" />
               </button>
             </div>
@@ -314,7 +314,7 @@ export default function AdminDashboard() {
                       </td>
                       <td className="py-4 text-sm font-medium text-gray-500">{order.date}</td>
                       <td className="py-4 text-right pr-2">
-                        <ChevronRight className="w-4 h-4 text-gray-300 group-hover:text-[#F5426A] ml-auto transition-colors" />
+                        <ChevronRight className="w-4 h-4 text-gray-300 group-hover:text-primary ml-auto transition-colors" />
                       </td>
                     </tr>
                   ))}
@@ -339,37 +339,37 @@ export default function AdminDashboard() {
             <h2 className="text-lg font-bold text-[#1a2b4b] mb-6">Quick Actions</h2>
             <div className="grid grid-cols-2 gap-4">
               <button className="flex flex-col items-center justify-center p-4 bg-gray-50 rounded-2xl hover:bg-pink-50 transition-colors group">
-                <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center text-[#F5426A] shadow-sm mb-3 group-hover:scale-110 transition-transform">
+                <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center text-primary shadow-sm mb-3 group-hover:scale-110 transition-transform">
                   <Plus className="w-5 h-5" />
                 </div>
                 <span className="text-xs font-bold text-gray-700">Add Product</span>
               </button>
               <button className="flex flex-col items-center justify-center p-4 bg-gray-50 rounded-2xl hover:bg-pink-50 transition-colors group">
-                <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center text-[#F5426A] shadow-sm mb-3 group-hover:scale-110 transition-transform">
+                <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center text-primary shadow-sm mb-3 group-hover:scale-110 transition-transform">
                   <ListOrdered className="w-5 h-5" />
                 </div>
                 <span className="text-xs font-bold text-gray-700">Manage Orders</span>
               </button>
               <button className="flex flex-col items-center justify-center p-4 bg-gray-50 rounded-2xl hover:bg-pink-50 transition-colors group">
-                <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center text-[#F5426A] shadow-sm mb-3 group-hover:scale-110 transition-transform">
+                <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center text-primary shadow-sm mb-3 group-hover:scale-110 transition-transform">
                   <FolderPlus className="w-5 h-5" />
                 </div>
                 <span className="text-xs font-bold text-gray-700">Add Category</span>
               </button>
               <button className="flex flex-col items-center justify-center p-4 bg-gray-50 rounded-2xl hover:bg-pink-50 transition-colors group">
-                <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center text-[#F5426A] shadow-sm mb-3 group-hover:scale-110 transition-transform">
+                <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center text-primary shadow-sm mb-3 group-hover:scale-110 transition-transform">
                   <UsersRound className="w-5 h-5" />
                 </div>
                 <span className="text-xs font-bold text-gray-700">View Customers</span>
               </button>
               <button className="flex flex-col items-center justify-center p-4 bg-gray-50 rounded-2xl hover:bg-pink-50 transition-colors group">
-                <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center text-[#F5426A] shadow-sm mb-3 group-hover:scale-110 transition-transform">
+                <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center text-primary shadow-sm mb-3 group-hover:scale-110 transition-transform">
                   <Ticket className="w-5 h-5" />
                 </div>
                 <span className="text-xs font-bold text-gray-700">Create Coupon</span>
               </button>
               <button className="flex flex-col items-center justify-center p-4 bg-gray-50 rounded-2xl hover:bg-pink-50 transition-colors group">
-                <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center text-[#F5426A] shadow-sm mb-3 group-hover:scale-110 transition-transform">
+                <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center text-primary shadow-sm mb-3 group-hover:scale-110 transition-transform">
                   <BarChart3 className="w-5 h-5" />
                 </div>
                 <span className="text-xs font-bold text-gray-700">Check Reports</span>
@@ -387,10 +387,10 @@ export default function AdminDashboard() {
         <div className="2xl:col-span-3 bg-white/80 backdrop-blur-xl rounded-[2rem] p-6 md:p-8 border border-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] dashboard-item">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
             <div className="flex items-center gap-3">
-              <Package className="w-6 h-6 text-[#F5426A]" />
+              <Package className="w-6 h-6 text-primary" />
               <h2 className="text-xl font-bold text-[#1a2b4b]">Inventory Overview</h2>
             </div>
-            <button className="text-[#F5426A] text-sm font-bold flex items-center gap-1 hover:underline whitespace-nowrap shrink-0">
+            <button className="text-primary text-sm font-bold flex items-center gap-1 hover:underline whitespace-nowrap shrink-0">
               Manage Inventory <ArrowUpRight className="w-4 h-4" />
             </button>
           </div>
@@ -456,7 +456,7 @@ export default function AdminDashboard() {
           <div className="bg-white rounded-[2rem] p-6 border border-gray-100 shadow-sm h-fit">
             <div className="flex justify-between items-center mb-6">
               <h2 className="text-lg font-bold text-[#1a2b4b]">Top Selling Products</h2>
-              <button className="text-[#F5426A] text-[11px] font-bold uppercase hover:underline flex items-center gap-1">View All <ArrowUpRight className="w-3 h-3" /></button>
+              <button className="text-primary text-[11px] font-bold uppercase hover:underline flex items-center gap-1">View All <ArrowUpRight className="w-3 h-3" /></button>
             </div>
             <div className="space-y-5">
               {topSelling.map((item, idx) => (
@@ -465,10 +465,10 @@ export default function AdminDashboard() {
                     <Image src={item.img} alt={item.name} fill className="object-cover" />
                   </div>
                   <div className="flex-1">
-                    <h4 className="font-bold text-gray-900 text-sm line-clamp-1 group-hover:text-[#F5426A] transition-colors">{item.name}</h4>
+                    <h4 className="font-bold text-gray-900 text-sm line-clamp-1 group-hover:text-primary transition-colors">{item.name}</h4>
                     <p className="text-xs text-gray-500 mt-1">৳ {item.price.toLocaleString()} • {item.sold} sold</p>
                   </div>
-                  <ChevronRight className="w-4 h-4 text-gray-300 group-hover:text-[#F5426A] transition-colors" />
+                  <ChevronRight className="w-4 h-4 text-gray-300 group-hover:text-primary transition-colors" />
                 </div>
               ))}
             </div>
@@ -484,7 +484,7 @@ export default function AdminDashboard() {
                 <span className="inline-block px-2 py-1 bg-white/20 rounded text-[10px] font-bold uppercase tracking-wider mb-3">Pro Tip</span>
                 <h3 className="font-bold text-lg mb-2">Boost Your Sales</h3>
                 <p className="text-sm text-gray-300 mb-4 line-clamp-3">Create targeted coupon campaigns to re-engage inactive customers and boost weekend revenue.</p>
-                <button className="bg-[#F5426A] hover:bg-[#F5426A]/90 text-white w-full py-2.5 rounded-xl text-sm font-bold transition-colors">
+                <button className="bg-primary hover:bg-primary/90 text-white w-full py-2.5 rounded-xl text-sm font-bold transition-colors">
                   Create Campaign
                 </button>
              </div>

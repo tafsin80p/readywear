@@ -21,8 +21,8 @@ export function SalesChart({ data }: { data?: any[] }) {
         >
           <defs>
             <linearGradient id="colorSales" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#F5426A" stopOpacity={0.3}/>
-              <stop offset="95%" stopColor="#F5426A" stopOpacity={0}/>
+              <stop offset="5%" stopColor="var(--primary)" stopOpacity={0.3}/>
+              <stop offset="95%" stopColor="var(--primary)" stopOpacity={0}/>
             </linearGradient>
           </defs>
           <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f3f4f6" />
@@ -46,11 +46,11 @@ export function SalesChart({ data }: { data?: any[] }) {
           <Area 
             type="monotone" 
             dataKey="sales" 
-            stroke="#F5426A" 
+            stroke="var(--primary)" 
             strokeWidth={3}
             fillOpacity={1} 
             fill="url(#colorSales)" 
-            activeDot={{ r: 6, fill: '#F5426A', stroke: '#fff', strokeWidth: 2 }}
+            activeDot={{ r: 6, fill: 'var(--primary)', stroke: '#fff', strokeWidth: 2 }}
           />
         </AreaChart>
       </ResponsiveContainer>

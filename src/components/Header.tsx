@@ -10,7 +10,7 @@ import { DesktopSearch } from "./DesktopSearch";
 import { useSession, signOut } from "next-auth/react";
 import { useState } from "react";
 
-export function Header() {
+export function Header({ logoUrl }: { logoUrl?: string }) {
   const { openCart, cartCount } = useCart();
   const { openLoginModal } = useAuth();
   const { openSearch } = useSearch();
@@ -25,7 +25,7 @@ export function Header() {
           <div className="flex items-center">
             <Link href="/" className="flex items-center">
               <Image 
-                src="/readywear logo.png" 
+                src={logoUrl || "/readywear logo.png"} 
                 alt="ReadyWear Logo" 
                 width={200} 
                 height={60} 

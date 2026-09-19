@@ -60,17 +60,17 @@ export function ToastProvider({ children }: { children: ReactNode }) {
             {/* Left Color Indicator Line */}
             <div className={`absolute left-0 top-0 bottom-0 w-1 ${
               t.type === "success" ? "bg-emerald-500" : 
-              t.type === "error" ? "bg-[#F5426A]" : "bg-blue-500"
+              t.type === "error" ? "bg-primary" : "bg-blue-500"
             }`} />
 
             {t.type === "success" && <CheckCircle2 className="w-5 h-5 text-emerald-500 shrink-0 mt-0.5" />}
-            {t.type === "error" && <XCircle className="w-5 h-5 text-[#F5426A] shrink-0 mt-0.5" />}
+            {t.type === "error" && <XCircle className="w-5 h-5 text-primary shrink-0 mt-0.5" />}
             {t.type === "info" && <Info className="w-5 h-5 text-blue-500 shrink-0 mt-0.5" />}
             
             <div className="flex-1 pr-6">
               <h4 className={`text-sm font-bold ${
                 t.type === "success" ? "text-emerald-700" : 
-                t.type === "error" ? "text-[#F5426A]" : "text-blue-700"
+                t.type === "error" ? "text-primary" : "text-blue-700"
               }`}>
                 {t.type === "success" ? "Success" : t.type === "error" ? "Error" : "Info"}
               </h4>
@@ -89,7 +89,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
               <div 
                 className={`h-full ${
                   t.type === "success" ? "bg-emerald-500" : 
-                  t.type === "error" ? "bg-[#F5426A]" : "bg-blue-500"
+                  t.type === "error" ? "bg-primary" : "bg-blue-500"
                 }`}
                 style={{ animation: "toast-progress 3.5s linear forwards" }}
               />

@@ -89,14 +89,14 @@ export default function AdminProfile() {
         {/* Left Column: Profile Card */}
         <div className="w-full lg:w-1/3 xl:w-1/4">
           <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden sticky top-8">
-            <div className="h-32 bg-gradient-to-br from-[#F5426A] to-[#ff7e9a]"></div>
+            <div className="h-32 bg-gradient-to-br from-primary to-[#ff7e9a]"></div>
             <div className="px-6 pb-6 relative">
               <div className="absolute -top-12 left-6 w-24 h-24 rounded-full border-4 border-gray-100 bg-white shadow-lg overflow-hidden">
                 <ImageUpload 
                   onUpload={(url) => setFormData(prev => ({ ...prev, image: url }))}
                   disabled={isLoading}
                 >
-                  <div className="w-full h-full bg-[#F5426A]/10 flex items-center justify-center text-[#F5426A] font-bold text-4xl uppercase relative group">
+                  <div className="w-full h-full bg-primary/10 flex items-center justify-center text-primary font-bold text-4xl uppercase relative group">
                     {formData.image ? (
                       <Image src={formData.image} alt="Profile" fill className="object-cover" />
                     ) : (
@@ -112,7 +112,7 @@ export default function AdminProfile() {
               <div className="pt-14">
                 <h2 className="text-xl font-extrabold text-gray-900">{session?.user?.name}</h2>
                 <div className="flex items-center gap-2 text-sm text-gray-500 mt-1 mb-4">
-                  <Shield className="w-4 h-4 text-[#F5426A]" />
+                  <Shield className="w-4 h-4 text-primary" />
                   <span className="font-medium">Super Admin</span>
                 </div>
                 
@@ -143,7 +143,7 @@ export default function AdminProfile() {
                 {/* Personal Information */}
                 <div>
                   <h3 className="text-lg font-bold text-gray-900 mb-6 flex items-center gap-2">
-                    <User className="w-5 h-5 text-[#F5426A]" />
+                    <User className="w-5 h-5 text-primary" />
                     Personal Information
                   </h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -151,7 +151,7 @@ export default function AdminProfile() {
                       <label className="text-sm font-bold text-gray-700">Full Name</label>
                       <div className="relative group">
                         <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                          <User className="w-4.5 h-4.5 text-gray-400 group-focus-within:text-[#F5426A] transition-colors" />
+                          <User className="w-4.5 h-4.5 text-gray-400 group-focus-within:text-primary transition-colors" />
                         </div>
                         <input 
                           type="text" 
@@ -159,7 +159,7 @@ export default function AdminProfile() {
                           value={formData.name || ""}
                           onChange={handleChange}
                           required
-                          className="w-full pl-11 pr-4 py-3.5 bg-gray-50/50 border border-gray-200 rounded-xl text-gray-900 font-medium focus:outline-none focus:ring-2 focus:ring-[#F5426A]/20 focus:border-[#F5426A] transition-all"
+                          className="w-full pl-11 pr-4 py-3.5 bg-gray-50/50 border border-gray-200 rounded-xl text-gray-900 font-medium focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
                         />
                       </div>
                     </div>
@@ -168,7 +168,7 @@ export default function AdminProfile() {
                       <label className="text-sm font-bold text-gray-700">Email Address</label>
                       <div className="relative group">
                         <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                          <Mail className="w-4.5 h-4.5 text-gray-400 group-focus-within:text-[#F5426A] transition-colors" />
+                          <Mail className="w-4.5 h-4.5 text-gray-400 group-focus-within:text-primary transition-colors" />
                         </div>
                         <input 
                           type="email" 
@@ -176,7 +176,7 @@ export default function AdminProfile() {
                           value={formData.email || ""}
                           onChange={handleChange}
                           required
-                          className="w-full pl-11 pr-4 py-3.5 bg-gray-50/50 border border-gray-200 rounded-xl text-gray-900 font-medium focus:outline-none focus:ring-2 focus:ring-[#F5426A]/20 focus:border-[#F5426A] transition-all"
+                          className="w-full pl-11 pr-4 py-3.5 bg-gray-50/50 border border-gray-200 rounded-xl text-gray-900 font-medium focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
                         />
                       </div>
                     </div>
@@ -188,7 +188,7 @@ export default function AdminProfile() {
                 {/* Security Settings */}
                 <div>
                   <h3 className="text-lg font-bold text-gray-900 mb-6 flex items-center gap-2">
-                    <Lock className="w-5 h-5 text-[#F5426A]" />
+                    <Lock className="w-5 h-5 text-primary" />
                     Security Settings
                   </h3>
                   
@@ -199,7 +199,7 @@ export default function AdminProfile() {
                       </label>
                       <div className="relative group">
                         <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                          <Lock className="w-4.5 h-4.5 text-gray-400 group-focus-within:text-[#F5426A] transition-colors" />
+                          <Lock className="w-4.5 h-4.5 text-gray-400 group-focus-within:text-primary transition-colors" />
                         </div>
                         <input 
                           type="password" 
@@ -207,7 +207,7 @@ export default function AdminProfile() {
                           value={formData.currentPassword}
                           onChange={handleChange}
                           placeholder="Required to change email or password"
-                          className="w-full pl-11 pr-4 py-3.5 bg-gray-50/50 border border-gray-200 rounded-xl text-gray-900 font-medium focus:outline-none focus:ring-2 focus:ring-[#F5426A]/20 focus:border-[#F5426A] transition-all placeholder:font-normal placeholder:text-gray-400"
+                          className="w-full pl-11 pr-4 py-3.5 bg-gray-50/50 border border-gray-200 rounded-xl text-gray-900 font-medium focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all placeholder:font-normal placeholder:text-gray-400"
                         />
                       </div>
                     </div>
@@ -216,7 +216,7 @@ export default function AdminProfile() {
                       <label className="text-sm font-bold text-gray-700">New Password</label>
                       <div className="relative group">
                         <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                          <Lock className="w-4.5 h-4.5 text-gray-400 group-focus-within:text-[#F5426A] transition-colors" />
+                          <Lock className="w-4.5 h-4.5 text-gray-400 group-focus-within:text-primary transition-colors" />
                         </div>
                         <input 
                           type="password" 
@@ -224,7 +224,7 @@ export default function AdminProfile() {
                           value={formData.newPassword}
                           onChange={handleChange}
                           placeholder="Leave blank to keep current password"
-                          className="w-full pl-11 pr-4 py-3.5 bg-gray-50/50 border border-gray-200 rounded-xl text-gray-900 font-medium focus:outline-none focus:ring-2 focus:ring-[#F5426A]/20 focus:border-[#F5426A] transition-all placeholder:font-normal placeholder:text-gray-400"
+                          className="w-full pl-11 pr-4 py-3.5 bg-gray-50/50 border border-gray-200 rounded-xl text-gray-900 font-medium focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all placeholder:font-normal placeholder:text-gray-400"
                         />
                       </div>
                     </div>
@@ -235,7 +235,7 @@ export default function AdminProfile() {
                   <button 
                     type="submit"
                     disabled={isLoading}
-                    className="bg-[#F5426A] hover:bg-[#F5426A]/90 text-white font-bold py-3.5 px-8 rounded-xl shadow-lg shadow-pink-200 transition-all flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
+                    className="bg-primary hover:bg-primary/90 text-white font-bold py-3.5 px-8 rounded-xl shadow-lg shadow-pink-200 transition-all flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
                   >
                     {isLoading ? (
                       <Loader2 className="w-5 h-5 animate-spin" />

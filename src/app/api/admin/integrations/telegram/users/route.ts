@@ -2,9 +2,17 @@ import { NextRequest, NextResponse } from "next/server";
 import connectToDatabase from "@/lib/mongodb";
 import IntegrationSettings from "@/models/IntegrationSettings";
 import { telegramService } from "@/lib/services/telegramService";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
+
 
 export async function POST(req: NextRequest) {
   try {
+    const session = await getServerSession(authOptions);
+    if (!session || session.user.role !== "admin") {
+      return NextResponse.json({ success: false, message: "Unauthorized" }, { status: 401 });
+    }
+
     const { action, telegramId } = await req.json();
 
     if (!action || !telegramId) {
