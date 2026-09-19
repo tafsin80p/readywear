@@ -30,7 +30,7 @@ export function Footer({
                 className={`h-10 w-auto object-contain ${!logoUrl ? 'mix-blend-multiply' : ''}`}
               />
             </Link>
-            <p className="text-gray-400 text-sm mb-6">স্টাইল মানেই তুমি</p>
+            <p className="text-gray-300 text-sm mb-6">স্টাইল মানেই তুমি</p>
             {/* Social Icons */}
             <div className="flex gap-4">
               {socialLinks?.facebook && (
@@ -60,10 +60,10 @@ export function Footer({
           <div>
             <h4 className="font-semibold text-lg mb-6">কুইক লিংক</h4>
             <ul className="space-y-3">
-              <li><Link href="/" className="text-gray-400 hover:text-primary transition-colors text-sm">হোম</Link></li>
-              <li><Link href="/categories" className="text-gray-400 hover:text-primary transition-colors text-sm">সকল ক্যাটাগরি</Link></li>
-              <li><Link href="/track" className="text-gray-400 hover:text-primary transition-colors text-sm">অর্ডার ট্র্যাক করুন</Link></li>
-              <li><Link href="/account" className="text-gray-400 hover:text-primary transition-colors text-sm">আমার অ্যাকাউন্ট</Link></li>
+              <li><Link href="/" className="text-gray-300 hover:text-white transition-colors text-sm">হোম</Link></li>
+              <li><Link href="/categories" className="text-gray-300 hover:text-white transition-colors text-sm">সকল ক্যাটাগরি</Link></li>
+              <li><Link href="/track" className="text-gray-300 hover:text-white transition-colors text-sm">অর্ডার ট্র্যাক করুন</Link></li>
+              <li><Link href="/account" className="text-gray-300 hover:text-white transition-colors text-sm">আমার অ্যাকাউন্ট</Link></li>
             </ul>
           </div>
 
@@ -71,9 +71,9 @@ export function Footer({
           <div>
             <h4 className="font-semibold text-lg mb-6">পলিসি ও নীতিমালা</h4>
             <ul className="space-y-3">
-              <li><Link href="/privacy-policy" className="text-gray-400 hover:text-primary transition-colors text-sm">প্রাইভেসি পলিসি</Link></li>
-              <li><Link href="/refund-return-policy" className="text-gray-400 hover:text-primary transition-colors text-sm">রিটার্ন ও রিফান্ড পলিসি</Link></li>
-              <li><Link href="/terms-conditions" className="text-gray-400 hover:text-primary transition-colors text-sm">শর্তাবলী</Link></li>
+              <li><Link href="/privacy-policy" className="text-gray-300 hover:text-white transition-colors text-sm">প্রাইভেসি পলিসি</Link></li>
+              <li><Link href="/refund-return-policy" className="text-gray-300 hover:text-white transition-colors text-sm">রিটার্ন ও রিফান্ড পলিসি</Link></li>
+              <li><Link href="/terms-conditions" className="text-gray-300 hover:text-white transition-colors text-sm">শর্তাবলী</Link></li>
             </ul>
           </div>
 
@@ -81,15 +81,15 @@ export function Footer({
           <div>
             <h4 className="font-semibold text-lg mb-6">যোগাযোগ</h4>
             <ul className="space-y-4">
-              <li className="flex items-start gap-3 text-gray-400 text-sm">
+              <li className="flex items-start gap-3 text-gray-300 text-sm">
                 <Phone className="w-[18px] h-[18px] mt-0.5 shrink-0 text-primary" />
-                <a href="tel:01332547787" className="hover:text-primary transition-colors">01332-547787</a>
+                <a href="tel:01332547787" className="hover:text-white transition-colors">01332-547787</a>
               </li>
-              <li className="flex items-start gap-3 text-gray-400 text-sm">
+              <li className="flex items-start gap-3 text-gray-300 text-sm">
                 <Mail className="w-[18px] h-[18px] mt-0.5 shrink-0 text-primary" />
-                <a href="mailto:contact.mehzin@gmail.com" className="hover:text-primary transition-colors break-all">contact.mehzin@gmail.com</a>
+                <a href="mailto:contact.mehzin@gmail.com" className="hover:text-white transition-colors break-all">contact.mehzin@gmail.com</a>
               </li>
-              <li className="flex items-start gap-3 text-gray-400 text-sm">
+              <li className="flex items-start gap-3 text-gray-300 text-sm">
                 <MapPin className="w-[18px] h-[18px] mt-0.5 shrink-0 text-primary" />
                 <span>ঢাকা, বাংলাদেশ</span>
               </li>
@@ -98,10 +98,10 @@ export function Footer({
 
         </div>
 
-        <div className="flex flex-col md:flex-row justify-between items-center text-xs text-gray-500">
-          <p>© 2026 রেডিওয়্যার. সর্বস্বত্ব সংরক্ষিত।</p>
+        <div className="flex flex-col md:flex-row justify-between items-center text-xs text-gray-400">
+          <p>© {new Date().getFullYear()} মেহজাবিন অফারস. সর্বস্বত্ব সংরক্ষিত।</p>
           <div className="mt-3 md:mt-0 flex items-center gap-2">
-            <span className="text-gray-400">A signature brand of</span>
+            <span className="text-gray-300">A signature brand of</span>
             <span className="text-white font-bold tracking-widest text-[11px] uppercase border-l border-gray-600 pl-2">Mehzin</span>
           </div>
         </div>
