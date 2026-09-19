@@ -6,7 +6,7 @@ import { useAuth } from "@/context/AuthContext";
 import { signIn } from "next-auth/react";
 import { useToast } from "@/context/ToastContext";
 
-export function LoginModal() {
+export function LoginModal({ logoUrl }: { logoUrl?: string }) {
   const { isLoginModalOpen, closeLoginModal } = useAuth();
   const { toast } = useToast();
   const [isLogin, setIsLogin] = useState(true);
@@ -51,7 +51,7 @@ export function LoginModal() {
         
         {/* Mobile Header */}
         <div className="md:hidden flex items-center justify-between p-5 border-b border-gray-100 bg-gray-50">
-          <img src="/readywear logo.png" alt="Mehzin Offers" className="h-7 w-auto mix-blend-multiply" />
+          <img src={logoUrl || "/readywear logo.png"} alt="Mehzin Offers" className="h-7 w-auto mix-blend-multiply" />
           <button 
             onClick={closeLoginModal}
             className="p-2 bg-white border border-gray-200 rounded-full hover:bg-gray-100 transition-colors text-gray-500"
@@ -75,7 +75,7 @@ export function LoginModal() {
           
           {/* Logo in the center/top */}
           <div className="absolute top-12 left-12 z-20">
-            <img src="/readywear logo.png" alt="Mehzin Offers" className="h-12 w-auto mix-blend-screen opacity-90 brightness-200" />
+            <img src={logoUrl || "/readywear logo.png"} alt="Mehzin Offers" className="h-12 w-auto mix-blend-screen opacity-90 brightness-200" />
           </div>
 
           {/* Decorative Circles */}

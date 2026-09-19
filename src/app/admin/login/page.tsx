@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { useGSAP } from "@gsap/react";
@@ -15,6 +15,18 @@ export default function AdminLogin() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [logoUrl, setLogoUrl] = useState("/readywear logo.png");
+
+  useEffect(() => {
+    fetch("/api/settings/public")
+      .then(res => res.json())
+      .then(data => {
+        if (data.success && data.logoUrl) {
+          setLogoUrl(data.logoUrl);
+        }
+      })
+      .catch(console.error);
+  }, []);
 
   useGSAP(() => {
     // Left side image overlay animation
@@ -74,7 +86,7 @@ export default function AdminLogin() {
           <div className="relative z-20 flex flex-col justify-between h-full p-12 text-white">
             <div className="flex items-center gap-2">
               <Image 
-                 src="/readywear logo.png" 
+                 src={logoUrl} 
                  alt="Mehzin Offers" 
                  width={180} 
                  height={60} 

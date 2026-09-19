@@ -45,7 +45,7 @@ export default async function StorefrontLayout({
         </main>
         <Footer logoUrl={footerLogo || headerLogo} socialLinks={socialLinks} />
         <MobileNavbar />
-        <ClientModals />
+        <ClientModals logoUrl={headerLogo} />
         <FloatingSocialButtons whatsappUrl={socialLinks.whatsapp} messengerUrl={socialLinks.messenger} />
       </div>
     </Providers>

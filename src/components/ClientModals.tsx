@@ -6,11 +6,11 @@ const CartSidebar = dynamic(() => import("./CartSidebar").then(mod => mod.CartSi
 const LoginModal = dynamic(() => import("./LoginModal").then(mod => mod.LoginModal), { ssr: false });
 const SearchModal = dynamic(() => import("./SearchModal").then(mod => mod.SearchModal), { ssr: false });
 
-export function ClientModals() {
+export function ClientModals({ logoUrl }: { logoUrl?: string }) {
   return (
     <>
       <CartSidebar />
-      <LoginModal />
+      <LoginModal logoUrl={logoUrl} />
       <SearchModal />
     </>
   );
