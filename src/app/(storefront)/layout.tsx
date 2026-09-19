@@ -3,6 +3,7 @@ import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { MobileNavbar } from "@/components/MobileNavbar";
 import { ClientModals } from "@/components/ClientModals";
+import { FloatingSocialButtons } from "@/components/FloatingSocialButtons";
 import { Providers } from "@/components/Providers";
 import connectToDatabase from "@/lib/mongodb";
 
@@ -13,7 +14,7 @@ export default async function StorefrontLayout({
 }) {
   let headerLogo = "";
   let footerLogo = "";
-  let socialLinks = {};
+  let socialLinks: any = {};
 
   try {
     const StoreSettings = (await import("@/models/StoreSettings")).default;
@@ -27,6 +28,7 @@ export default async function StorefrontLayout({
         instagram: settings.instagramUrl || "",
         youtube: settings.youtubeUrl || "",
         whatsapp: settings.whatsappUrl || "",
+        messenger: settings.messengerUrl || "",
       };
     }
   } catch (error) {
@@ -44,6 +46,7 @@ export default async function StorefrontLayout({
         <Footer logoUrl={footerLogo || headerLogo} socialLinks={socialLinks} />
         <MobileNavbar />
         <ClientModals />
+        <FloatingSocialButtons whatsappUrl={socialLinks.whatsapp} messengerUrl={socialLinks.messenger} />
       </div>
     </Providers>
   );

@@ -51,6 +51,7 @@ export async function POST(req: NextRequest) {
       if (body.instagramUrl !== undefined) settings.instagramUrl = body.instagramUrl;
       if (body.youtubeUrl !== undefined) settings.youtubeUrl = body.youtubeUrl;
       if (body.whatsappUrl !== undefined) settings.whatsappUrl = body.whatsappUrl;
+      if (body.messengerUrl !== undefined) settings.messengerUrl = body.messengerUrl;
     }
     
     await settings.save();

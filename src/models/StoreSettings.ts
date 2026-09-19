@@ -14,6 +14,7 @@ export interface IStoreSettings extends Document {
   instagramUrl?: string;
   youtubeUrl?: string;
   whatsappUrl?: string;
+  messengerUrl?: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -32,7 +33,8 @@ const StoreSettingsSchema: Schema<IStoreSettings> = new Schema(
     facebookUrl: { type: String, default: "" },
     instagramUrl: { type: String, default: "" },
     youtubeUrl: { type: String, default: "" },
-    whatsappUrl: { type: String, default: "" }
+    whatsappUrl: { type: String, default: "" },
+    messengerUrl: { type: String, default: "" }
   },
   { timestamps: true }
 );

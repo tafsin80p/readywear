@@ -22,6 +22,7 @@ export default function AppearanceSettings() {
   const [instagramUrl, setInstagramUrl] = useState("");
   const [youtubeUrl, setYoutubeUrl] = useState("");
   const [whatsappUrl, setWhatsappUrl] = useState("");
+  const [messengerUrl, setMessengerUrl] = useState("");
 
   useEffect(() => {
     const fetchSettings = async () => {
@@ -42,6 +43,7 @@ export default function AppearanceSettings() {
           if (data.settings.instagramUrl) setInstagramUrl(data.settings.instagramUrl);
           if (data.settings.youtubeUrl) setYoutubeUrl(data.settings.youtubeUrl);
           if (data.settings.whatsappUrl) setWhatsappUrl(data.settings.whatsappUrl);
+          if (data.settings.messengerUrl) setMessengerUrl(data.settings.messengerUrl);
         }
       } catch (error) {
         console.error("Failed to load appearance settings:", error);
@@ -106,7 +108,8 @@ export default function AppearanceSettings() {
           facebookUrl,
           instagramUrl,
           youtubeUrl,
-          whatsappUrl
+          whatsappUrl,
+          messengerUrl
         }),
       });
 
@@ -224,6 +227,16 @@ export default function AppearanceSettings() {
                   onChange={(e) => setWhatsappUrl(e.target.value)}
                   className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm"
                   placeholder="https://wa.me/..."
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">Messenger URL</label>
+                <input
+                  type="url"
+                  value={messengerUrl}
+                  onChange={(e) => setMessengerUrl(e.target.value)}
+                  className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm"
+                  placeholder="https://m.me/..."
                 />
               </div>
             </div>
