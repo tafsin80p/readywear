@@ -134,7 +134,7 @@ export default function AppearanceSettings() {
   }
 
   return (
-    <div className="p-6 max-w-4xl mx-auto mb-20">
+    <div className="w-full p-6 space-y-6 mb-20">
       <div className="flex items-center justify-between mb-8">
         <div>
           <h1 className="text-2xl font-black text-gray-900">Appearance Settings</h1>
