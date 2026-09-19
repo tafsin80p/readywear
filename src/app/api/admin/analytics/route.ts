@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { BetaAnalyticsDataClient } from "@google-analytics/data";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
+import IntegrationSettings from "@/models/IntegrationSettings";
+import connectToDatabase from "@/lib/mongodb";
 
 
 export async function GET() {
@@ -11,9 +13,15 @@ export async function GET() {
       return NextResponse.json({ success: false, message: "Unauthorized" }, { status: 401 });
     }
 
-    const clientEmail = process.env.GA_CLIENT_EMAIL;
-    const privateKey = process.env.GA_PRIVATE_KEY?.replace(/\\n/g, '\n');
-    const propertyId = process.env.GA_PROPERTY_ID;
+    await connectToDatabase();
+    const settings = await IntegrationSettings.findOne();
+
+    // Prefer DB settings, fallback to .env
+    const clientEmail = settings?.googleAnalytics?.clientEmail || process.env.GA_CLIENT_EMAIL;
+    // Replace literal '\n' string from env/db with actual newlines
+    let privateKeyRaw = settings?.googleAnalytics?.privateKey || process.env.GA_PRIVATE_KEY;
+    const privateKey = privateKeyRaw?.replace(/\\n/g, '\n');
+    const propertyId = settings?.googleAnalytics?.propertyId || process.env.GA_PROPERTY_ID;
 
     // Check if credentials are provided
     if (!clientEmail || !privateKey || !propertyId) {

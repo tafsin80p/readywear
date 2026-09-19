@@ -73,7 +73,10 @@ export default function IntegrationsPage() {
 
   const [googleAnalytics, setGoogleAnalytics] = useState({
     enabled: false,
-    measurementId: ""
+    measurementId: "",
+    clientEmail: "",
+    privateKey: "",
+    propertyId: ""
   });
 
   const [tiktok, setTiktok] = useState({
@@ -833,6 +836,36 @@ export default function IntegrationsPage() {
                       placeholder="G-XXXXXXXXXX"
                     />
                     <p className="text-[11px] text-gray-500 mt-1.5 font-medium">Your Google Analytics 4 Measurement ID.</p>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Property ID</label>
+                    <input 
+                      type="text" 
+                      value={googleAnalytics.propertyId}
+                      onChange={e => setGoogleAnalytics({...googleAnalytics, propertyId: e.target.value})}
+                      className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-[#F9AB00]/20 focus:border-[#F9AB00] transition-all outline-none bg-white"
+                      placeholder="123456789"
+                    />
+                    <p className="text-[11px] text-gray-500 mt-1.5 font-medium">Found in Google Analytics Admin &gt; Property Settings.</p>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Client Email (Service Account)</label>
+                    <input 
+                      type="text" 
+                      value={googleAnalytics.clientEmail}
+                      onChange={e => setGoogleAnalytics({...googleAnalytics, clientEmail: e.target.value})}
+                      className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-[#F9AB00]/20 focus:border-[#F9AB00] transition-all outline-none bg-white"
+                      placeholder="service-account@project.iam.gserviceaccount.com"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Private Key (Service Account)</label>
+                    <textarea 
+                      value={googleAnalytics.privateKey}
+                      onChange={e => setGoogleAnalytics({...googleAnalytics, privateKey: e.target.value})}
+                      className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-[#F9AB00]/20 focus:border-[#F9AB00] transition-all outline-none bg-white min-h-[100px]"
+                      placeholder="-----BEGIN PRIVATE KEY-----\nMIIE...\n-----END PRIVATE KEY-----"
+                    />
                   </div>
 
                   <div className="pt-4 flex justify-end border-t border-gray-100 mt-2">

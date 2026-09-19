@@ -42,6 +42,9 @@ export interface IIntegrationSettings extends Document {
   googleAnalytics: {
     enabled: boolean;
     measurementId: string;
+    clientEmail?: string;
+    privateKey?: string;
+    propertyId?: string;
   };
   tiktok: {
     enabled: boolean;
@@ -108,6 +111,9 @@ const IntegrationSettingsSchema: Schema<IIntegrationSettings> = new Schema(
     googleAnalytics: {
       enabled: { type: Boolean, default: false },
       measurementId: { type: String, default: "" },
+      clientEmail: { type: String, default: "" },
+      privateKey: { type: String, default: "" },
+      propertyId: { type: String, default: "" },
     },
     tiktok: {
       enabled: { type: Boolean, default: false },

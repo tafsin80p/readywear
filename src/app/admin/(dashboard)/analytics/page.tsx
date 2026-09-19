@@ -115,19 +115,8 @@ export default function AnalyticsDashboardPage() {
             <div className="flex gap-4">
               <div className="w-8 h-8 rounded-full bg-primary/10 text-primary font-bold flex items-center justify-center shrink-0">4</div>
               <div className="w-full">
-                <h3 className="font-bold text-gray-900 mb-2">Add Credentials to your .env file</h3>
-                <p className="text-sm text-gray-600 mb-4">Open your project's <code>.env</code> file and add the following keys using the details from your downloaded JSON and Google Analytics:</p>
-                
-                <div className="bg-gray-900 rounded-xl p-4 font-mono text-xs text-gray-300 relative group overflow-hidden">
-                  <div className="absolute right-2 top-2">
-                    <button onClick={() => copyToClipboard('GA_CLIENT_EMAIL="your-service-account-email"\nGA_PRIVATE_KEY="your-private-key"\nGA_PROPERTY_ID="your-property-id"')} className="p-2 bg-gray-800 hover:bg-gray-700 rounded-lg transition-colors text-white">
-                      <Copy className="w-4 h-4" />
-                    </button>
-                  </div>
-                  <div><span className="text-pink-400">GA_CLIENT_EMAIL</span>="your-service-account-email@project.iam.gserviceaccount.com"</div>
-                  <div className="mt-2"><span className="text-pink-400">GA_PRIVATE_KEY</span>="-----BEGIN PRIVATE KEY-----\nYourKeyHere\n-----END PRIVATE KEY-----\n"</div>
-                  <div className="mt-2"><span className="text-pink-400">GA_PROPERTY_ID</span>="123456789" <span className="text-gray-500 ml-2">// Found in GA Admin &gt; Property Settings</span></div>
-                </div>
+                <h3 className="font-bold text-gray-900 mb-2">Add Credentials to Integrations Dashboard</h3>
+                <p className="text-sm text-gray-600 mb-4">Go to <span className="font-bold">Settings &gt; Integrations</span> and add the following keys to the Google Analytics section using the details from your downloaded JSON and Google Analytics Property Settings.</p>
               </div>
             </div>
           </div>
@@ -135,9 +124,10 @@ export default function AnalyticsDashboardPage() {
           <div className="bg-orange-50 p-6 border-t border-orange-100 flex items-start gap-3">
             <AlertCircle className="w-5 h-5 text-orange-600 shrink-0 mt-0.5" />
             <p className="text-sm text-orange-800 font-medium leading-relaxed">
-              After adding these keys to your <code>.env</code> file, you MUST restart your development server (<code>npm run dev</code>). Once restarted, this page will automatically unlock and show your live analytics dashboard!
+              After adding these keys to your Integrations Dashboard and saving, this page will automatically unlock and show your live analytics dashboard!
             </p>
           </div>
+
         </div>
       </div>
     );
