@@ -139,6 +139,7 @@ export function ProductDetails({ product, relatedProducts }: { product: Product,
                   width={800}
                   height={1200}
                   priority
+                  fetchPriority="high"
                   className={`w-full h-auto object-contain transition-transform duration-200 ease-out ${isZoomed ? 'scale-[2.5]' : 'scale-100'}`}
                   style={{
                     transformOrigin: isZoomed ? `${mousePosition.x}% ${mousePosition.y}%` : 'center center'

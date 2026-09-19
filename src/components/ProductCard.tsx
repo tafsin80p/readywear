@@ -75,6 +75,7 @@ export function ProductCard({ product, priority = false }: ProductProps) {
           width={400}
           height={600}
           priority={priority}
+          fetchPriority={priority ? "high" : "auto"}
           sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 20vw"
           className="w-full h-auto object-cover group-hover/image:scale-105 transition-transform duration-500"
         />

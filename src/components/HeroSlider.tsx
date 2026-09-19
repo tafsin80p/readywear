@@ -65,6 +65,7 @@ export function HeroSlider() {
             fill
             className="object-cover object-center"
             priority={index === 0}
+            fetchPriority={index === 0 ? "high" : "auto"}
           />
           <div className="absolute inset-0 bg-gradient-to-r from-white/90 via-white/50 to-transparent" />
           
