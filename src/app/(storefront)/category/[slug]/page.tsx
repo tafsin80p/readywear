@@ -27,10 +27,10 @@ export async function generateMetadata(
 
   return {
     title: activeCategoryObj.name,
-    description: `Shop the best ${activeCategoryObj.name} collection at ReadyWear. Premium quality clothing in Bangladesh.`,
+    description: `Shop the best ${activeCategoryObj.name} collection at Mehzin Offers. Premium quality clothing in Bangladesh.`,
     openGraph: {
-      title: `${activeCategoryObj.name} Collection | ReadyWear`,
-      description: `Shop the best ${activeCategoryObj.name} collection at ReadyWear.`,
+      title: `${activeCategoryObj.name} Collection | Mehzin Offers`,
+      description: `Shop the best ${activeCategoryObj.name} collection at Mehzin Offers.`,
     },
   };
 }

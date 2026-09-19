@@ -26,17 +26,17 @@ export async function generateMetadata(
 
   const description = product.description 
     ? product.description.slice(0, 150) + "..."
-    : `Buy ${product.name} at ReadyWear. Best quality ${product.category} in Bangladesh. Price: ৳${product.price}. Shop now!`;
+    : `Buy ${product.name} at Mehzin Offers. Best quality ${product.category} in Bangladesh. Price: ৳${product.price}. Shop now!`;
 
   return {
-    title: `${product.name} - ReadyWear`,
+    title: `${product.name} - Mehzin Offers`,
     description: description,
-    keywords: [product.name, product.category, 'ReadyWear', 'Bangladesh fashion', 'buy online', product.sku],
+    keywords: [product.name, product.category, 'Mehzin Offers', 'Bangladesh fashion', 'buy online', product.sku],
     openGraph: {
       title: product.name,
       description: description,
       url: `https://readywear.com.bd/product/${product.slug}`,
-      siteName: 'ReadyWear',
+      siteName: 'Mehzin Offers',
       images: [
         {
           url: mainImage,
@@ -84,11 +84,11 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
     '@type': 'Product',
     name: productDoc.name,
     image: productDoc.images,
-    description: productDoc.description || `Buy ${productDoc.name} at ReadyWear.`,
+    description: productDoc.description || `Buy ${productDoc.name} at Mehzin Offers.`,
     sku: productDoc.sku,
     brand: {
       '@type': 'Brand',
-      name: 'ReadyWear'
+      name: 'Mehzin Offers'
     },
     offers: {
       '@type': 'Offer',
