@@ -391,19 +391,7 @@ export function AdminSidebar({
         </div>
       </div>
 
-      {/* Promo Banner */}
-      <div className={cn("transition-all duration-300 overflow-hidden", isCollapsed ? "h-0 opacity-0 p-0" : "h-[100px] opacity-100 p-6")}>
-        <div className="bg-gradient-to-br from-pink-50 via-white to-pink-100/50 rounded-2xl p-4 flex items-center justify-between border border-pink-100/50 shadow-sm hover:shadow-md transition-shadow cursor-pointer group">
-          <div>
-            <h4 className="font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-primary to-primary/80 text-sm">ReadyWear</h4>
-            <p className="text-xs text-gray-500 mt-0.5 font-medium whitespace-nowrap">Fashion for Every You</p>
-          </div>
-          <div className="w-10 h-10 bg-gradient-to-br from-primary to-primary/80 rounded-full flex items-center justify-center text-white shrink-0 shadow-lg shadow-pink-200 group-hover:scale-110 transition-transform duration-300">
-            <ShoppingBag className="w-4 h-4" />
-          </div>
-        </div>
-      </div>
-      
+
       <style>{`
         .custom-scrollbar::-webkit-scrollbar {
           width: 4px;
