@@ -84,7 +84,7 @@ export default function PushNotificationManager({ toneUrl }: { toneUrl?: string 
     setTriggerPermission(() => requestPermission);
     
     // Create a floating button in the UI for the admin to debug notifications
-    if (pathname.startsWith('/admin')) {
+    if (pathname.startsWith('/admin') && pathname !== '/admin/login') {
       const debugBtn = document.createElement("button");
       debugBtn.innerText = `🔔 Push Status: ${Notification.permission}`;
       debugBtn.className = "fixed bottom-5 right-5 bg-purple-600 text-white px-4 py-2 rounded-full shadow-lg z-50 font-medium text-sm hover:bg-purple-700 transition-all";
