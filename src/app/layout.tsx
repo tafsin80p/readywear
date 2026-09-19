@@ -10,6 +10,8 @@ const bengaliFont = Hind_Siliguri({
   subsets: ["bengali"],
   weight: ["300", "400", "500", "600", "700"],
   variable: "--font-bengali",
+  display: 'swap',
+  preload: true,
 });
 
 export async function generateMetadata(): Promise<Metadata> {
