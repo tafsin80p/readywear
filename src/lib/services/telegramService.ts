@@ -20,7 +20,16 @@ const escapeMarkdown = (text: string | number | undefined | null) => {
 const buildOrderMessageText = (order: any, extraText: string = "") => {
   let productsList = escapeMarkdown(order.items.map((item: any) => item.title || item.name).join(", "));
   let totalQty = order.items.reduce((sum: number, item: any) => sum + item.quantity, 0);
-  let orderDate = escapeMarkdown(order.createdAt ? new Date(order.createdAt).toLocaleString() : new Date().toLocaleString());
+  const dateObj = order.createdAt ? new Date(order.createdAt) : new Date();
+  let orderDate = escapeMarkdown(dateObj.toLocaleString('en-US', { 
+    timeZone: 'Asia/Dhaka',
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: true
+  }));
   
   let statusText = "pending\\_verification";
   if (order.verificationStatus === "confirmed") statusText = "✅ CONFIRMED";
