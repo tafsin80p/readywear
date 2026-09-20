@@ -4,6 +4,8 @@ export const oneSignalService = {
   sendAdminNotification: async (title: string, body: string, url: string = '/admin/orders', type: string = 'order') => {
     try {
       const settings = await IntegrationSettings.findOne();
+      const storeSettings = await (await import('@/models/StoreSettings')).default.findOne();
+      const iconUrl = storeSettings?.favicon || storeSettings?.headerLogo || "";
       
       if (!settings || !settings.pushNotification || !settings.pushNotification.enabled) {
         return { success: false, reason: "Push notifications disabled" };
@@ -28,7 +30,10 @@ export const oneSignalService = {
           contents: { en: body },
           headings: { en: title },
           url: url,
-          data: { type, url }
+          data: { type, url },
+          chrome_web_icon: iconUrl,
+          firefox_icon: iconUrl,
+          safari_icon: iconUrl
         })
       });
 
