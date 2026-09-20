@@ -37,7 +37,11 @@ export default function PushNotificationManager({ toneUrl }: { toneUrl?: string 
       try {
         await OneSignal.init({
           appId: appId,
+          safari_web_id: "web.onesignal.auto.6514249a-4cb8-451b-a889-88f5913c9a7f",
           allowLocalhostAsSecureOrigin: true,
+          notifyButton: {
+            enable: true,
+          },
         });
 
         // Add 'role: admin' tag if user is in admin dashboard
