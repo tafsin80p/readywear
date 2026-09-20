@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { after } from "next/server";
 import connectToDatabase from "@/lib/mongodb";
 import Order from "@/models/Order";
 import { getServerSession } from "next-auth";
@@ -63,8 +64,9 @@ export async function POST(req: NextRequest) {
 
     await newOrder.save();
 
-    // Run external notifications concurrently to significantly speed up checkout
-    await Promise.allSettled([
+    // Run external notifications asynchronously without blocking the API response
+    after(async () => {
+      await Promise.allSettled([
       (async () => {
         try {
           const tgResult = await telegramService.sendOrderNotification(newOrder);
@@ -109,6 +111,7 @@ export async function POST(req: NextRequest) {
         }
       })()
     ]);
+    });
 
     return NextResponse.json(
       { success: true, message: "Order created successfully", orderId: newOrder._id, displayId: orderId },
