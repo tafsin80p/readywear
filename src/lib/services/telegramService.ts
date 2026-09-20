@@ -40,6 +40,9 @@ const buildOrderMessageText = (order: any, extraText: string = "") => {
     if (item.quantity > 1) {
       name += ` x${item.quantity}`;
     }
+    if (item.image) {
+      name = `[🖼️](${item.image}) ` + name;
+    }
     return name;
   }).join("\n• "));
   let totalQty = order.items.reduce((sum: number, item: any) => sum + item.quantity, 0);
