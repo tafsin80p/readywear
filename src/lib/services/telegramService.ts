@@ -163,30 +163,14 @@ export const telegramService = {
       const isLead = action === "lead";
       const isFake = action === "fake";
       
-      let headerIcon = isConfirmed ? "🛍️" : isLead ? "🎯" : "❌";
-      let statusText = isConfirmed ? "✅ *CONFIRMED*" : isLead ? "🎯 *REAL ORDER (LEAD)*" : "❌ *FAKE / CANCELLED*";
-      
-      const message = `
-${headerIcon} *MEHZIN OFFERS ORDER*
+      let extraText = `
+*Action by:* ${escapeMarkdown(order.confirmedBy || "Admin")}
 
-Order: #${escapeMarkdown(order.orderId)}
-
-👤 ${escapeMarkdown(order.customerInfo.firstName)} ${escapeMarkdown(order.customerInfo.lastName || "")}
-📞 ${escapeMarkdown(order.customerInfo.phone)}
-
-💰 ৳${escapeMarkdown(order.pricing.total)}
-
-${statusText}
-
-Action by:
-${escapeMarkdown(order.confirmedBy || "Admin")}
-
-Meta Events:
+*Meta Events:*
 Purchase: ${order.metaEventStatus === "sent" ? "✅ SENT" : "🚫 NOT SENT"}
 Lead: ${order.metaLeadEventStatus === "sent" ? "✅ SENT" : "🚫 NOT SENT"}
 
-Timestamp:
-${escapeMarkdown(new Date().toLocaleString('en-US', {
+*Timestamp:* ${escapeMarkdown(new Date().toLocaleString('en-US', {
   timeZone: 'Asia/Dhaka',
   year: 'numeric',
   month: 'short',
@@ -194,8 +178,9 @@ ${escapeMarkdown(new Date().toLocaleString('en-US', {
   hour: '2-digit',
   minute: '2-digit',
   hour12: true
-}))}
-`;
+}))}`;
+
+      const message = buildOrderMessageText(order, extraText);
 
       // Telegram rejects localhost URLs in inline keyboards
       let appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://yourwebsite.com";
