@@ -70,11 +70,15 @@ export default function PushNotificationManager({ toneUrl }: { toneUrl?: string 
             });
           }
 
-          // Play tone
+          // Stop existing audio if playing
+          if (audioRef.current) {
+            audioRef.current.pause();
+            audioRef.current.currentTime = 0;
+          }
+
+          // Audio will be played by the <audio> tag in the overlay
           try {
-            if (toneUrl) {
-              new Audio(toneUrl).play().catch(e => console.error("Failed to play custom tone", e));
-            } else {
+            if (!toneUrl) {
               const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
               if (AudioContext) {
                 const ctx = new AudioContext();
@@ -94,15 +98,28 @@ export default function PushNotificationManager({ toneUrl }: { toneUrl?: string 
             }
           } catch (err) {}
           
-          // Optionally, display it anyway by not calling preventDefault, but we show overlay instead
-        });
+        };
+
+        OneSignal.Notifications.addEventListener('foregroundWillDisplay', handleNotification);
+
+        // Cleanup function for listener
+        return () => {
+          OneSignal.Notifications.removeEventListener('foregroundWillDisplay', handleNotification);
+        };
 
       } catch (err) {
         console.error("OneSignal Init Error:", err);
       }
     };
 
-    initOneSignal();
+    let cleanupFn: (() => void) | void;
+    initOneSignal().then(cleanup => {
+      cleanupFn = cleanup;
+    });
+
+    return () => {
+      if (cleanupFn) cleanupFn();
+    };
 
   }, [isSupported, appId, pathname, toneUrl]);
 
@@ -174,6 +191,13 @@ export default function PushNotificationManager({ toneUrl }: { toneUrl?: string 
 
   const handleCloseOverlay = (redirectUrl?: string) => {
     setIsClosing(true);
+    
+    // Stop audio
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
+    }
+
     setTimeout(() => {
       setIncomingOrder(null);
       setIsClosing(false);
@@ -214,6 +238,9 @@ export default function PushNotificationManager({ toneUrl }: { toneUrl?: string 
           <div className="bg-white text-primary font-black text-lg px-8 py-3 rounded-2xl shadow-xl hover:bg-gray-50 transition-colors">
             View Order Details
           </div>
+          {toneUrl && (
+            <audio src={toneUrl} autoPlay loop className="hidden" />
+          )}
         </div>
       </div>
     );
