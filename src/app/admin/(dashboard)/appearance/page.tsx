@@ -103,7 +103,7 @@ export default function AppearanceSettings() {
         body: JSON.stringify({ 
           file: base64File, 
           folder: "readywear/appearance",
-          type: type === 'tone' ? 'audio' : 'image'
+          type: 'image'
         }),
       });
       
@@ -115,9 +115,8 @@ export default function AppearanceSettings() {
       else if (type === 'footer') setFooterLogo(url);
       else if (type === 'favicon') setFavicon(url);
       else if (type === 'social') setSocialImage(url);
-      else if (type === 'tone') setNotificationTone(url);
       
-      toast.success(type === 'tone' ? "Audio uploaded successfully" : "Image uploaded successfully");
+      toast.success("Image uploaded successfully");
     } catch (error: any) {
       toast.error(error.message || "Failed to upload image");
     }
