@@ -56,6 +56,40 @@ export default function AppearanceSettings() {
 
   const handleFileUpload = async (file: File, type: 'header' | 'footer' | 'favicon' | 'tone' | 'social') => {
     try {
+      if (type === 'tone') {
+        const timestamp = Math.round(new Date().getTime() / 1000);
+        const paramsToSign = {
+          timestamp,
+          folder: "readywear/appearance",
+        };
+        const signRes = await fetch('/api/cloudinary/sign', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ paramsToSign })
+        });
+        const { signature } = await signRes.json();
+
+        const formData = new FormData();
+        formData.append("file", file);
+        formData.append("api_key", process.env.NEXT_PUBLIC_CLOUDINARY_API_KEY!);
+        formData.append("timestamp", timestamp.toString());
+        formData.append("signature", signature);
+        formData.append("folder", "readywear/appearance");
+        
+        const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
+        const uploadRes = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/auto/upload`, {
+          method: "POST",
+          body: formData,
+        });
+        
+        const uploadData = await uploadRes.json();
+        if (!uploadRes.ok) throw new Error(uploadData.error?.message || "Audio upload failed");
+        
+        setNotificationTone(uploadData.secure_url);
+        toast.success("Audio uploaded successfully");
+        return;
+      }
+
       const base64File = await new Promise<string>((resolve, reject) => {
         const reader = new FileReader();
         reader.readAsDataURL(file);
