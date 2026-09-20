@@ -235,6 +235,45 @@ export default function PushNotificationManager({ toneUrl }: { toneUrl?: string 
     }, 200);
   };
 
+  // Fallback Polling for iOS PWA where Web Push foreground events might fail
+  useEffect(() => {
+    if (!pathname.startsWith('/admin')) return;
+    
+    // Check every 10 seconds for new orders
+    let lastChecked = Date.now();
+    
+    const pollOrders = async () => {
+      try {
+        const res = await fetch(`/api/admin/orders/latest?since=${lastChecked}`);
+        if (!res.ok) return;
+        
+        const data = await res.json();
+        
+        if (data.success && data.orders && data.orders.length > 0) {
+          const newOrder = data.orders[0]; // Most recent order
+          
+          setIncomingOrder({
+            title: "New Order Received! 🛍️",
+            body: `Order ${newOrder.orderId} has been placed for ${newOrder.pricing?.total} BDT.`,
+            url: `/admin/orders/${newOrder._id}`
+          });
+          
+          if (toneUrl && audioRef.current) {
+            audioRef.current.src = toneUrl;
+            audioRef.current.play().catch(() => {});
+          }
+        }
+        
+        lastChecked = Date.now();
+      } catch (err) {
+        // Silently fail polling errors
+      }
+    };
+
+    const interval = setInterval(pollOrders, 10000);
+    return () => clearInterval(interval);
+  }, [pathname, toneUrl]);
+
   if (incomingOrder) {
     return (
       <div className={`fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-primary/95 backdrop-blur-md p-4 duration-300 ${isClosing ? 'animate-zoom-out' : 'animate-fade-zoom'}`}>
