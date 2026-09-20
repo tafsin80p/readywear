@@ -23,9 +23,13 @@ const buildOrderMessageText = (order: any, extraText: string = "") => {
     let attrs = [];
     if (item.size) attrs.push(`Size: ${item.size}`);
     if (item.color) attrs.push(`Color: ${item.color}`);
-    if (item.attributes && typeof item.attributes === 'object') {
-      for (const [key, val] of Object.entries(item.attributes)) {
-         attrs.push(`${key}: ${val}`);
+    let plainItem = typeof item.toJSON === 'function' ? item.toJSON() : item;
+    if (plainItem.attributes && typeof plainItem.attributes === 'object') {
+      const attrsObj = plainItem.attributes instanceof Map ? Object.fromEntries(plainItem.attributes) : plainItem.attributes;
+      for (const [key, val] of Object.entries(attrsObj)) {
+         if (typeof val !== 'object' && typeof val !== 'function' && !key.startsWith('$')) {
+           attrs.push(`${key}: ${val}`);
+         }
       }
     }
     // De-duplicate attributes if necessary

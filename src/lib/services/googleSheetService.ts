@@ -18,8 +18,16 @@ export const googleSheetService = {
         customerPhone: order.customerInfo.phone,
         customerAddress: `${order.customerInfo.address}, ${order.customerInfo.area}`,
         products: order.items.map((item: any) => `${item.title || item.name} (x${item.quantity})`).join(", "),
-        productSizes: order.items.map((item: any) => item.size).filter(Boolean).join(", ") || "-",
-        productColors: order.items.map((item: any) => item.color).filter(Boolean).join(", ") || "-",
+        productSizes: order.items.map((item: any) => {
+          let plain = typeof item.toJSON === 'function' ? item.toJSON() : item;
+          let attrs = plain.attributes instanceof Map ? Object.fromEntries(plain.attributes) : (plain.attributes || {});
+          return item.size || attrs.Size || attrs.size || "";
+        }).filter(Boolean).join(", ") || "-",
+        productColors: order.items.map((item: any) => {
+          let plain = typeof item.toJSON === 'function' ? item.toJSON() : item;
+          let attrs = plain.attributes instanceof Map ? Object.fromEntries(plain.attributes) : (plain.attributes || {});
+          return item.color || attrs.Color || attrs.color || "";
+        }).filter(Boolean).join(", ") || "-",
         subtotal: order.pricing.subtotal,
         shipping: order.pricing.deliveryCharge,
         total: order.pricing.total,
