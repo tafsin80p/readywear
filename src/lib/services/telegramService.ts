@@ -159,7 +159,15 @@ Purchase: ${order.metaEventStatus === "sent" ? "✅ SENT" : "🚫 NOT SENT"}
 Lead: ${order.metaLeadEventStatus === "sent" ? "✅ SENT" : "🚫 NOT SENT"}
 
 Timestamp:
-${escapeMarkdown(new Date().toLocaleString())}
+${escapeMarkdown(new Date().toLocaleString('en-US', {
+  timeZone: 'Asia/Dhaka',
+  year: 'numeric',
+  month: 'short',
+  day: 'numeric',
+  hour: '2-digit',
+  minute: '2-digit',
+  hour12: true
+}))}
 `;
 
       // Telegram rejects localhost URLs in inline keyboards
