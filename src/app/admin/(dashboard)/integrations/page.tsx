@@ -269,7 +269,7 @@ export default function IntegrationsPage() {
       const res = await fetch("/api/admin/integrations/test-telegram", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ botToken: telegram.botToken, chatId: telegram.chatId })
+        body: JSON.stringify({ botToken: telegram.botToken.trim(), chatId: telegram.chatId.trim() })
       });
       const data = await res.json();
       if (data.success) {
@@ -667,7 +667,7 @@ export default function IntegrationsPage() {
                     <input 
                       type="password" 
                       value={telegram.botToken}
-                      onChange={e => setTelegram({...telegram, botToken: e.target.value})}
+                      onChange={e => setTelegram({...telegram, botToken: e.target.value.trim()})}
                       className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-[#0088cc]/20 focus:border-[#0088cc] transition-all outline-none bg-white"
                       placeholder="123456789:ABCdefGHIjklMNOpqrsTUVwxyz"
                     />
@@ -677,7 +677,7 @@ export default function IntegrationsPage() {
                     <input 
                       type="text" 
                       value={telegram.chatId}
-                      onChange={e => setTelegram({...telegram, chatId: e.target.value})}
+                      onChange={e => setTelegram({...telegram, chatId: e.target.value.trim()})}
                       className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-[#0088cc]/20 focus:border-[#0088cc] transition-all outline-none bg-white"
                       placeholder="-100123456789"
                     />
