@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import OneSignal from 'react-onesignal';
 import { toast } from "react-hot-toast";
 import { usePathname, useRouter } from "next/navigation";
@@ -12,8 +12,10 @@ export default function PushNotificationManager({ toneUrl }: { toneUrl?: string 
   const [incomingOrder, setIncomingOrder] = useState<{ title: string; body: string; url: string } | null>(null);
   const [isClosing, setIsClosing] = useState(false);
   const [showPrompt, setShowPrompt] = useState(false);
+  const [audioUnlocked, setAudioUnlocked] = useState(false);
   const pathname = usePathname();
   const router = useRouter();
+  const audioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -29,6 +31,29 @@ export default function PushNotificationManager({ toneUrl }: { toneUrl?: string 
         .catch(err => console.error("Failed to fetch OneSignal config:", err));
     }
   }, []);
+
+  // Unlock Audio on First User Interaction
+  useEffect(() => {
+    const unlockAudio = () => {
+      if (audioRef.current && !audioUnlocked) {
+        audioRef.current.play().then(() => {
+          audioRef.current?.pause();
+          setAudioUnlocked(true);
+        }).catch(() => {});
+        // Remove listeners once unlocked
+        window.removeEventListener('click', unlockAudio);
+        window.removeEventListener('touchstart', unlockAudio);
+      }
+    };
+
+    window.addEventListener('click', unlockAudio);
+    window.addEventListener('touchstart', unlockAudio);
+
+    return () => {
+      window.removeEventListener('click', unlockAudio);
+      window.removeEventListener('touchstart', unlockAudio);
+    };
+  }, [audioUnlocked]);
 
   useEffect(() => {
     if (!isSupported || !appId) return;
@@ -70,9 +95,12 @@ export default function PushNotificationManager({ toneUrl }: { toneUrl?: string 
             });
           }
 
-          // Audio will be played by the <audio> tag in the overlay
-          try {
-            if (!toneUrl) {
+          // Play audio using the unlocked reference
+          if (toneUrl && audioRef.current) {
+            audioRef.current.src = toneUrl;
+            audioRef.current.loop = true;
+            audioRef.current.play().catch(e => console.error("Failed to play order alert:", e));
+          } else if (!toneUrl) {
               const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
               if (AudioContext) {
                 const ctx = new AudioContext();
@@ -185,7 +213,11 @@ export default function PushNotificationManager({ toneUrl }: { toneUrl?: string 
   const handleCloseOverlay = (redirectUrl?: string) => {
     setIsClosing(true);
     
-    // The <audio> tag will naturally stop when the component is unmounted (incomingOrder is set to null).
+    // Stop audio
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
+    }
 
     setTimeout(() => {
       setIncomingOrder(null);
@@ -227,13 +259,14 @@ export default function PushNotificationManager({ toneUrl }: { toneUrl?: string 
           <div className="bg-white text-primary font-black text-lg px-8 py-3 rounded-2xl shadow-xl hover:bg-gray-50 transition-colors">
             View Order Details
           </div>
-          {toneUrl && (
-            <audio src={toneUrl} autoPlay loop className="hidden" />
-          )}
         </div>
       </div>
     );
   }
 
-  return null;
+  return (
+    <>
+      <audio ref={audioRef} preload="auto" className="hidden" playsInline />
+    </>
+  );
 }
