@@ -18,8 +18,8 @@ const escapeMarkdown = (text: string | number | undefined | null) => {
 };
 
 const buildOrderMessageText = (order: any, extraText: string = "") => {
-  let productsList = escapeMarkdown(order.items.map((item: any) => {
-    let name = item.title || item.name;
+  let productsList = order.items.map((item: any) => {
+    let name = escapeMarkdown(item.title || item.name);
     let attrs = [];
     if (item.size) attrs.push(`Size: ${item.size}`);
     if (item.color) attrs.push(`Color: ${item.color}`);
@@ -35,13 +35,16 @@ const buildOrderMessageText = (order: any, extraText: string = "") => {
     // De-duplicate attributes if necessary
     attrs = [...new Set(attrs)];
     if (attrs.length > 0) {
-      name += ` (${attrs.join(", ")})`;
+      name += ` (${escapeMarkdown(attrs.join(", "))})`;
     }
     if (item.quantity > 1) {
       name += ` x${item.quantity}`;
     }
+    if (item.image) {
+      name = `[\u200B](${item.image})` + name;
+    }
     return name;
-  }).join("\n• "));
+  }).join("\n• ");
   let totalQty = order.items.reduce((sum: number, item: any) => sum + item.quantity, 0);
   const dateObj = order.createdAt ? new Date(order.createdAt) : new Date();
   let orderDate = escapeMarkdown(dateObj.toLocaleString('en-US', { 
