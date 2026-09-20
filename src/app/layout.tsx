@@ -5,6 +5,7 @@ import "./globals.css";
 import GoogleAnalytics from "@/components/GoogleAnalytics";
 import TikTokPixel from "@/components/TikTokPixel";
 import PushNotificationManager from "@/components/PushNotificationManager";
+import PwaManifest from "@/components/PwaManifest";
 
 const bengaliFont = Hind_Siliguri({
   subsets: ["bengali"],
@@ -107,6 +108,7 @@ export default async function RootLayout({
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="theme-color" content="#ffffff" />
+        <PwaManifest />
         <link rel="preconnect" href="https://images.unsplash.com" />
         <link rel="dns-prefetch" href="https://images.unsplash.com" />
         <style dangerouslySetInnerHTML={{
