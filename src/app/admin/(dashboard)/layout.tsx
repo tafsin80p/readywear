@@ -8,9 +8,17 @@ import Product from "@/models/Product";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 import { redirect } from "next/navigation";
+import type { Viewport } from 'next';
 
 export const dynamic = 'force-dynamic';
 export const fetchCache = 'force-no-store';
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+};
 
 export default async function AdminLayout({
   children,
