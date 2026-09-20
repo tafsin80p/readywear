@@ -46,7 +46,7 @@ export default async function AdminLayout({
       <div className="flex h-screen bg-gray-50/50 font-sans overflow-hidden" suppressHydrationWarning>
         <AdminSidebar unreadOrdersCount={unreadOrdersCount} totalProductsCount={totalProductsCount} logo={settings?.headerLogo || "/readywear logo.png"} />
         <div className="flex-1 flex flex-col h-screen overflow-hidden relative">
-          <AdminHeader />
+          <AdminHeader logo={settings?.headerLogo || "/readywear logo.png"} />
           <main className="flex-1 overflow-y-auto pb-20 lg:pb-0">
             {children}
           </main>

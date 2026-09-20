@@ -7,7 +7,7 @@ import Link from "next/link";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { signOut, useSession } from "next-auth/react";
 
-export function AdminHeader() {
+export function AdminHeader({ logo = "/readywear logo.png" }: { logo?: string }) {
   const { data: session } = useSession();
   const userName = session?.user?.name || "Admin";
   const userInitial = userName.charAt(0).toUpperCase();
@@ -279,8 +279,15 @@ export function AdminHeader() {
         </button>
 
         {/* Mobile Logo */}
-        <Link href="/admin" className="lg:hidden font-black text-xl tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-primary to-primary/80 font-bengali">
-          মেহজাবিন অফারস
+        <Link href="/admin" className="lg:hidden flex items-center shrink-0 max-w-[150px]">
+          <Image 
+            src={logo} 
+            alt="Logo" 
+            width={120} 
+            height={40} 
+            className="h-8 w-auto object-contain"
+            priority
+          />
         </Link>
         
         <div ref={searchRef} className="relative max-w-md w-full hidden md:block">
