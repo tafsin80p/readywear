@@ -87,13 +87,7 @@ export default function IntegrationsPage() {
   const [pushNotification, setPushNotification] = useState({
     enabled: false,
     appId: "",
-    apiKey: "",
-    authDomain: "",
-    projectId: "",
-    storageBucket: "",
-    messagingSenderId: "",
-    vapidKey: "",
-    serviceAccountJson: ""
+    restApiKey: ""
   });
 
   const [pathao, setPathao] = useState({
@@ -456,7 +450,7 @@ export default function IntegrationsPage() {
 
         {/* Push Notification Section */}
         <div className={`bg-white rounded-2xl border relative transition-all duration-300 shadow-sm ${expanded === 'pushNotification' ? 'border-purple-400 ring-2 ring-purple-50' : 'border-gray-200'}`}>
-          {pushNotification.enabled && pushNotification.appId && pushNotification.apiKey && pushNotification.vapidKey && (
+          {pushNotification.enabled && pushNotification.appId && pushNotification.restApiKey && (
             <div className="absolute top-4 right-4 bg-green-50 border border-green-200 text-green-700 text-[10px] font-bold px-2 py-1 rounded-full flex items-center gap-1.5 shadow-sm">
               <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span>
               Connected
@@ -911,85 +905,25 @@ export default function IntegrationsPage() {
               {expanded === 'pushNotification' && (
                 <div className="space-y-5">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">API Key</label>
-                    <input 
-                      type="text" 
-                      value={pushNotification.apiKey}
-                      onChange={e => setPushNotification({...pushNotification, apiKey: e.target.value})}
-                      className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-[#8B5CF6]/20 focus:border-[#8B5CF6] transition-all outline-none bg-white"
-                      placeholder="Enter API Key"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Auth Domain</label>
-                    <input 
-                      type="text" 
-                      value={pushNotification.authDomain}
-                      onChange={e => setPushNotification({...pushNotification, authDomain: e.target.value})}
-                      className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-[#8B5CF6]/20 focus:border-[#8B5CF6] transition-all outline-none bg-white"
-                      placeholder="project-id.firebaseapp.com"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Project ID</label>
-                    <input 
-                      type="text" 
-                      value={pushNotification.projectId}
-                      onChange={e => setPushNotification({...pushNotification, projectId: e.target.value})}
-                      className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-[#8B5CF6]/20 focus:border-[#8B5CF6] transition-all outline-none bg-white"
-                      placeholder="project-id"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Storage Bucket</label>
-                    <input 
-                      type="text" 
-                      value={pushNotification.storageBucket}
-                      onChange={e => setPushNotification({...pushNotification, storageBucket: e.target.value})}
-                      className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-[#8B5CF6]/20 focus:border-[#8B5CF6] transition-all outline-none bg-white"
-                      placeholder="project-id.appspot.com"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Messaging Sender ID</label>
-                    <input 
-                      type="text" 
-                      value={pushNotification.messagingSenderId}
-                      onChange={e => setPushNotification({...pushNotification, messagingSenderId: e.target.value})}
-                      className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-[#8B5CF6]/20 focus:border-[#8B5CF6] transition-all outline-none bg-white"
-                      placeholder="1234567890"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">App ID</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">OneSignal App ID</label>
                     <input 
                       type="text" 
                       value={pushNotification.appId}
                       onChange={e => setPushNotification({...pushNotification, appId: e.target.value})}
                       className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-[#8B5CF6]/20 focus:border-[#8B5CF6] transition-all outline-none bg-white"
-                      placeholder="1:1234567890:web:abcdef"
+                      placeholder="e.g. 1a2b3c4d-5e6f-7a8b-9c0d-1e2f3a4b5c6d"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">VAPID Key</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">OneSignal REST API Key</label>
                     <input 
-                      type="text" 
-                      value={pushNotification.vapidKey}
-                      onChange={e => setPushNotification({...pushNotification, vapidKey: e.target.value})}
+                      type="password" 
+                      value={pushNotification.restApiKey}
+                      onChange={e => setPushNotification({...pushNotification, restApiKey: e.target.value})}
                       className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-[#8B5CF6]/20 focus:border-[#8B5CF6] transition-all outline-none bg-white"
-                      placeholder="Generate in Cloud Messaging settings"
+                      placeholder="Enter REST API Key"
                     />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Service Account JSON</label>
-                    <textarea 
-                      value={pushNotification.serviceAccountJson}
-                      onChange={e => setPushNotification({...pushNotification, serviceAccountJson: e.target.value})}
-                      className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-[#8B5CF6]/20 focus:border-[#8B5CF6] transition-all outline-none bg-white font-mono text-xs"
-                      placeholder='{"type": "service_account", "project_id": "..."}'
-                      rows={4}
-                    />
-                    <p className="text-[11px] text-gray-500 mt-1.5 font-medium">Required for sending automatic push notifications from the server. Generate in Project Settings &gt; Service Accounts.</p>
+                    <p className="text-[11px] text-gray-500 mt-1.5 font-medium">Keep this secret. Used to send notifications from the backend.</p>
                   </div>
 
                   <div className="pt-4 flex justify-end border-t border-gray-100 mt-2">

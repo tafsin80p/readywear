@@ -11,18 +11,12 @@ export async function GET() {
       return NextResponse.json({
         success: true,
         config: {
-          apiKey: settings.pushNotification.apiKey,
-          authDomain: settings.pushNotification.authDomain,
-          projectId: settings.pushNotification.projectId,
-          storageBucket: settings.pushNotification.storageBucket,
-          messagingSenderId: settings.pushNotification.messagingSenderId,
           appId: settings.pushNotification.appId,
-          vapidKey: settings.pushNotification.vapidKey
         }
       });
     }
 
-    return NextResponse.json({ success: false, error: "Firebase Push Notifications are not enabled or configured." });
+    return NextResponse.json({ success: false, error: "OneSignal Push Notifications are not enabled or configured." });
   } catch (error: any) {
     return NextResponse.json({ success: false, error: error.message }, { status: 500 });
   }

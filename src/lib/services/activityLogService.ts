@@ -1,5 +1,5 @@
 import Notification from "@/models/Notification";
-import { fcmService } from "./fcmService";
+import { oneSignalService } from "./oneSignalService";
 import connectToDatabase from "@/lib/mongodb";
 
 type ActivityType = 'order' | 'product' | 'category' | 'customer' | 'setting' | 'other';
@@ -15,7 +15,7 @@ interface ActivityLogParams {
 export const activityLogService = {
   /**
    * Logs an activity to the Notification collection.
-   * Optionally sends a push notification via fcmService.
+   * Optionally sends a push notification via oneSignalService.
    */
   logActivity: async ({ title, message, type, link, sendPush = true }: ActivityLogParams) => {
     try {
@@ -33,7 +33,7 @@ export const activityLogService = {
       // Send push notification if requested
       if (sendPush) {
         try {
-          await fcmService.sendAdminNotification(title, message, link, type);
+          await oneSignalService.sendAdminNotification(title, message, link, type);
         } catch (err) {
           console.error("Failed to send push notification from activity log", err);
         }

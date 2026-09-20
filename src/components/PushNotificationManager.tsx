@@ -1,196 +1,125 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { initFirebase, getToken, onMessage } from "@/lib/firebase";
+import OneSignal from 'react-onesignal';
 import { toast } from "react-hot-toast";
 import { usePathname, useRouter } from "next/navigation";
 import { Bell, X, ShoppingBag } from "lucide-react";
 
 export default function PushNotificationManager({ toneUrl }: { toneUrl?: string }) {
   const [isSupported, setIsSupported] = useState(false);
-  const [config, setConfig] = useState<any>(null);
+  const [appId, setAppId] = useState<string | null>(null);
   const [incomingOrder, setIncomingOrder] = useState<{ title: string; body: string; url: string } | null>(null);
   const [isClosing, setIsClosing] = useState(false);
+  const [showPrompt, setShowPrompt] = useState(false);
   const pathname = usePathname();
   const router = useRouter();
 
   useEffect(() => {
-    // Check if the browser supports notifications and service workers
-    if (typeof window !== "undefined" && "Notification" in window && "serviceWorker" in navigator) {
+    if (typeof window !== "undefined") {
       setIsSupported(true);
-      
-      // Fetch dynamic firebase configuration from database
-      fetch('/api/settings/firebase')
+      // Fetch OneSignal config
+      fetch('/api/settings/onesignal')
         .then(res => res.json())
         .then(data => {
-          if (data.success && data.config) {
-             setConfig(data.config);
+          if (data.success && data.config?.appId) {
+             setAppId(data.config.appId);
           }
         })
-        .catch(err => console.error("Failed to fetch Firebase config:", err));
+        .catch(err => console.error("Failed to fetch OneSignal config:", err));
     }
   }, []);
 
   useEffect(() => {
-    if (!isSupported || !config) return;
+    if (!isSupported || !appId) return;
 
-    const { messaging } = initFirebase(config);
-    if (!messaging) return;
-
-    const requestPermission = async () => {
+    const initOneSignal = async () => {
       try {
-        const permission = await Notification.requestPermission();
-        if (permission === "granted") {
-          console.log("Notification permission granted.");
+        await OneSignal.init({
+          appId: appId,
+          allowLocalhostAsSecureOrigin: true,
+        });
+
+        // Add 'role: admin' tag if user is in admin dashboard
+        if (pathname.startsWith('/admin')) {
+          await OneSignal.User.addTag("role", "admin");
+        }
+
+        // Handle foreground notifications (OneSignal v16+)
+        OneSignal.Notifications.addEventListener('foregroundWillDisplay', (event) => {
+          event.preventDefault(); // Prevent default browser notification in foreground
           
-          // Get the FCM token
-          const registration = await navigator.serviceWorker.register('/firebase-messaging-sw.js');
-          const token = await getToken(messaging, {
-            vapidKey: config.vapidKey,
-            serviceWorkerRegistration: registration
-          });
+          const notification = event.notification;
+          const data = notification.additionalData as any;
+          const title = notification.title || "New Notification";
+          const body = notification.body || "";
           
-          if (token) {
-            console.log("FCM Token:", token);
-            // Send this token to the backend if we are on the admin panel
-            if (pathname.startsWith('/admin')) {
-              try {
-                await fetch('/api/admin/fcm-token', {
-                  method: 'POST',
-                  headers: { 'Content-Type': 'application/json' },
-                  body: JSON.stringify({ token })
-                });
-                console.log("Admin FCM token registered successfully.");
-              } catch (err) {
-                console.error("Failed to register Admin FCM token:", err);
+          const isOrder = data?.type === 'order' || title.toLowerCase().includes('order');
+
+          if (isOrder) {
+            setIncomingOrder({
+              title,
+              body,
+              url: data?.url || "/admin/orders"
+            });
+          } else {
+            toast.success(`${title}\n${body}`, {
+              duration: 5000,
+              icon: '🔔',
+            });
+          }
+
+          // Play tone
+          try {
+            if (toneUrl) {
+              new Audio(toneUrl).play().catch(e => console.error("Failed to play custom tone", e));
+            } else {
+              const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
+              if (AudioContext) {
+                const ctx = new AudioContext();
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(880, ctx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(1760, ctx.currentTime + 0.1);
+                gain.gain.setValueAtTime(0, ctx.currentTime);
+                gain.gain.linearRampToValueAtTime(0.5, ctx.currentTime + 0.05);
+                gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.5);
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start();
+                osc.stop(ctx.currentTime + 0.6);
               }
             }
-          } else {
-            console.log("No registration token available. Request permission to generate one.");
-          }
-        } else {
-          console.log("Notification permission not granted.");
-        }
-      } catch (error) {
-        console.error("An error occurred while retrieving token. ", error);
+          } catch (err) {}
+          
+          // Optionally, display it anyway by not calling preventDefault, but we show overlay instead
+        });
+
+      } catch (err) {
+        console.error("OneSignal Init Error:", err);
       }
     };
 
-    if (Notification.permission === "granted") {
-      requestPermission();
-    }
-    
-    // Store request permission function in state so it can be called from UI
-    setTriggerPermission(() => requestPermission);
-    
-    // Create a floating button in the UI for the admin to debug notifications
-    if (pathname.startsWith('/admin') && pathname !== '/admin/login') {
-      const debugBtn = document.createElement("button");
-      debugBtn.innerText = `🔔 Push Status: ${Notification.permission}`;
-      debugBtn.className = "fixed bottom-5 right-5 bg-purple-600 text-white px-4 py-2 rounded-full shadow-lg z-50 font-medium text-sm hover:bg-purple-700 transition-all";
-      debugBtn.onclick = () => {
-        debugBtn.innerText = "Requesting...";
-        requestPermission().then(() => {
-          debugBtn.innerText = `🔔 Push Status: ${Notification.permission}`;
-        });
-      };
-      document.body.appendChild(debugBtn);
-      
-      const testOverlayBtn = document.createElement("button");
-      testOverlayBtn.innerText = `🧪 Test Overlay`;
-      testOverlayBtn.className = "fixed bottom-16 right-5 bg-green-600 text-white px-4 py-2 rounded-full shadow-lg z-50 font-medium text-sm hover:bg-green-700 transition-all";
-      testOverlayBtn.onclick = () => {
-        setIncomingOrder({
-          title: "New Order! (Test)",
-          body: "This is a test order notification.",
-          url: "/admin/orders"
-        });
-      };
-      document.body.appendChild(testOverlayBtn);
-      
-      return () => {
-        if (document.body.contains(debugBtn)) {
-          debugBtn.remove();
-        }
-        if (document.body.contains(testOverlayBtn)) {
-          testOverlayBtn.remove();
-        }
-      };
-    }
+    initOneSignal();
 
-    // Listen for messages when the app is in the foreground
-    const unsubscribe = onMessage(messaging, (payload) => {
-      console.log("Foreground message received:", payload);
-      
-      // Check if it's a new order notification and we are in admin
-      const isOrder = payload.data?.type === 'order' || (payload.notification?.title && payload.notification.title.includes('Order'));
-      
-      if (isOrder) {
-        setIncomingOrder({
-          title: payload.notification?.title || "New Order!",
-          body: payload.notification?.body || "A new order has been received.",
-          url: payload.data?.url || "/admin/orders"
-        });
-      } else if (payload.notification) {
-        // Show normal toast notification
-        toast.success(
-          `${payload.notification.title}\n${payload.notification.body}`,
-          {
-            duration: 5000,
-            icon: '🔔',
-          }
-        );
-      }
-        
-        // Play notification tone
-        try {
-          if (toneUrl) {
-            new Audio(toneUrl).play().catch(e => console.error("Failed to play custom tone", e));
-          } else {
-            // Fallback synthetic beep
-            const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
-            if (AudioContext) {
-              const ctx = new AudioContext();
-              const osc = ctx.createOscillator();
-              const gain = ctx.createGain();
-              osc.type = 'sine';
-              osc.frequency.setValueAtTime(880, ctx.currentTime);
-              osc.frequency.exponentialRampToValueAtTime(1760, ctx.currentTime + 0.1);
-              gain.gain.setValueAtTime(0, ctx.currentTime);
-              gain.gain.linearRampToValueAtTime(0.5, ctx.currentTime + 0.05);
-              gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.5);
-              osc.connect(gain);
-              gain.connect(ctx.destination);
-              osc.start();
-              osc.stop(ctx.currentTime + 0.6);
-            }
-          }
-        } catch (error) {
-          console.error("Audio playback error:", error);
-        }
-    });
+  }, [isSupported, appId, pathname, toneUrl]);
 
-    return () => {
-      if (unsubscribe) {
-        unsubscribe();
-      }
-    };
-  }, [isSupported, config, pathname]);
-
-  // Handle dismissal of custom prompt
-  const [showPrompt, setShowPrompt] = useState(false);
-  const [triggerPermission, setTriggerPermission] = useState<(() => Promise<void>) | null>(null);
-
+  // Handle custom prompt
   useEffect(() => {
-    if (typeof window !== "undefined" && "Notification" in window) {
-      if (pathname.startsWith('/admin') && Notification.permission === "default") {
-        const hasDismissed = localStorage.getItem('push_prompt_dismissed');
-        if (!hasDismissed) {
-          setShowPrompt(true);
+    if (typeof window !== "undefined" && pathname.startsWith('/admin') && pathname !== '/admin/login' && appId) {
+      const checkPermission = async () => {
+        // OneSignal uses its own permission state, but browser permission is sufficient for the prompt check
+        if (Notification.permission === "default") {
+          const hasDismissed = localStorage.getItem('push_prompt_dismissed');
+          if (!hasDismissed) {
+            setShowPrompt(true);
+          }
         }
-      }
+      };
+      checkPermission();
     }
-  }, [pathname]);
+  }, [pathname, appId]);
 
   if (showPrompt && pathname.startsWith('/admin')) {
     return (
@@ -219,13 +148,9 @@ export default function PushNotificationManager({ toneUrl }: { toneUrl?: string 
             <button 
               onClick={async () => {
                 setShowPrompt(false);
-                if (triggerPermission) {
-                  await triggerPermission();
-                } else if (typeof window !== "undefined" && "Notification" in window) {
-                   await Notification.requestPermission();
-                   // A reload will naturally trigger the useEffect to setup FCM again
-                   window.location.reload();
-                }
+                try {
+                  await OneSignal.Notifications.requestPermission();
+                } catch (e) {}
               }}
               className="w-full bg-primary hover:bg-primary/90 text-white font-bold py-4 rounded-xl shadow-lg shadow-primary/30 transition-all flex items-center justify-center gap-2"
             >

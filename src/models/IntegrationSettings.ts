@@ -53,14 +53,7 @@ export interface IIntegrationSettings extends Document {
   pushNotification: {
     enabled: boolean;
     appId: string;
-    apiKey: string;
-    authDomain: string;
-    projectId: string;
-    storageBucket: string;
-    messagingSenderId: string;
-    vapidKey: string;
-    serviceAccountJson: string;
-    adminFcmTokens: string[];
+    restApiKey: string;
   };
   createdAt: Date;
   updatedAt: Date;
@@ -122,14 +115,7 @@ const IntegrationSettingsSchema: Schema<IIntegrationSettings> = new Schema(
     pushNotification: {
       enabled: { type: Boolean, default: false },
       appId: { type: String, default: "" },
-      apiKey: { type: String, default: "" },
-      authDomain: { type: String, default: "" },
-      projectId: { type: String, default: "" },
-      storageBucket: { type: String, default: "" },
-      messagingSenderId: { type: String, default: "" },
-      vapidKey: { type: String, default: "" },
-      serviceAccountJson: { type: String, default: "" },
-      adminFcmTokens: [{ type: String }],
+      restApiKey: { type: String, default: "" },
     },
   },
   { timestamps: true }
