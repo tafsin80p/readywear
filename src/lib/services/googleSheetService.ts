@@ -10,17 +10,21 @@ export const googleSheetService = {
 
       // Format data for Google Sheet
       const payload = {
-        timestamp: order.createdAt ? new Date(order.createdAt).toISOString() : new Date().toISOString(),
+        createdAt: order.createdAt 
+          ? new Date(order.createdAt).toLocaleString('en-US', { timeZone: 'Asia/Dhaka' }) 
+          : new Date().toLocaleString('en-US', { timeZone: 'Asia/Dhaka' }),
         orderId: order.orderId,
         customerName: `${order.customerInfo.firstName} ${order.customerInfo.lastName || ""}`.trim(),
         customerPhone: order.customerInfo.phone,
         customerAddress: `${order.customerInfo.address}, ${order.customerInfo.area}`,
-        products: order.items.map((item: any) => `${item.title} (x${item.quantity})`).join(", "),
+        products: order.items.map((item: any) => `${item.title || item.name} (x${item.quantity})`).join(", "),
+        productSizes: order.items.map((item: any) => item.size).filter(Boolean).join(", ") || "-",
+        productColors: order.items.map((item: any) => item.color).filter(Boolean).join(", ") || "-",
         subtotal: order.pricing.subtotal,
         shipping: order.pricing.deliveryCharge,
         total: order.pricing.total,
         paymentMethod: order.paymentMethod,
-        status: order.status
+        status: order.verificationStatus || order.status
       };
 
       const response = await fetch(settings.googleSheet.webhookUrl, {

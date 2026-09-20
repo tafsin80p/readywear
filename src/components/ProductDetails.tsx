@@ -246,61 +246,63 @@ export function ProductDetails({ product, relatedProducts }: { product: Product,
             </div>
 
             {/* Actions & Quantity */}
-            <div className="flex flex-col sm:flex-row items-end gap-3 mt-auto">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-end gap-4 mt-auto pt-2">
               {/* Quantity */}
               <div className="flex flex-col gap-2 shrink-0 w-full sm:w-auto">
                 <span className="text-sm font-semibold text-gray-900 hidden sm:block">পরিমাণ</span>
-                <div className={`flex items-center w-full sm:w-[110px] h-11 bg-gray-50 border border-gray-200 rounded-lg ${isOutOfStock ? 'opacity-50 pointer-events-none' : ''}`}>
+                <div className={`flex items-center w-full sm:w-[110px] h-12 sm:h-11 bg-gray-50 border border-gray-200 rounded-xl sm:rounded-lg ${isOutOfStock ? 'opacity-50 pointer-events-none' : ''}`}>
                   <button 
                     onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                    className="w-10 sm:w-9 h-full flex items-center justify-center text-gray-500 hover:text-primary transition-colors disabled:opacity-50"
+                    className="w-12 sm:w-9 h-full flex items-center justify-center text-gray-500 hover:text-primary transition-colors disabled:opacity-50"
                     disabled={isOutOfStock}
                   >
-                    <Minus className="w-4 h-4" />
+                    <Minus className="w-5 h-5 sm:w-4 sm:h-4" />
                   </button>
-                  <span className="flex-1 text-center font-semibold text-gray-900 flex items-center justify-center h-full pt-0.5">{quantity}</span>
+                  <span className="flex-1 text-center font-bold sm:font-semibold text-gray-900 flex items-center justify-center h-full text-lg sm:text-base pt-0.5">{quantity}</span>
                   <button 
                     onClick={() => setQuantity(quantity + 1)}
-                    className="w-10 sm:w-9 h-full flex items-center justify-center text-gray-500 hover:text-primary transition-colors disabled:opacity-50"
+                    className="w-12 sm:w-9 h-full flex items-center justify-center text-gray-500 hover:text-primary transition-colors disabled:opacity-50"
                     disabled={isOutOfStock}
                   >
-                    <Plus className="w-4 h-4" />
+                    <Plus className="w-5 h-5 sm:w-4 sm:h-4" />
                   </button>
                 </div>
               </div>
 
-              {/* Add to Cart */}
-              <button 
-                onClick={handleAddToCart}
-                disabled={isAdded || isOutOfStock}
-                className={`flex-1 w-full transition-all duration-300 h-11 rounded-lg flex items-center justify-center gap-2 font-bold text-[14px] border-2
-                  ${isOutOfStock
-                    ? 'bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed'
-                    : isAdded
-                      ? 'bg-emerald-500 text-white border-emerald-500 scale-95'
-                      : 'bg-white hover:bg-gray-50 text-gray-900 border-gray-900 active:scale-95'
-                  }`}
-              >
-                {isOutOfStock ? (
-                  <>স্টক শেষ</>
-                ) : isAdded ? (
-                  <><Check className="w-4 h-4 animate-bounce" /> যোগ হয়েছে</>
-                ) : (
-                  <><ShoppingCart className="w-4 h-4" /> কার্টে রাখুন</>
-                )}
-              </button>
+              <div className="flex flex-row gap-3 w-full">
+                {/* Add to Cart */}
+                <button 
+                  onClick={handleAddToCart}
+                  disabled={isAdded || isOutOfStock}
+                  className={`flex-1 transition-all duration-300 h-12 sm:h-11 rounded-xl sm:rounded-lg flex items-center justify-center gap-2 font-bold text-[15px] sm:text-[14px] border-2
+                    ${isOutOfStock
+                      ? 'bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed'
+                      : isAdded
+                        ? 'bg-emerald-500 text-white border-emerald-500 scale-95'
+                        : 'bg-white hover:bg-gray-50 text-gray-900 border-gray-900 active:scale-95'
+                    }`}
+                >
+                  {isOutOfStock ? (
+                    <>স্টক শেষ</>
+                  ) : isAdded ? (
+                    <><Check className="w-5 h-5 sm:w-4 sm:h-4 animate-bounce" /> <span className="hidden sm:inline">যোগ হয়েছে</span></>
+                  ) : (
+                    <><ShoppingCart className="w-5 h-5 sm:w-4 sm:h-4" /> <span className="sm:hidden">কার্ট</span><span className="hidden sm:inline">কার্টে রাখুন</span></>
+                  )}
+                </button>
 
-              {/* Buy Now */}
-              <button 
-                onClick={() => {
-                  addToCart(product as any, quantity, undefined, undefined, selectedAttributes, false);
-                  router.push('/checkout');
-                }}
-                disabled={isOutOfStock}
-                className={`flex-1 w-full transition-all duration-300 h-11 rounded-lg flex items-center justify-center gap-2 font-bold text-[14px] ${isOutOfStock ? 'bg-gray-200 text-gray-400 cursor-not-allowed shadow-none' : 'bg-primary hover:bg-primary/90 text-white shadow-lg shadow-primary/25'}`}
-              >
-                {isOutOfStock ? 'স্টক শেষ' : 'এখনি কিনুন'}
-              </button>
+                {/* Buy Now */}
+                <button 
+                  onClick={() => {
+                    addToCart(product as any, quantity, undefined, undefined, selectedAttributes, false);
+                    router.push('/checkout');
+                  }}
+                  disabled={isOutOfStock}
+                  className={`flex-[1.5] sm:flex-1 transition-all duration-300 h-12 sm:h-11 rounded-xl sm:rounded-lg flex items-center justify-center gap-2 font-bold text-[15px] sm:text-[14px] ${isOutOfStock ? 'bg-gray-200 text-gray-400 cursor-not-allowed shadow-none' : 'bg-primary hover:bg-primary/90 text-white shadow-lg shadow-primary/25 active:scale-95'}`}
+                >
+                  {isOutOfStock ? 'স্টক শেষ' : 'এখনি কিনুন'}
+                </button>
+              </div>
             </div>
 
             {/* Service Features */}
