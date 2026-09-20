@@ -32,9 +32,11 @@ export const activityLogService = {
 
       // Send push notification if requested
       if (sendPush) {
-        // Fire and forget, don't await so it doesn't block
-        fcmService.sendAdminNotification(title, message, link, type)
-          .catch(err => console.error("Failed to send push notification from activity log", err));
+        try {
+          await fcmService.sendAdminNotification(title, message, link, type);
+        } catch (err) {
+          console.error("Failed to send push notification from activity log", err);
+        }
       }
 
       return { success: true, notification: newNotification };
