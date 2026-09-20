@@ -24,7 +24,13 @@ export default async function AdminOrderDetailsPage({ params }: { params: Promis
   const { id } = await params;
   
   await connectToDatabase();
-  const order = await Order.findById(id).populate('userId', 'image name').lean() as any;
+  let order: any = null;
+  try {
+    order = await Order.findById(id).populate('userId', 'image name').lean();
+  } catch (error) {
+    // If the ID is invalid (e.g. not a 24-character hex string), Mongoose throws a CastError.
+    // We catch it and handle it gracefully by showing 404 instead of a 500 server crash.
+  }
   
   if (!order) {
     notFound();
