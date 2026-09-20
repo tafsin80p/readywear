@@ -118,7 +118,6 @@ export default function PushNotificationManager({ toneUrl }: { toneUrl?: string 
                 osc.stop(ctx.currentTime + 0.6);
               }
             }
-          } catch (err) {}
         };
 
         OneSignal.Notifications.addEventListener('foregroundWillDisplay', handleNotification);
