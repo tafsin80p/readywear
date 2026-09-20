@@ -72,9 +72,8 @@ export default function PushNotificationManager({ toneUrl }: { toneUrl?: string 
           await OneSignal.User.addTag("role", "admin");
         }
 
-        // Check and track subscription status
         const updateSubscriptionStatus = () => {
-          setIsSubscribed(OneSignal.User.PushSubscription.optedIn);
+          setIsSubscribed(!!OneSignal.User.PushSubscription.optedIn);
         };
         updateSubscriptionStatus();
         OneSignal.User.PushSubscription.addEventListener("change", updateSubscriptionStatus);
@@ -352,7 +351,7 @@ export default function PushNotificationManager({ toneUrl }: { toneUrl?: string 
           onClick={async () => {
             try {
               await OneSignal.Notifications.requestPermission();
-              setIsSubscribed(OneSignal.User.PushSubscription.optedIn);
+              setIsSubscribed(!!OneSignal.User.PushSubscription.optedIn);
             } catch (e) {}
           }}
           className="fixed bottom-24 md:bottom-6 right-6 z-[9000] bg-primary hover:bg-primary/90 text-white p-4 rounded-full shadow-2xl flex items-center gap-3 group animate-bounce"
