@@ -13,6 +13,7 @@ export default function PushNotificationManager({ toneUrl }: { toneUrl?: string 
   const [isClosing, setIsClosing] = useState(false);
   const [showPrompt, setShowPrompt] = useState(false);
   const [audioUnlocked, setAudioUnlocked] = useState(false);
+  const [isSubscribed, setIsSubscribed] = useState(true);
   const pathname = usePathname();
   const router = useRouter();
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -70,6 +71,13 @@ export default function PushNotificationManager({ toneUrl }: { toneUrl?: string 
         if (pathname.startsWith('/admin')) {
           await OneSignal.User.addTag("role", "admin");
         }
+
+        // Check and track subscription status
+        const updateSubscriptionStatus = () => {
+          setIsSubscribed(OneSignal.User.PushSubscription.optedIn);
+        };
+        updateSubscriptionStatus();
+        OneSignal.User.PushSubscription.addEventListener("change", updateSubscriptionStatus);
 
         // Handle foreground notifications (OneSignal v16+)
         const handleNotification = (event: any) => {
@@ -266,6 +274,24 @@ export default function PushNotificationManager({ toneUrl }: { toneUrl?: string 
   return (
     <>
       <audio ref={audioRef} preload="auto" className="hidden" playsInline />
+      
+      {/* Floating Subscribe Button if not subscribed */}
+      {!isSubscribed && pathname.startsWith('/admin') && !showPrompt && isSupported && (
+        <button
+          onClick={async () => {
+            try {
+              await OneSignal.Notifications.requestPermission();
+              setIsSubscribed(OneSignal.User.PushSubscription.optedIn);
+            } catch (e) {}
+          }}
+          className="fixed bottom-24 md:bottom-6 right-6 z-[9000] bg-primary hover:bg-primary/90 text-white p-4 rounded-full shadow-2xl flex items-center gap-3 group animate-bounce"
+        >
+          <Bell className="w-6 h-6 animate-ring" />
+          <span className="font-bold hidden md:block group-hover:block whitespace-nowrap overflow-hidden transition-all max-w-0 group-hover:max-w-[200px]">
+            Enable Alerts
+          </span>
+        </button>
+      )}
     </>
   );
 }
