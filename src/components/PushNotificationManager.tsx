@@ -47,7 +47,7 @@ export default function PushNotificationManager({ toneUrl }: { toneUrl?: string 
         }
 
         // Handle foreground notifications (OneSignal v16+)
-        OneSignal.Notifications.addEventListener('foregroundWillDisplay', (event) => {
+        const handleNotification = (event: any) => {
           event.preventDefault(); // Prevent default browser notification in foreground
           
           const notification = event.notification;
@@ -68,12 +68,6 @@ export default function PushNotificationManager({ toneUrl }: { toneUrl?: string 
               duration: 5000,
               icon: '🔔',
             });
-          }
-
-          // Stop existing audio if playing
-          if (audioRef.current) {
-            audioRef.current.pause();
-            audioRef.current.currentTime = 0;
           }
 
           // Audio will be played by the <audio> tag in the overlay
@@ -97,7 +91,6 @@ export default function PushNotificationManager({ toneUrl }: { toneUrl?: string 
               }
             }
           } catch (err) {}
-          
         };
 
         OneSignal.Notifications.addEventListener('foregroundWillDisplay', handleNotification);
@@ -192,11 +185,7 @@ export default function PushNotificationManager({ toneUrl }: { toneUrl?: string 
   const handleCloseOverlay = (redirectUrl?: string) => {
     setIsClosing(true);
     
-    // Stop audio
-    if (audioRef.current) {
-      audioRef.current.pause();
-      audioRef.current.currentTime = 0;
-    }
+    // The <audio> tag will naturally stop when the component is unmounted (incomingOrder is set to null).
 
     setTimeout(() => {
       setIncomingOrder(null);
