@@ -81,7 +81,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       }];
     });
     
-    toast(`${product.title} কার্টে যোগ করা হয়েছে!`);
+    toast(`${product.title || product.name} কার্টে যোগ করা হয়েছে!`);
     if (openSidebar) {
       openCart();
     }
