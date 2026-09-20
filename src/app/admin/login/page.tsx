@@ -7,14 +7,6 @@ import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { Lock, Mail, ArrowRight, ShieldCheck } from "lucide-react";
 import { signIn } from "next-auth/react";
-import type { Viewport } from 'next';
-
-export const viewport: Viewport = {
-  width: 'device-width',
-  initialScale: 1,
-  maximumScale: 1,
-  userScalable: false,
-};
 
 export default function AdminLogin() {
   const containerRef = useRef<HTMLDivElement>(null);
