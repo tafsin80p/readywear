@@ -44,7 +44,13 @@ export async function generateMetadata(): Promise<Metadata> {
     icons: {
       icon: favicon,
       shortcut: favicon,
-      apple: favicon,
+      apple: "/readywear logo.png",
+    },
+    manifest: "/manifest.json",
+    appleWebApp: {
+      capable: true,
+      statusBarStyle: "default",
+      title: storeName,
     },
     openGraph: {
       type: "website",
