@@ -20,6 +20,7 @@ interface ProductProps {
     images: string[];
     inStock?: boolean;
     stock?: number;
+    attributes?: { name: string; values: { value: string; meta?: string; stock: number }[] }[];
   };
   priority?: boolean;
 }
@@ -35,10 +36,20 @@ import { useCart } from "@/context/CartContext";
 export function ProductCard({ product, priority = false }: ProductProps) {
   const { addToCart } = useCart();
   const [isAdded, setIsAdded] = useState(false);
-  
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
     if (isAdded) return;
+    
+    // Auto-select first available option for each attribute
+    const defaultAttributes: Record<string, string> = {};
+    if (product.attributes && product.attributes.length > 0) {
+      product.attributes.forEach((attr: any) => {
+        const availableValue = attr.values.find((v: any) => v.stock > 0);
+        if (availableValue) {
+          defaultAttributes[attr.name] = availableValue.value;
+        }
+      });
+    }
     
     // Convert to the format expected by cart context if needed
     const cartProduct = {
@@ -54,7 +65,8 @@ export function ProductCard({ product, priority = false }: ProductProps) {
       sku: product.sku
     };
     
-    addToCart(cartProduct, 1);
+    const hasAttributes = Object.keys(defaultAttributes).length > 0;
+    addToCart(cartProduct, 1, undefined, undefined, hasAttributes ? defaultAttributes : undefined);
     setIsAdded(true);
     
     setTimeout(() => {
