@@ -44,9 +44,8 @@ export async function generateMetadata(): Promise<Metadata> {
     icons: {
       icon: favicon,
       shortcut: favicon,
-      apple: "/readywear logo.png",
+      apple: favicon,
     },
-    manifest: "/manifest.json",
     appleWebApp: {
       capable: true,
       statusBarStyle: "default",
