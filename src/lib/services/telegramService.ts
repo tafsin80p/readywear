@@ -18,25 +18,32 @@ const escapeMarkdown = (text: string | number | undefined | null) => {
 };
 
 const buildOrderMessageText = (order: any, extraText: string = "") => {
+  let allSizes: string[] = [];
+  let allColors: string[] = [];
+  let otherAttrs: string[] = [];
+
   let productsList = order.items.map((item: any) => {
     let name = escapeMarkdown(item.title || item.name);
-    let attrs = [];
-    if (item.size) attrs.push(`Size: ${item.size}`);
-    if (item.color) attrs.push(`Color: ${item.color}`);
+    
     let plainItem = typeof item.toJSON === 'function' ? item.toJSON() : item;
+    
+    let size = item.size;
+    let color = item.color;
+    
     if (plainItem.attributes && typeof plainItem.attributes === 'object') {
       const attrsObj = plainItem.attributes instanceof Map ? Object.fromEntries(plainItem.attributes) : plainItem.attributes;
       for (const [key, val] of Object.entries(attrsObj)) {
          if (typeof val !== 'object' && typeof val !== 'function' && !key.startsWith('$')) {
-           attrs.push(`${key}: ${val}`);
+           if (key.toLowerCase() === 'size' && !size) size = val;
+           else if (key.toLowerCase() === 'color' && !color) color = val;
+           else otherAttrs.push(`${key}: ${val}`);
          }
       }
     }
-    // De-duplicate attributes if necessary
-    attrs = [...new Set(attrs)];
-    if (attrs.length > 0) {
-      name += ` (${escapeMarkdown(attrs.join(", "))})`;
-    }
+    
+    if (size) allSizes.push(String(size));
+    if (color) allColors.push(String(color));
+
     if (item.quantity > 1) {
       name += ` x${item.quantity}`;
     }
@@ -45,6 +52,10 @@ const buildOrderMessageText = (order: any, extraText: string = "") => {
     }
     return name;
   }).join("\n• ");
+
+  allSizes = [...new Set(allSizes)];
+  allColors = [...new Set(allColors)];
+  otherAttrs = [...new Set(otherAttrs)];
   let totalQty = order.items.reduce((sum: number, item: any) => sum + item.quantity, 0);
   const dateObj = order.createdAt ? new Date(order.createdAt) : new Date();
   let orderDate = escapeMarkdown(dateObj.toLocaleString('en-US', { 
@@ -69,7 +80,7 @@ const buildOrderMessageText = (order: any, extraText: string = "") => {
 *Order Source:* ${escapeMarkdown(order.source || "Website")}
 
 *Product:* 
-• ${productsList}
+• ${productsList}${allSizes.length > 0 ? `\n\n*Size:* ${escapeMarkdown(allSizes.join(", "))}` : ''}${allColors.length > 0 ? `\n*Color:* ${escapeMarkdown(allColors.join(", "))}` : ''}${otherAttrs.length > 0 ? `\n*Attributes:* ${escapeMarkdown(otherAttrs.join(", "))}` : ''}
 
 *Customer:* ${escapeMarkdown(order.customerInfo.firstName)} ${escapeMarkdown(order.customerInfo.lastName || "")}
 *Phone:* ${escapeMarkdown(order.customerInfo.phone)}
