@@ -61,6 +61,20 @@ export async function POST(req: NextRequest) {
       link: `/admin/integrations`,
     });
 
+    // Register Telegram Webhook if enabled
+    if (body.telegram?.enabled && body.telegram?.botToken) {
+      const origin = req.headers.get("origin") || process.env.NEXT_PUBLIC_APP_URL || "";
+      if (origin && !origin.includes("localhost")) {
+        const webhookUrl = `${origin}/api/integrations/telegram/webhook`;
+        try {
+          await fetch(`https://api.telegram.org/bot${body.telegram.botToken}/setWebhook?url=${webhookUrl}`);
+          console.log(`[Telegram] Webhook set to ${webhookUrl}`);
+        } catch (err) {
+          console.error("[Telegram] Failed to set webhook", err);
+        }
+      }
+    }
+
     return NextResponse.json({ success: true, settings });
   } catch (error: any) {
     return NextResponse.json({ success: false, error: error.message }, { status: 500 });
