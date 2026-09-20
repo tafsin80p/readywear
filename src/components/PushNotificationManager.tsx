@@ -57,7 +57,7 @@ export default function PushNotificationManager({ toneUrl }: { toneUrl?: string 
           
           const isOrder = data?.type === 'order' || title.toLowerCase().includes('order');
 
-          if (isOrder) {
+          if (isOrder && pathname.startsWith('/admin')) {
             setIncomingOrder({
               title,
               body,
