@@ -63,48 +63,52 @@ export async function POST(req: NextRequest) {
 
     await newOrder.save();
 
-    // Trigger Telegram notification
-    try {
-      const tgResult = await telegramService.sendOrderNotification(newOrder);
-      if (tgResult.success) {
-        newOrder.telegramNotificationStatus = "sent";
-        newOrder.telegramMessageId = tgResult.messageId;
-        newOrder.telegramChatId = tgResult.chatId;
-      } else {
-        newOrder.telegramNotificationStatus = "failed";
-        newOrder.telegramLastError = tgResult.error || tgResult.reason;
-      }
-      await newOrder.save();
-    } catch (err) {
-      console.error("Telegram notification error:", err);
-    }
-
-    // Trigger Google Sheet sync
-    try {
-      const gsResult = await googleSheetService.sendOrderToSheet(newOrder);
-      if (gsResult.success) {
-        newOrder.googleSheetSyncStatus = "sent";
-      } else {
-        newOrder.googleSheetSyncStatus = "failed";
-        newOrder.googleSheetLastError = gsResult.error || gsResult.reason;
-      }
-      await newOrder.save();
-    } catch (err) {
-      console.error("Google Sheet sync error:", err);
-    }
-
-    // Trigger Admin Push Notification
-    try {
-      await activityLogService.logActivity({
-        title: "New Order Received! 🛍️",
-        message: `Order ${orderId} has been placed for ${pricing.total} BDT.`,
-        type: "order",
-        link: `/admin/orders/${newOrder._id}`,
-        sendPush: true
-      });
-    } catch (err) {
-      console.error("Failed to log activity and send admin push notification", err);
-    }
+    // Run external notifications concurrently to significantly speed up checkout
+    await Promise.allSettled([
+      (async () => {
+        try {
+          const tgResult = await telegramService.sendOrderNotification(newOrder);
+          if (tgResult.success) {
+            newOrder.telegramNotificationStatus = "sent";
+            newOrder.telegramMessageId = tgResult.messageId;
+            newOrder.telegramChatId = tgResult.chatId;
+          } else {
+            newOrder.telegramNotificationStatus = "failed";
+            newOrder.telegramLastError = tgResult.error || tgResult.reason;
+          }
+          await newOrder.save();
+        } catch (err) {
+          console.error("Telegram notification error:", err);
+        }
+      })(),
+      (async () => {
+        try {
+          const gsResult = await googleSheetService.sendOrderToSheet(newOrder);
+          if (gsResult.success) {
+            newOrder.googleSheetSyncStatus = "sent";
+          } else {
+            newOrder.googleSheetSyncStatus = "failed";
+            newOrder.googleSheetLastError = gsResult.error || gsResult.reason;
+          }
+          await newOrder.save();
+        } catch (err) {
+          console.error("Google Sheet sync error:", err);
+        }
+      })(),
+      (async () => {
+        try {
+          await activityLogService.logActivity({
+            title: "New Order Received! 🛍️",
+            message: `Order ${orderId} has been placed for ${pricing.total} BDT.`,
+            type: "order",
+            link: `/admin/orders/${newOrder._id}`,
+            sendPush: true
+          });
+        } catch (err) {
+          console.error("Failed to log activity and send admin push notification", err);
+        }
+      })()
+    ]);
 
     return NextResponse.json(
       { success: true, message: "Order created successfully", orderId: newOrder._id, displayId: orderId },
