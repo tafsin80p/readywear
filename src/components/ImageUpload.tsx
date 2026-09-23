@@ -12,6 +12,52 @@ interface ImageUploadProps {
   folder?: string;
 }
 
+const convertToWebP = (file: File): Promise<string> => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = (event) => {
+      const img = new Image();
+      img.src = event.target?.result as string;
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        
+        // Maintain original dimensions, just convert to webp for better compression
+        let width = img.width;
+        let height = img.height;
+        
+        // Optional: limit max dimensions to prevent huge memory usage on canvas
+        const MAX_DIMENSION = 2500;
+        if (width > MAX_DIMENSION || height > MAX_DIMENSION) {
+          if (width > height) {
+            height = Math.round((height * MAX_DIMENSION) / width);
+            width = MAX_DIMENSION;
+          } else {
+            width = Math.round((width * MAX_DIMENSION) / height);
+            height = MAX_DIMENSION;
+          }
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext("2d");
+        
+        if (!ctx) {
+          return reject(new Error("Canvas context is not supported"));
+        }
+        
+        ctx.drawImage(img, 0, 0, width, height);
+        
+        // Convert to WebP with 0.85 quality (maintains high quality while reducing size)
+        const webpDataUrl = canvas.toDataURL("image/webp", 0.85);
+        resolve(webpDataUrl);
+      };
+      img.onerror = (err) => reject(new Error("Failed to load image for conversion"));
+    };
+    reader.onerror = (err) => reject(new Error("Failed to read file"));
+  });
+};
+
 export function ImageUpload({ onUpload, disabled, className, children, folder }: ImageUploadProps) {
   const [isUploading, setIsUploading] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -31,37 +77,25 @@ export function ImageUpload({ onUpload, disabled, className, children, folder }:
     try {
       setIsUploading(true);
 
-      // Wrap in promise to properly wait
-      await new Promise<void>((resolve, reject) => {
-        const reader = new FileReader();
-        reader.readAsDataURL(file);
-        
-        reader.onload = async () => {
-          try {
-            const base64File = reader.result;
-            
-            // Send to our backend API with optional folder
-            const res = await fetch("/api/upload", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ file: base64File, folder: folder || "readywear" }),
-            });
-
-            const data = await res.json();
-            
-            if (!res.ok) {
-              throw new Error(data.error || "Failed to upload image");
-            }
-
-            onUpload(data.url);
-            toast("success", "Image uploaded successfully!");
-            resolve();
-          } catch (err) {
-            reject(err);
-          }
-        };
-        reader.onerror = () => reject(new Error("Failed to read file"));
+      // Convert image to WebP client-side to reduce payload size
+      // This solves the 413 JSON Payload Too Large error for 4-5MB images
+      const base64File = await convertToWebP(file);
+      
+      // Send to our backend API with optional folder
+      const res = await fetch("/api/upload", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ file: base64File, folder: folder || "readywear" }),
       });
+
+      const data = await res.json();
+      
+      if (!res.ok) {
+        throw new Error(data.error || "Failed to upload image");
+      }
+
+      onUpload(data.url);
+      toast("success", "Image uploaded successfully!");
 
     } catch (error: any) {
       console.error("Error uploading image:", error);
