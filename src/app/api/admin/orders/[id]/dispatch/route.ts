@@ -38,13 +38,7 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
       return NextResponse.json({ success: false, message: `${courier} is not connected or enabled in settings.` }, { status: 400 });
     }
 
-    const itemDescription = order.items.map((i: any) => {
-      let desc = `${i.quantity}x ${i.title}${i.size ? ` (${i.size})` : ''}`;
-      if (i.image) {
-        desc += ` [Image: ${i.image}]`;
-      }
-      return desc;
-    }).join(", ");
+    const itemDescription = order.items.map((i: any) => `${i.quantity}x ${i.title}${i.size ? ` (${i.size})` : ''}`).join(", ");
     
     // Amount to collect logic (only if payment is unpaid, else 0)
     const amountToCollect = order.paymentStatus === "unpaid" ? order.pricing.total : 0;
