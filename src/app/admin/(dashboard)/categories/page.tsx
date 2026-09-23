@@ -17,6 +17,7 @@ export default function CategoriesPage() {
     name: "",
     slug: "",
     image: "",
+    parentCategory: "",
   });
 
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -76,7 +77,7 @@ export default function CategoriesPage() {
       toast("success", editingId ? "Category updated successfully" : "Category created successfully");
       
       // Reset form
-      setFormData({ name: "", slug: "", image: "" });
+      setFormData({ name: "", slug: "", image: "", parentCategory: "" });
       setEditingId(null);
       
       // Refresh list
@@ -94,6 +95,7 @@ export default function CategoriesPage() {
       name: category.name,
       slug: category.slug,
       image: category.image || "",
+      parentCategory: category.parentCategory || "",
     });
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -178,6 +180,21 @@ export default function CategoriesPage() {
             </div>
 
             <div className="space-y-2">
+              <label className="text-sm font-semibold text-gray-700">Parent Category (Optional)</label>
+              <select 
+                name="parentCategory"
+                value={formData.parentCategory}
+                onChange={handleInputChange as any}
+                className="w-full px-4 py-2.5 bg-gray-50/50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+              >
+                <option value="">None (Top-level Category)</option>
+                {categories.filter(c => !c.parentCategory && c._id !== editingId).map(cat => (
+                  <option key={cat._id} value={cat.slug}>{cat.name}</option>
+                ))}
+              </select>
+            </div>
+
+            <div className="space-y-2">
               <label className="text-sm font-semibold text-gray-700">Category Image</label>
               
               <div className="relative w-full aspect-video rounded-xl overflow-hidden group bg-gray-50 flex flex-col items-center justify-center border-2 border-dashed border-gray-200 hover:border-primary/50 transition-all">
@@ -213,12 +230,11 @@ export default function CategoriesPage() {
             </div>
 
             <div className="pt-4 flex gap-3">
-              {editingId && (
                 <button 
                   type="button"
                   onClick={() => {
                     setEditingId(null);
-                    setFormData({ name: "", slug: "", image: "" });
+                    setFormData({ name: "", slug: "", image: "", parentCategory: "" });
                   }}
                   className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2.5 rounded-xl font-bold transition-all"
                 >
@@ -295,7 +311,15 @@ export default function CategoriesPage() {
                         )}
                       </td>
                       <td className="px-6 py-4">
-                        <span className="font-bold text-gray-900">{category.name}</span>
+                        <div className="flex flex-col">
+                          <span className="font-bold text-gray-900">{category.name}</span>
+                          {category.parentCategory && (
+                            <span className="text-xs text-gray-500 mt-1 flex items-center gap-1">
+                              <span className="w-3 h-px bg-gray-300 inline-block"></span>
+                              Subcategory of: {categories.find(c => c.slug === category.parentCategory)?.name || category.parentCategory}
+                            </span>
+                          )}
+                        </div>
                       </td>
                       <td className="px-6 py-4">
                         <span className="inline-block px-2.5 py-1 bg-gray-100 text-gray-600 rounded-md text-xs font-medium">

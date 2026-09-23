@@ -58,9 +58,12 @@ export function CustomDatePicker({ selectedDate, onSelect, className = "" }: Cus
     setIsOpen(false);
   };
 
-  const displayDateText = selectedDate 
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+
+  const displayDateText = mounted ? (selectedDate 
     ? new Date(selectedDate).toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' })
-    : new Date().toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' });
+    : new Date().toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' })) : "Loading...";
 
   return (
     <div className={`relative ${className}`} ref={dropdownRef}>

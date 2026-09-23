@@ -4,6 +4,7 @@ export interface ICategory extends Document {
   name: string;
   slug: string;
   image?: string;
+  parentCategory?: string; // slug of parent category
   isActive: boolean;
   createdAt: Date;
   updatedAt: Date;
@@ -14,6 +15,7 @@ const CategorySchema: Schema<ICategory> = new Schema(
     name: { type: String, required: true },
     slug: { type: String, required: true, unique: true },
     image: { type: String, default: "" },
+    parentCategory: { type: String, default: null },
     isActive: { type: Boolean, default: true },
   },
   { timestamps: true }

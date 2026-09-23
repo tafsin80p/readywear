@@ -12,6 +12,7 @@ interface ProductProps {
     sku?: string;
     name: string;
     category: string;
+    subCategory?: string;
     price: number;
     oldPrice?: number;
     discount?: number;
@@ -113,7 +114,7 @@ export function ProductCard({ product, priority = false }: ProductProps) {
       {/* Content */}
       <div className="flex flex-col flex-grow">
         <span className="text-xs text-gray-600 font-medium mb-1 bg-gray-100 self-start px-2 py-0.5 rounded">
-          {product.category}
+          {product.subCategory ? `${product.category} > ${product.subCategory}` : product.category}
         </span>
         <Link href={`/product/${product.slug}`} className="block mb-2 hover:text-primary transition-colors">
           <h2 className="text-[15px] font-semibold text-gray-800 line-clamp-1">

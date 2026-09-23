@@ -14,6 +14,7 @@ interface Product {
   sku?: string;
   name: string;
   category: string;
+  subCategory?: string;
   price: number;
   oldPrice?: number;
   discount?: number;
@@ -102,6 +103,12 @@ export function ProductDetails({ product, relatedProducts }: { product: Product,
         <ChevronRight className="w-4 h-4 shrink-0" />
         <Link href={`/category/${product.category === 'ড্রেস' ? 'dress' : product.category === 'শাড়ি' ? 'saree' : product.category === 'বেবি ড্রেস' ? 'baby-dress' : product.category === 'পাঞ্জাবি' ? 'panjabi' : 'combo-offer'}`} className="hover:text-primary transition-colors">{product.category}</Link>
         <ChevronRight className="w-4 h-4 shrink-0" />
+        {product.subCategory && (
+          <>
+            <span className="text-gray-600 font-medium">{product.subCategory}</span>
+            <ChevronRight className="w-4 h-4 shrink-0" />
+          </>
+        )}
         <span className="text-gray-900 font-medium truncate">{product.name}</span>
       </nav>
 

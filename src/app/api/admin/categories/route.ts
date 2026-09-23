@@ -49,7 +49,7 @@ export async function POST(req: NextRequest) {
     }
 
     const body = await req.json();
-    const { name, slug, image } = body;
+    const { name, slug, image, parentCategory } = body;
 
     if (!name || !slug) {
       return NextResponse.json(
@@ -68,7 +68,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const newCategory = new Category({ name, slug, image });
+    const newCategory = new Category({ name, slug, image, parentCategory: parentCategory || null });
     const savedCategory = await newCategory.save();
 
     // Log Activity

@@ -296,13 +296,13 @@ export default function AdminDashboard() {
                       <td className="py-4">
                         <div className="flex items-center gap-3">
                           <div className="relative w-10 h-10 rounded-lg overflow-hidden bg-gray-100">
-                            <Image src={order.img} alt="Product" fill className="object-cover" />
+                            <Image src={order.img || "https://placehold.co/100x100/f3f4f6/a1a1aa?text=No+Image"} alt="Product" fill className="object-cover" />
                           </div>
                           <span className="font-bold text-gray-900 text-sm">{order.id}</span>
                         </div>
                       </td>
                       <td className="py-4 text-sm font-medium text-gray-600">{order.customer}</td>
-                      <td className="py-4 text-sm font-bold text-gray-900">৳ {order.amount.toLocaleString()}</td>
+                      <td className="py-4 text-sm font-bold text-gray-900">৳ {(order.amount || 0).toLocaleString()}</td>
                       <td className="py-4">
                         <span className={`px-3 py-1 rounded-full text-[11px] font-bold ${
                           order.status === 'Delivered' ? 'bg-green-100 text-green-700' :
@@ -422,7 +422,7 @@ export default function AdminDashboard() {
                         <td className="py-3">
                           <div className="flex items-center gap-3">
                             <div className="relative w-8 h-8 rounded-lg overflow-hidden bg-gray-100 shrink-0">
-                              <Image src={item.img} alt="Product" fill className="object-cover" />
+                              <Image src={item.img || "https://placehold.co/100x100/f3f4f6/a1a1aa?text=No+Image"} alt="Product" fill className="object-cover" />
                             </div>
                             <div>
                               <span className="font-bold text-gray-900 text-sm line-clamp-1">{item.name}</span>
@@ -462,11 +462,11 @@ export default function AdminDashboard() {
               {topSelling.map((item, idx) => (
                 <div key={idx} className="flex items-center gap-4 group cursor-pointer">
                   <div className="relative w-14 h-14 rounded-xl overflow-hidden bg-gray-100 shrink-0">
-                    <Image src={item.img} alt={item.name} fill className="object-cover" />
+                    <Image src={item.img || "https://placehold.co/100x100/f3f4f6/a1a1aa?text=No+Image"} alt={item.name || "Product"} fill className="object-cover" />
                   </div>
                   <div className="flex-1">
                     <h4 className="font-bold text-gray-900 text-sm line-clamp-1 group-hover:text-primary transition-colors">{item.name}</h4>
-                    <p className="text-xs text-gray-500 mt-1">৳ {item.price.toLocaleString()} • {item.sold} sold</p>
+                    <p className="text-xs text-gray-500 mt-1">৳ {(item.price || 0).toLocaleString()} • {item.sold || 0} sold</p>
                   </div>
                   <ChevronRight className="w-4 h-4 text-gray-300 group-hover:text-primary transition-colors" />
                 </div>

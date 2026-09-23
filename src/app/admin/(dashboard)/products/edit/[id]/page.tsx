@@ -27,6 +27,7 @@ export default function EditProduct() {
     slug: "",
     description: "",
     category: "saree", // default
+    subCategory: "",
     regularPrice: "",
     discountPrice: "",
     sku: "",
@@ -89,6 +90,7 @@ export default function EditProduct() {
           slug: data.slug || "",
           description: data.description || "",
           category: data.category || "saree",
+          subCategory: data.subCategory || "",
           regularPrice: data.oldPrice ? data.oldPrice.toString() : data.price?.toString() || "",
           discountPrice: data.oldPrice ? data.price?.toString() : "",
           sku: data.sku || "",
@@ -123,7 +125,7 @@ export default function EditProduct() {
     fetchProduct();
   }, [id, router, toast]);
 
-  const [categories, setCategories] = useState<{value: string, label: string}[]>([]);
+  const [categories, setCategories] = useState<{value: string, label: string, parentCategory: string | null}[]>([]);
 
   useEffect(() => {
     fetch('/api/admin/categories')
@@ -132,7 +134,8 @@ export default function EditProduct() {
         if (data.success && data.categories) {
           setCategories(data.categories.map((c: any) => ({
             value: c.slug,
-            label: c.name
+            label: c.name,
+            parentCategory: c.parentCategory || null
           })));
         }
       })
@@ -663,10 +666,34 @@ export default function EditProduct() {
                   <select 
                     name="category"
                     value={formData.category}
+                    onChange={(e) => {
+                      handleInputChange(e);
+                      // Clear subcategory when parent category changes
+                      setFormData(prev => ({ ...prev, subCategory: "" }));
+                    }}
+                    className="w-full pl-4 pr-10 py-3 bg-gray-100/70 border border-transparent hover:border-gray-200 rounded-xl focus:outline-none focus:bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all appearance-none cursor-pointer font-medium text-gray-900 text-sm"
+                  >
+                    {categories.filter(c => !c.parentCategory).map(cat => (
+                      <option key={cat.value} value={cat.value}>{cat.label}</option>
+                    ))}
+                  </select>
+                  <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none w-5 h-5 bg-gray-900 rounded-full flex items-center justify-center">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-sm font-semibold text-gray-700">Sub Category (Optional)</label>
+                <div className="relative">
+                  <select 
+                    name="subCategory"
+                    value={formData.subCategory}
                     onChange={handleInputChange}
                     className="w-full pl-4 pr-10 py-3 bg-gray-100/70 border border-transparent hover:border-gray-200 rounded-xl focus:outline-none focus:bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all appearance-none cursor-pointer font-medium text-gray-900 text-sm"
                   >
-                    {categories.map(cat => (
+                    <option value="">Select a sub category</option>
+                    {categories.filter(c => c.parentCategory === formData.category).map(cat => (
                       <option key={cat.value} value={cat.value}>{cat.label}</option>
                     ))}
                   </select>
