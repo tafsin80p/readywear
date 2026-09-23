@@ -107,10 +107,10 @@ export function CartSidebar() {
         {/* Footer / Checkout */}
         <div className="p-4 border-t border-gray-100 bg-white shadow-[0_-10px_40px_-15px_rgba(0,0,0,0.05)]">
           <div className="flex items-center justify-between mb-4">
-            <span className="text-gray-500 font-medium">সাবটোটাল</span>
-            <span className="text-xl font-bold text-gray-900">৳ {toBengaliNumber(cartTotal)}</span>
+            <span className="text-gray-600 font-medium text-lg">সাবটোটাল</span>
+            <span className="text-2xl font-bold text-gray-900">৳ {toBengaliNumber(cartTotal)}</span>
           </div>
-          <p className="text-xs text-gray-400 mb-4 text-center">ডেলিভারি চার্জ চেকআউট পেজে হিসাব করা হবে</p>
+          <p className="text-[13px] text-gray-500 mb-4 text-center font-medium">ডেলিভারি চার্জ চেকআউট পেজে হিসাব করা হবে</p>
           
           <Link href="/checkout" onClick={closeCart} className="w-full bg-primary hover:bg-primary/90 text-white font-bold text-[15px] py-3.5 rounded-xl transition-all shadow-lg shadow-primary/25 flex items-center justify-center gap-2">
             চেকআউট করুন

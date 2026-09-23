@@ -386,15 +386,15 @@ export default function CheckoutPage() {
                 </div>
 
                 <div className="border-t border-gray-100 pt-5 space-y-4">
-                  <div className="flex items-center justify-between text-sm">
+                  <div className="flex items-center justify-between text-base">
                     <span className="text-gray-600">সাবটোটাল</span>
-                    <span className="font-medium text-gray-900">
+                    <span className="font-bold text-gray-900">
                       ৳ {toBengaliNumber(subtotal)}
                     </span>
                   </div>
-                  <div className="flex items-center justify-between text-sm">
+                  <div className="flex items-center justify-between text-base">
                     <span className="text-gray-600">ডেলিভারি চার্জ</span>
-                    <span className="font-medium text-gray-900">
+                    <span className="font-bold text-gray-900">
                       ৳ {toBengaliNumber(deliveryCharge)}
                     </span>
                   </div>
@@ -402,8 +402,8 @@ export default function CheckoutPage() {
 
                 <div className="border-t border-gray-100 mt-5 pt-5">
                   <div className="flex items-center justify-between">
-                    <span className="font-bold text-gray-900">সর্বমোট</span>
-                    <span className="text-xl font-bold text-primary">
+                    <span className="font-bold text-gray-900 text-lg">সর্বমোট</span>
+                    <span className="text-2xl font-bold text-primary">
                       ৳ {toBengaliNumber(total)}
                     </span>
                   </div>

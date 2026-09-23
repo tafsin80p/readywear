@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Hind_Siliguri } from "next/font/google";
+import { Noto_Sans_Bengali } from "next/font/google";
 import { Toaster } from "react-hot-toast";
 import "./globals.css";
 import GoogleAnalytics from "@/components/GoogleAnalytics";
@@ -8,7 +8,7 @@ import PushNotificationManager from "@/components/PushNotificationManager";
 import PwaManifest from "@/components/PwaManifest";
 import { ConfirmProvider } from "@/context/ConfirmContext";
 
-const bengaliFont = Hind_Siliguri({
+const bengaliFont = Noto_Sans_Bengali({
   subsets: ["bengali"],
   weight: ["300", "400", "500", "600", "700"],
   variable: "--font-bengali",
