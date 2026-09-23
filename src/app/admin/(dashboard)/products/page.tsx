@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Plus, Search, Filter, MoreVertical, Edit, Trash2, Eye, PackageX } from "lucide-react";
+import { Plus, Search, Filter, MoreVertical, Edit, Trash2, Eye, PackageX, Copy } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { useToast } from "@/context/ToastContext";
@@ -67,6 +67,29 @@ export default function ProductsList() {
       }
     } catch (error: any) {
       toast("error", error.message || "An error occurred while deleting");
+    }
+  };
+
+  const handleDuplicate = async (id: string, name: string) => {
+    if (!window.confirm(`Are you sure you want to duplicate "${name}"?`)) {
+      return;
+    }
+    
+    try {
+      const res = await fetch(`/api/admin/products/${id}/duplicate`, {
+        method: "POST",
+      });
+      const data = await res.json();
+      
+      if (res.ok) {
+        toast("success", "Product duplicated successfully");
+        // Refetch products to show the newly duplicated one
+        fetchProducts();
+      } else {
+        toast("error", data.error || "Failed to duplicate product");
+      }
+    } catch (error: any) {
+      toast("error", error.message || "An error occurred while duplicating");
     }
   };
 
@@ -285,6 +308,12 @@ export default function ProductsList() {
                         <Link href={`/admin/products/edit/${product._id}`} className="p-2 text-gray-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors" title="Edit">
                           <Edit className="w-4 h-4" />
                         </Link>
+                        <button 
+                          onClick={() => handleDuplicate(product._id, product.name)}
+                          className="p-2 text-gray-400 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition-colors" title="Duplicate"
+                        >
+                          <Copy className="w-4 h-4" />
+                        </button>
                         <button 
                           onClick={() => handleDelete(product._id, product.name)}
                           className="p-2 text-gray-400 hover:text-primary hover:bg-primary/10 rounded-lg transition-colors" title="Delete"
