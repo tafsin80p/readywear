@@ -58,6 +58,10 @@ export interface IOrder extends Document {
 
   source?: string; // Track if order came from Facebook, TikTok, Instagram, etc.
 
+  courierStatus?: "unassigned" | "dispatched";
+  dispatchedTo?: "pathao" | "steadfast";
+  consignmentId?: string;
+
   isDeleted?: boolean;
   deletedAt?: Date;
 
@@ -149,6 +153,17 @@ const OrderSchema: Schema<IOrder> = new Schema(
     },
     metaLeadEventId: { type: String },
     metaLeadEventSentAt: { type: Date },
+
+    courierStatus: {
+      type: String,
+      enum: ["unassigned", "dispatched"],
+      default: "unassigned",
+    },
+    dispatchedTo: {
+      type: String,
+      enum: ["pathao", "steadfast"],
+    },
+    consignmentId: { type: String },
     
     source: { type: String, default: "Website" },
     

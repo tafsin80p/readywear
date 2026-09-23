@@ -30,6 +30,8 @@ export interface IIntegrationSettings extends Document {
     enabled: boolean;
     clientId: string;
     clientSecret: string;
+    username: string;
+    password: string;
     storeId: string;
     logoUrl?: string;
   };
@@ -92,6 +94,8 @@ const IntegrationSettingsSchema: Schema<IIntegrationSettings> = new Schema(
       enabled: { type: Boolean, default: false },
       clientId: { type: String, default: "" },
       clientSecret: { type: String, default: "" },
+      username: { type: String, default: "" },
+      password: { type: String, default: "" },
       storeId: { type: String, default: "" },
       logoUrl: { type: String, default: "" },
     },

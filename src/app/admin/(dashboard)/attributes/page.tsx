@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { Plus, Trash2, Edit2, Save, Tag, Settings, ArrowLeft, Palette, Type } from "lucide-react";
 import { useToast } from "@/context/ToastContext";
+import { useConfirm } from "@/context/ConfirmContext";
 
 interface AttributeTerm {
   name: string;
@@ -21,6 +22,7 @@ export default function AttributesPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const { toast } = useToast();
+  const { confirm } = useConfirm();
 
   // View State: null = main view, string = configuring specific attribute ID
   const [activeAttributeId, setActiveAttributeId] = useState<string | null>(null);
@@ -80,7 +82,12 @@ export default function AttributesPage() {
   };
 
   const handleDeleteAttribute = async (id: string) => {
-    if (!confirm("Are you sure you want to delete this attribute? All its terms will be lost.")) return;
+    if (!(await confirm({
+      title: "Delete Attribute",
+      message: "Are you sure you want to delete this attribute? All its terms will be lost.",
+      confirmText: "Delete",
+      variant: "danger"
+    }))) return;
     try {
       const res = await fetch(`/api/admin/attributes/${id}`, { method: "DELETE" });
       const data = await res.json();

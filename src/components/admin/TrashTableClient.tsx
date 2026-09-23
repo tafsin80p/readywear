@@ -5,11 +5,13 @@ import { OrderRow } from "./OrderRow";
 import { Trash2, RotateCcw } from "lucide-react";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
+import { useConfirm } from "@/context/ConfirmContext";
 
 export function TrashTableClient({ orders }: { orders: any[] }) {
   const [selectedOrders, setSelectedOrders] = useState<string[]>([]);
   const [isProcessing, setIsProcessing] = useState(false);
   const router = useRouter();
+  const { confirm } = useConfirm();
 
   const handleSelectAll = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.checked) {
@@ -31,9 +33,19 @@ export function TrashTableClient({ orders }: { orders: any[] }) {
     if (selectedOrders.length === 0) return;
     
     if (action === 'delete') {
-      if (!confirm(`Are you sure you want to PERMANENTLY delete ${selectedOrders.length} orders? This action cannot be undone.`)) return;
+      if (!(await confirm({
+        title: "Permanent Delete",
+        message: `Are you sure you want to PERMANENTLY delete ${selectedOrders.length} orders? This action cannot be undone.`,
+        confirmText: "Yes, Delete Permanently",
+        variant: "danger"
+      }))) return;
     } else {
-      if (!confirm(`Restore ${selectedOrders.length} orders?`)) return;
+      if (!(await confirm({
+        title: "Restore Orders",
+        message: `Restore ${selectedOrders.length} orders to active list?`,
+        confirmText: "Yes, Restore",
+        variant: "info"
+      }))) return;
     }
 
     setIsProcessing(true);

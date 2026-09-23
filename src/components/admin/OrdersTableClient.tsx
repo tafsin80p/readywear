@@ -5,11 +5,13 @@ import { OrderRow } from "./OrderRow";
 import { Trash2 } from "lucide-react";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
+import { useConfirm } from "@/context/ConfirmContext";
 
 export function OrdersTableClient({ orders }: { orders: any[] }) {
   const [selectedOrders, setSelectedOrders] = useState<string[]>([]);
   const [isDeleting, setIsDeleting] = useState(false);
   const router = useRouter();
+  const { confirm } = useConfirm();
 
   const handleSelectAll = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.checked) {
@@ -29,7 +31,12 @@ export function OrdersTableClient({ orders }: { orders: any[] }) {
 
   const handleBulkDelete = async () => {
     if (selectedOrders.length === 0) return;
-    if (!confirm(`Are you sure you want to delete ${selectedOrders.length} orders?`)) return;
+    if (!(await confirm({
+      title: "Delete Orders",
+      message: `Are you sure you want to move ${selectedOrders.length} orders to trash?`,
+      confirmText: "Yes, Delete",
+      variant: "danger"
+    }))) return;
 
     setIsDeleting(true);
     const loadingToast = toast.loading("Deleting orders...");

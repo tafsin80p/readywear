@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Save, Printer, ChevronDown, Trash2 } from "lucide-react";
+import { Save, Printer, ChevronDown, Trash2, Send, Package } from "lucide-react";
 import toast from "react-hot-toast";
 import { useConfirm } from "@/context/ConfirmContext";
 
@@ -80,15 +80,28 @@ interface OrderStatusUpdaterProps {
   currentStatus: string;
   currentPaymentStatus: string;
   verificationStatus?: string;
+  courierStatus?: "unassigned" | "dispatched";
+  dispatchedTo?: "pathao" | "steadfast" | undefined;
+  consignmentId?: string;
 }
 
-export function OrderStatusUpdater({ orderId, currentStatus, currentPaymentStatus, verificationStatus = "pending_verification" }: OrderStatusUpdaterProps) {
+export function OrderStatusUpdater({ 
+  orderId, 
+  currentStatus, 
+  currentPaymentStatus, 
+  verificationStatus = "pending_verification",
+  courierStatus = "unassigned",
+  dispatchedTo,
+  consignmentId 
+}: OrderStatusUpdaterProps) {
   const router = useRouter();
   const { confirm } = useConfirm();
   
   const [status, setStatus] = useState(currentStatus);
   const [paymentStatus, setPaymentStatus] = useState(currentPaymentStatus);
   const [isUpdating, setIsUpdating] = useState(false);
+  const [showDispatchModal, setShowDispatchModal] = useState(false);
+  const [selectedCourier, setSelectedCourier] = useState<"pathao" | "steadfast">("steadfast");
 
   // Check if anything actually changed
   const hasChanges = status !== currentStatus || paymentStatus !== currentPaymentStatus;
@@ -196,6 +209,29 @@ export function OrderStatusUpdater({ orderId, currentStatus, currentPaymentStatu
     }
   };
 
+  const handleDispatch = async () => {
+    setIsUpdating(true);
+    const loadingToast = toast.loading(`Dispatching to ${selectedCourier}...`);
+    try {
+      const res = await fetch(`/api/admin/orders/${orderId}/dispatch`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ courier: selectedCourier }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || "Failed to dispatch order");
+      
+      toast.success(data.message || "Order dispatched successfully!", { id: loadingToast });
+      setShowDispatchModal(false);
+      router.refresh();
+    } catch (error: any) {
+      console.error(error);
+      toast.error(error.message || "Failed to dispatch order", { id: loadingToast });
+    } finally {
+      setIsUpdating(false);
+    }
+  };
+
   return (
     <div className="flex flex-col xl:flex-row items-start xl:items-center gap-3 w-full xl:w-auto">
       
@@ -231,6 +267,33 @@ export function OrderStatusUpdater({ orderId, currentStatus, currentPaymentStatu
           <span className="px-2 sm:px-3 py-1.5 bg-red-100 text-red-800 text-[10px] sm:text-xs font-bold rounded-lg border border-red-200 whitespace-nowrap">
             Marked Fake
           </span>
+        )}
+
+        {/* Courier Dispatch Actions */}
+        {courierStatus === 'unassigned' && verificationStatus === 'confirmed' && (
+          <button 
+            onClick={() => setShowDispatchModal(true)}
+            disabled={isUpdating}
+            className="flex items-center justify-center gap-1 sm:gap-2 px-2 sm:px-4 py-1.5 sm:py-2 bg-gradient-to-r from-blue-600 to-indigo-600 border-none text-white text-[10px] sm:text-sm font-semibold rounded-lg hover:from-blue-700 hover:to-indigo-700 transition-colors shadow-md disabled:opacity-50"
+            title="Dispatch to Courier"
+          >
+            <Send className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+            <span className="hidden sm:inline">Dispatch</span>
+          </button>
+        )}
+
+        {courierStatus === 'dispatched' && (
+          <div className="flex items-center justify-center gap-1.5 px-3 py-1.5 sm:py-2 bg-blue-50 border border-blue-200 text-blue-700 text-[10px] sm:text-sm font-semibold rounded-lg shadow-sm whitespace-nowrap">
+            <Package className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-blue-600" />
+            <span>
+              Dispatched via <span className="capitalize">{dispatchedTo}</span>
+            </span>
+            {consignmentId && (
+              <span className="bg-white px-2 py-0.5 rounded text-blue-800 border border-blue-100 font-mono ml-1">
+                {consignmentId}
+              </span>
+            )}
+          </div>
         )}
 
         {/* Delete Button */}
@@ -301,6 +364,82 @@ export function OrderStatusUpdater({ orderId, currentStatus, currentPaymentStatu
           Update
         </button>
       </div>
+
+      {/* Custom Dispatch Modal */}
+      {showDispatchModal && (
+        <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-gray-900/40 backdrop-blur-[2px] animate-in fade-in duration-200">
+          <div className="bg-white rounded-2xl shadow-xl w-full max-w-[400px] overflow-hidden animate-in zoom-in-95 duration-300">
+            <div className="p-6">
+              <div className="flex items-start gap-4 mb-4">
+                <div className="w-12 h-12 rounded-full flex items-center justify-center shrink-0 bg-indigo-50 text-indigo-500">
+                  <Send className="w-6 h-6" />
+                </div>
+                <div className="pt-2">
+                  <h3 className="text-xl font-bold text-gray-900 leading-none">Dispatch Order</h3>
+                  <p className="text-gray-500 font-medium text-sm mt-1">Select your preferred courier service.</p>
+                </div>
+              </div>
+              
+              <div className="space-y-3 mt-4">
+                <label 
+                  className={`flex items-center p-4 border rounded-xl cursor-pointer transition-all ${
+                    selectedCourier === 'steadfast' ? 'border-indigo-500 bg-indigo-50/50' : 'border-gray-200 hover:border-gray-300'
+                  }`}
+                >
+                  <input 
+                    type="radio" 
+                    name="courier" 
+                    value="steadfast" 
+                    checked={selectedCourier === 'steadfast'}
+                    onChange={() => setSelectedCourier('steadfast')}
+                    className="w-5 h-5 text-indigo-600 focus:ring-indigo-500"
+                  />
+                  <div className="ml-3 flex flex-col">
+                    <span className="font-bold text-gray-900">Steadfast Courier</span>
+                    <span className="text-xs text-gray-500">Standard delivery</span>
+                  </div>
+                </label>
+                
+                <label 
+                  className={`flex items-center p-4 border rounded-xl cursor-pointer transition-all ${
+                    selectedCourier === 'pathao' ? 'border-indigo-500 bg-indigo-50/50' : 'border-gray-200 hover:border-gray-300'
+                  }`}
+                >
+                  <input 
+                    type="radio" 
+                    name="courier" 
+                    value="pathao" 
+                    checked={selectedCourier === 'pathao'}
+                    onChange={() => setSelectedCourier('pathao')}
+                    className="w-5 h-5 text-indigo-600 focus:ring-indigo-500"
+                  />
+                  <div className="ml-3 flex flex-col">
+                    <span className="font-bold text-gray-900">Pathao Courier</span>
+                    <span className="text-xs text-gray-500">Requires Zone mapped to Dhaka</span>
+                  </div>
+                </label>
+              </div>
+              
+              <div className="flex justify-end gap-3 pt-6 mt-4 border-t border-gray-100">
+                <button
+                  onClick={() => setShowDispatchModal(false)}
+                  disabled={isUpdating}
+                  className="px-5 py-2.5 text-sm font-bold text-gray-600 hover:text-gray-900 bg-gray-50 hover:bg-gray-100 rounded-xl transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleDispatch}
+                  disabled={isUpdating}
+                  className="px-5 py-2.5 text-sm font-bold text-white bg-indigo-600 hover:bg-indigo-700 rounded-xl transition-all shadow-sm shadow-indigo-500/20 disabled:opacity-50"
+                >
+                  {isUpdating ? 'Dispatching...' : 'Dispatch Now'}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
