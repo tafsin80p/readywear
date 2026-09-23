@@ -126,7 +126,7 @@ export function ProductDetails({ product, relatedProducts }: { product: Product,
                   onClick={() => setActiveImageIndex(index)}
                   className={`relative aspect-[3/4] md:w-full w-20 shrink-0 rounded-xl overflow-hidden border-2 transition-all ${activeImageIndex === index ? 'border-primary shadow-sm shadow-primary/20' : 'border-transparent hover:border-gray-200'}`}
                 >
-                  <Image src={img} alt={`Thumbnail ${index + 1}`} fill quality={100} className={`object-cover object-top transition-opacity ${activeImageIndex === index ? 'opacity-100' : 'opacity-60 hover:opacity-100'}`} sizes="(max-width: 768px) 25vw, 15vw" />
+                  <Image src={img} alt={`Thumbnail ${index + 1}`} fill unoptimized={true} quality={100} className={`object-cover object-top transition-opacity ${activeImageIndex === index ? 'opacity-100' : 'opacity-60 hover:opacity-100'}`} sizes="(max-width: 768px) 25vw, 15vw" />
                 </button>
               ))}
             </div>
@@ -145,6 +145,7 @@ export function ProductDetails({ product, relatedProducts }: { product: Product,
                   alt={product.name}
                   width={800}
                   height={1200}
+                  unoptimized={true}
                   quality={100}
                   priority
                   fetchPriority="high"
@@ -432,6 +433,7 @@ export function ProductDetails({ product, relatedProducts }: { product: Product,
               src={product.images?.[activeImageIndex] || "https://placehold.co/800x1200/f3f4f6/a1a1aa?text=No+Image"}
               alt={product.name}
               fill
+              unoptimized={true}
               quality={100}
               className="object-contain"
               sizes="100vw"
