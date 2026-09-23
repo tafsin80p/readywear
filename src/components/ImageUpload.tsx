@@ -12,45 +12,7 @@ interface ImageUploadProps {
   folder?: string;
 }
 
-const convertToBase64 = (file: File): Promise<string> => {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = (event) => resolve(event.target?.result as string);
-    reader.onerror = (err) => reject(new Error("Failed to read file"));
-  });
-};
-
-const convertToWebP = (file: File, quality: number = 0.98): Promise<string> => {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = (event) => {
-      const img = new Image();
-      img.src = event.target?.result as string;
-      img.onload = () => {
-        const canvas = document.createElement("canvas");
-        
-        // Maintain exact original dimensions
-        canvas.width = img.width;
-        canvas.height = img.height;
-        const ctx = canvas.getContext("2d");
-        
-        if (!ctx) {
-          return reject(new Error("Canvas context is not supported"));
-        }
-        
-        ctx.drawImage(img, 0, 0, img.width, img.height);
-        
-        // Convert to WebP with very high quality (0.98)
-        const webpDataUrl = canvas.toDataURL("image/webp", quality);
-        resolve(webpDataUrl);
-      };
-      img.onerror = (err) => reject(new Error("Failed to load image for conversion"));
-    };
-    reader.onerror = (err) => reject(new Error("Failed to read file"));
-  });
-};
+// Removed canvas and Base64 conversion functions since we will upload directly
 
 export function ImageUpload({ onUpload, disabled, className, children, folder }: ImageUploadProps) {
   const [isUploading, setIsUploading] = useState(false);
@@ -71,29 +33,39 @@ export function ImageUpload({ onUpload, disabled, className, children, folder }:
     try {
       setIsUploading(true);
 
-      // If file is smaller than 2.5MB, keep it exactly original.
-      // If it's larger (e.g. 4-5MB), convert it to WebP with 98% quality to avoid Vercel 4.5MB payload limit.
-      let base64File = "";
-      if (file.size > 2.5 * 1024 * 1024) {
-        base64File = await convertToWebP(file, 0.98);
-      } else {
-        base64File = await convertToBase64(file);
-      }
-      
-      // Send to our backend API with optional folder
-      const res = await fetch("/api/upload", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ file: base64File, folder: folder || "readywear" }),
-      });
+      // 1. Get signature from our backend
+      const uploadFolder = folder || "readywear";
+      const sigRes = await fetch(`/api/upload/signature?folder=${uploadFolder}`);
+      const sigData = await sigRes.json();
 
-      const data = await res.json();
-      
-      if (!res.ok) {
-        throw new Error(data.error || "Failed to upload image");
+      if (!sigRes.ok) {
+        throw new Error(sigData.error || "Failed to get upload signature");
       }
 
-      onUpload(data.url);
+      // 2. Upload directly to Cloudinary from the browser!
+      // This bypasses Vercel's 4.5MB limit completely and avoids any Canvas/Base64 quality loss
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("api_key", sigData.api_key);
+      formData.append("timestamp", sigData.timestamp.toString());
+      formData.append("signature", sigData.signature);
+      formData.append("folder", uploadFolder);
+
+      const cloudinaryRes = await fetch(
+        `https://api.cloudinary.com/v1_1/${sigData.cloud_name}/image/upload`,
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
+
+      const data = await cloudinaryRes.json();
+      
+      if (!cloudinaryRes.ok) {
+        throw new Error(data.error?.message || "Failed to upload directly to Cloudinary");
+      }
+
+      onUpload(data.secure_url);
       toast("success", "Image uploaded successfully!");
 
     } catch (error: any) {
