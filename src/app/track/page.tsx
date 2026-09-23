@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Search, MapPin, Truck, PackageCheck, Package, Clock, Phone, Hash, ChevronRight, Check, XCircle } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 import { cn } from "@/lib/utils";
 
 
@@ -32,6 +33,18 @@ export default function TrackOrderPage() {
   const [showResult, setShowResult] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
   const [orderData, setOrderData] = useState<any>(null);
+  const [logoUrl, setLogoUrl] = useState<string>("/readywear logo.png");
+
+  useEffect(() => {
+    fetch("/api/settings/public")
+      .then(res => res.json())
+      .then(data => {
+        if (data.success && data.logoUrl) {
+          setLogoUrl(data.logoUrl);
+        }
+      })
+      .catch(console.error);
+  }, []);
 
   const handleTrack = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -81,7 +94,22 @@ export default function TrackOrderPage() {
 
   return (
     <>
-      <div className="min-h-screen bg-gray-50/50 pb-20 md:pb-32">
+      <div className="min-h-screen flex flex-col bg-gray-50/50 pb-20 md:pb-32">
+        
+        {/* Top Logo Area */}
+        <div className="w-full flex justify-center pt-10 pb-6">
+          <Link href="/">
+            <Image
+              src={logoUrl}
+              alt="Logo"
+              width={180}
+              height={60}
+              className="object-contain h-12 w-auto"
+              priority
+            />
+          </Link>
+        </div>
+
         {/* Hero Header */}
       <div className="pt-8 pb-12">
         <div className="container mx-auto px-4 max-w-2xl text-center">
