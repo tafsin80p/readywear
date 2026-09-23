@@ -90,7 +90,7 @@ const IntegrationSettingsSchema: Schema<IIntegrationSettings> = new Schema(
       pixelId: { type: String, default: "" },
       accessToken: { type: String, default: "" },
       testEventCode: { type: String, default: "" },
-      datasetName: { type: String, default: "ReadyWear" },
+      datasetName: { type: String, default: "Mehzin Offers" },
       currency: { type: String, default: "BDT" },
     },
     googleSheet: {
