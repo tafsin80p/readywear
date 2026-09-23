@@ -129,7 +129,7 @@ export function MobileNavbar() {
                   )}
                   {item.badge && (
                     <span className={cn(
-                      "absolute -top-1.5 -right-2 text-[9px] font-bold w-4 h-4 flex items-center justify-center rounded-full border border-white",
+                      "absolute -top-2 -right-2.5 text-[12px] font-bold w-5 h-5 flex items-center justify-center rounded-full border border-white",
                       isActive ? "bg-white text-primary" : "bg-primary text-white"
                     )}>
                       {item.badge}

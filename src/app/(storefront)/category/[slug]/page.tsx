@@ -87,7 +87,7 @@ export default async function CategoryShopPage({ params }: { params: Promise<{ s
               
               <div className="mb-4 flex justify-between items-center md:hidden">
                 <h1 className="text-lg font-bold text-gray-900">{activeCategoryLabel}</h1>
-                <span className="text-xs font-medium text-gray-500">{totalCount} টি পণ্য</span>
+                <span className="text-[13px] font-bold text-gray-500 bg-gray-100 px-2.5 py-0.5 rounded-full">{totalCount} টি পণ্য</span>
               </div>
               
               {/* Removed duplicate Subcategories Tabs since they are now in the sidebar */}

@@ -39,7 +39,7 @@ export default async function ShopPage() {
               
               <div className="mb-4 flex justify-between items-center md:hidden">
                 <h1 className="text-lg font-bold text-gray-900">{activeCategoryLabel}</h1>
-                <span className="text-xs font-medium text-gray-500">{filteredProducts.length} টি পণ্য</span>
+                <span className="text-[13px] font-bold text-gray-500 bg-gray-100 px-2.5 py-0.5 rounded-full">{filteredProducts.length} টি পণ্য</span>
               </div>
               
               {filteredProducts.length > 0 ? (

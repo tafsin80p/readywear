@@ -95,16 +95,16 @@ export function ProductCard({ product, priority = false }: ProductProps) {
         
         {/* Stock Status Badges */}
         {isOutOfStock ? (
-          <div className="absolute top-2 left-2 bg-red-500 text-white text-[10px] font-bold px-2 py-1 rounded shadow-sm z-10">
+          <div className="absolute top-2 left-2 bg-red-500 text-white text-[11px] md:text-xs font-bold px-2 py-1 rounded shadow-sm z-10">
             স্টক আউট
           </div>
         ) : (
           (product.discount || 0) > 0 ? (
-            <div className="absolute top-2 left-2 bg-primary text-white text-xs font-bold px-2 py-1 rounded shadow-sm z-10">
+            <div className="absolute top-2 left-2 bg-primary text-white text-[13px] font-bold px-2.5 py-1 rounded shadow-sm z-10">
               {toBengaliNumber(product.discount!)}% ছাড়
             </div>
           ) : (
-            <div className="absolute top-2 left-2 bg-emerald-500/90 text-white text-[10px] font-bold px-2 py-1 rounded shadow-sm z-10">
+            <div className="absolute top-2 left-2 bg-emerald-500/90 text-white text-[11px] md:text-xs font-bold px-2 py-1 rounded shadow-sm z-10">
               ইন স্টক
             </div>
           )
@@ -130,11 +130,11 @@ export function ProductCard({ product, priority = false }: ProductProps) {
         </div>
         
         <div className="flex flex-wrap items-baseline gap-1.5 md:gap-2 mt-auto mb-3 md:mb-4">
-          <span className="text-[16px] md:text-[19px] font-bold text-primary">
+          <span className="text-[17px] md:text-[19px] font-bold text-primary">
             ৳ {toBengaliNumber(product.price)}
           </span>
           {product.oldPrice && product.oldPrice > product.price && (
-            <span className="text-[11px] md:text-[14px] text-gray-500 line-through">
+            <span className="text-[13px] md:text-[14px] text-gray-500 line-through">
               ৳{toBengaliNumber(product.oldPrice)}
             </span>
           )}
