@@ -108,6 +108,15 @@ export default function IntegrationsPage() {
     logoUrl: ""
   });
 
+  const [smtp, setSmtp] = useState({
+    enabled: false,
+    host: "",
+    port: 465,
+    user: "",
+    password: "",
+    fromEmail: ""
+  });
+
   const [pendingUsers, setPendingUsers] = useState<any[]>([]);
 
   useEffect(() => {
@@ -130,6 +139,7 @@ export default function IntegrationsPage() {
         if (data.settings.googleSheet) setGoogleSheet(data.settings.googleSheet);
         if (data.settings.pathao) setPathao(data.settings.pathao);
         if (data.settings.steadfast) setSteadfast(data.settings.steadfast);
+        if (data.settings.smtp) setSmtp(data.settings.smtp);
         setPendingUsers(data.settings.telegram?.pendingTelegramUsers || []);
       }
     } catch (error) {
@@ -153,7 +163,8 @@ export default function IntegrationsPage() {
         pushNotification,
         googleSheet,
         pathao,
-        steadfast
+        steadfast,
+        smtp
       };
 
       const res = await fetch("/api/admin/integrations", {
@@ -222,7 +233,7 @@ export default function IntegrationsPage() {
     }
   };
 
-  const handleToggle = (type: 'telegram' | 'meta' | 'googleAnalytics' | 'tiktok' | 'pushNotification' | 'googleSheet' | 'pathao' | 'steadfast', enabled: boolean) => {
+  const handleToggle = (type: 'telegram' | 'meta' | 'googleAnalytics' | 'tiktok' | 'pushNotification' | 'googleSheet' | 'pathao' | 'steadfast' | 'smtp', enabled: boolean) => {
     const payload = {
       telegram: { ...telegram, authorizedUsers: telegram.authorizedUsers.split(",").map(u => u.trim()).filter(Boolean) },
       meta,
@@ -231,7 +242,8 @@ export default function IntegrationsPage() {
       pushNotification,
       googleSheet,
       pathao,
-      steadfast
+      steadfast,
+      smtp
     };
     
     if (type === 'telegram') {
@@ -258,9 +270,37 @@ export default function IntegrationsPage() {
     } else if (type === 'steadfast') {
       setSteadfast({ ...steadfast, enabled });
       payload.steadfast.enabled = enabled;
+    } else if (type === 'smtp') {
+      setSmtp({ ...smtp, enabled });
+      payload.smtp.enabled = enabled;
     }
     
     handleSave(payload);
+  };
+
+  const handleTestSmtp = async () => {
+    if (!smtp.host || !smtp.user || !smtp.password || !smtp.fromEmail) {
+      toast.error("Host, User, Password, and From Email are required to test.");
+      return;
+    }
+    setTesting(true);
+    try {
+      const res = await fetch("/api/admin/integrations/test-smtp", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(smtp)
+      });
+      const data = await res.json();
+      if (data.success) {
+        toast.success("Test email sent successfully! Check your inbox.");
+      } else {
+        toast.error(data.error || data.message || "Failed to send test email");
+      }
+    } catch (error) {
+      toast.error("Error connecting to SMTP server");
+    } finally {
+      setTesting(false);
+    }
   };
 
   const handleTestTelegram = async () => {
@@ -635,6 +675,39 @@ export default function IntegrationsPage() {
           </div>
         </div>
 
+        {/* SMTP Section */}
+        <div className={`bg-white rounded-2xl border relative transition-all duration-300 shadow-sm ${expanded === 'smtp' ? 'border-indigo-400 ring-2 ring-indigo-50' : 'border-gray-200'}`}>
+          {smtp.enabled && smtp.host && smtp.user && (
+            <div className="absolute top-4 right-4 bg-green-50 border border-green-200 text-green-700 text-[10px] font-bold px-2 py-1 rounded-full flex items-center gap-1.5 shadow-sm">
+              <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span>
+              Connected
+            </div>
+          )}
+          <div className="p-6 flex flex-col items-center text-center gap-3">
+            <svg className="w-14 h-14" viewBox="0 0 24 24" fill="none" stroke="#4F46E5" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+              <polyline points="22,6 12,13 2,6"></polyline>
+            </svg>
+            <div>
+              <h2 className="text-lg font-bold text-gray-900">Custom SMTP</h2>
+              <p className="text-xs text-gray-500 mt-1 line-clamp-2">Send emails via your own custom SMTP server.</p>
+            </div>
+            
+            <div className="w-full flex items-center justify-between mt-3 pt-4 border-t border-gray-100">
+              <label className="relative inline-flex items-center cursor-pointer">
+                <input type="checkbox" className="sr-only peer" checked={smtp.enabled} onChange={e => handleToggle('smtp', e.target.checked)} />
+                <div className="w-10 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-[#4F46E5]"></div>
+              </label>
+              <button 
+                onClick={() => setExpanded(expanded === 'smtp' ? null : 'smtp')}
+                className="px-3 py-1.5 bg-gray-50 border border-gray-200 text-gray-700 rounded-lg text-xs font-medium hover:bg-gray-100 transition-colors"
+              >
+                {expanded === 'smtp' ? 'Close' : 'Configure'}
+              </button>
+            </div>
+          </div>
+        </div>
+
       </div>
 
       {/* Configuration Modals */}
@@ -654,6 +727,7 @@ export default function IntegrationsPage() {
                 {expanded === 'googleSheet' && 'Google Sheets Configuration'}
                 {expanded === 'pathao' && 'Pathao Courier Configuration'}
                 {expanded === 'steadfast' && 'Steadfast Courier Configuration'}
+                {expanded === 'smtp' && 'SMTP Configuration'}
               </h2>
               <button 
                 onClick={handleCloseModal}
@@ -1101,6 +1175,80 @@ export default function IntegrationsPage() {
                       onClick={() => handleSave()}
                       disabled={saving}
                       className="flex items-center gap-2 bg-[#0a192f] text-white px-5 py-2 rounded-xl text-sm font-medium hover:bg-[#112240] transition-colors disabled:opacity-70 shadow-sm"
+                    >
+                      {saving ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+                      Save Config
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {expanded === 'smtp' && (
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">SMTP Host</label>
+                    <input 
+                      type="text" 
+                      value={smtp.host}
+                      onChange={e => setSmtp({...smtp, host: e.target.value})}
+                      className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all outline-none bg-white"
+                      placeholder="smtp.gmail.com"
+                    />
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Port</label>
+                      <input 
+                        type="number" 
+                        value={smtp.port}
+                        onChange={e => setSmtp({...smtp, port: Number(e.target.value)})}
+                        className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all outline-none bg-white"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">From Email (Sender)</label>
+                      <input 
+                        type="email" 
+                        value={smtp.fromEmail}
+                        onChange={e => setSmtp({...smtp, fromEmail: e.target.value})}
+                        className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all outline-none bg-white"
+                        placeholder="noreply@yourdomain.com"
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">SMTP Username</label>
+                    <input 
+                      type="text" 
+                      value={smtp.user}
+                      onChange={e => setSmtp({...smtp, user: e.target.value})}
+                      className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all outline-none bg-white"
+                      placeholder="Your SMTP Email"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">SMTP Password</label>
+                    <input 
+                      type="password" 
+                      value={smtp.password}
+                      onChange={e => setSmtp({...smtp, password: e.target.value})}
+                      className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all outline-none bg-white"
+                      placeholder="App Password or Password"
+                    />
+                  </div>
+                  <div className="pt-4 flex justify-between border-t border-gray-100 mt-2">
+                    <button 
+                      onClick={handleTestSmtp}
+                      disabled={testing}
+                      className="flex items-center gap-2 bg-indigo-50 text-indigo-700 px-5 py-2 rounded-xl text-sm font-medium hover:bg-indigo-100 transition-colors disabled:opacity-70 shadow-sm"
+                    >
+                      {testing ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
+                      Test Connection
+                    </button>
+                    <button 
+                      onClick={() => handleSave()}
+                      disabled={saving}
+                      className="flex items-center gap-2 bg-indigo-600 text-white px-5 py-2 rounded-xl text-sm font-medium hover:bg-indigo-700 transition-colors disabled:opacity-70 shadow-sm"
                     >
                       {saving ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
                       Save Config

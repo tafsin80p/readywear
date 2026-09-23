@@ -57,6 +57,14 @@ export interface IIntegrationSettings extends Document {
     appId: string;
     restApiKey: string;
   };
+  smtp: {
+    enabled: boolean;
+    host: string;
+    port: number;
+    user: string;
+    password?: string;
+    fromEmail: string;
+  };
   createdAt: Date;
   updatedAt: Date;
 }
@@ -120,6 +128,14 @@ const IntegrationSettingsSchema: Schema<IIntegrationSettings> = new Schema(
       enabled: { type: Boolean, default: false },
       appId: { type: String, default: "" },
       restApiKey: { type: String, default: "" },
+    },
+    smtp: {
+      enabled: { type: Boolean, default: false },
+      host: { type: String, default: "" },
+      port: { type: Number, default: 465 },
+      user: { type: String, default: "" },
+      password: { type: String, default: "" },
+      fromEmail: { type: String, default: "" },
     },
   },
   { timestamps: true }

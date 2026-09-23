@@ -49,6 +49,7 @@ export async function POST(req: NextRequest) {
       settings.googleAnalytics = body.googleAnalytics;
       if (body.tiktok) settings.tiktok = body.tiktok;
       if (body.pushNotification) settings.pushNotification = body.pushNotification;
+      if (body.smtp) settings.smtp = body.smtp;
     }
     
     await settings.save();
