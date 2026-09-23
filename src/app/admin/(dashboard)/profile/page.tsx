@@ -206,6 +206,7 @@ export default function AdminProfile() {
                           name="currentPassword"
                           value={formData.currentPassword}
                           onChange={handleChange}
+                          required={formData.email !== session?.user?.email || formData.newPassword.length > 0}
                           placeholder="Required to change email or password"
                           className="w-full pl-11 pr-4 py-3.5 bg-gray-50/50 border border-gray-200 rounded-xl text-gray-900 font-medium focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all placeholder:font-normal placeholder:text-gray-400"
                         />
