@@ -223,7 +223,7 @@ export default function ProductsList() {
                 <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Category</th>
                 <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Price</th>
                 <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Stock</th>
-                <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider text-right">Actions</th>
+                <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider text-right sticky right-0 bg-gray-50/80 z-10 border-l border-gray-100">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
@@ -300,7 +300,7 @@ export default function ProductsList() {
                         </span>
                       </div>
                     </td>
-                    <td className="px-6 py-4 text-right">
+                    <td className="px-6 py-4 text-right sticky right-0 bg-white group-hover:bg-gray-50/50 z-10 border-l border-gray-100 shadow-[-5px_0_10px_rgba(0,0,0,0.02)]">
                       <div className="flex items-center justify-end gap-2 transition-opacity">
                         <Link href={`/product/${product.slug}`} target="_blank" className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors" title="View Live">
                           <Eye className="w-4 h-4" />
