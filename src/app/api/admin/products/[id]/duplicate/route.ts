@@ -52,14 +52,13 @@ export async function POST(
     // Log Activity
     const session = await getServerSession(authOptions);
     if (session?.user?.id) {
-      await activityLogService.logActivity(
-        session.user.id,
-        'create',
-        'Product',
-        newProduct._id.toString(),
-        `Duplicated product: ${newProduct.name}`,
-        req
-      );
+      await activityLogService.logActivity({
+        title: "Product Duplicated",
+        message: `Duplicated product: ${newProduct.name}`,
+        type: 'product',
+        link: `/admin/products/edit/${newProduct._id}`,
+        sendPush: false
+      });
     }
     
     revalidatePath("/");
