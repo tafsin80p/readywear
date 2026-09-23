@@ -170,6 +170,73 @@ export default function PushNotificationManager({ toneUrl }: { toneUrl?: string 
     }
   }, [pathname, appId]);
 
+  // Fallback Polling for iOS PWA where Web Push foreground events might fail
+  useEffect(() => {
+    if (!pathname.startsWith('/admin')) return;
+    
+    // Check every 10 seconds for new orders
+    let lastChecked = Date.now();
+    
+    const pollOrders = async () => {
+      try {
+        const res = await fetch(`/api/admin/orders/latest?since=${lastChecked}`);
+        if (!res.ok) return;
+        
+        const data = await res.json();
+        
+        if (data.success && data.orders && data.orders.length > 0) {
+          const newOrder = data.orders[0]; // Most recent order
+          
+          setIncomingOrder({
+            title: "New Order Received! 🛍️",
+            body: `Order ${newOrder.orderId} has been placed for ${newOrder.pricing?.total} BDT.`,
+            url: `/admin/orders/${newOrder._id}`
+          });
+          
+          if (toneUrl && audioRef.current) {
+            // Ensure audio is not already playing to avoid overlapping
+            if (audioRef.current.paused) {
+              audioRef.current.src = toneUrl;
+              audioRef.current.loop = true;
+              audioRef.current.load();
+              const playPromise = audioRef.current.play();
+              if (playPromise !== undefined) {
+                playPromise.catch(() => {});
+              }
+            }
+          } else if (!toneUrl) {
+            // Fallback beep for polling if no custom tone
+            const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
+            if (AudioContext) {
+              try {
+                const ctx = new AudioContext();
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(880, ctx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(1760, ctx.currentTime + 0.1);
+                gain.gain.setValueAtTime(0, ctx.currentTime);
+                gain.gain.linearRampToValueAtTime(0.5, ctx.currentTime + 0.05);
+                gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.5);
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start();
+                osc.stop(ctx.currentTime + 0.6);
+              } catch(e) {}
+            }
+          }
+        }
+        
+        lastChecked = Date.now();
+      } catch (err) {
+        // Silently fail polling errors
+      }
+    };
+
+    const interval = setInterval(pollOrders, 10000);
+    return () => clearInterval(interval);
+  }, [pathname, toneUrl]);
+
   if (showPrompt && pathname.startsWith('/admin')) {
     return (
       <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-fade-in">
@@ -238,72 +305,6 @@ export default function PushNotificationManager({ toneUrl }: { toneUrl?: string 
     }, 200);
   };
 
-  // Fallback Polling for iOS PWA where Web Push foreground events might fail
-  useEffect(() => {
-    if (!pathname.startsWith('/admin')) return;
-    
-    // Check every 10 seconds for new orders
-    let lastChecked = Date.now();
-    
-    const pollOrders = async () => {
-      try {
-        const res = await fetch(`/api/admin/orders/latest?since=${lastChecked}`);
-        if (!res.ok) return;
-        
-        const data = await res.json();
-        
-        if (data.success && data.orders && data.orders.length > 0) {
-          const newOrder = data.orders[0]; // Most recent order
-          
-          setIncomingOrder({
-            title: "New Order Received! 🛍️",
-            body: `Order ${newOrder.orderId} has been placed for ${newOrder.pricing?.total} BDT.`,
-            url: `/admin/orders/${newOrder._id}`
-          });
-          
-          if (toneUrl && audioRef.current) {
-            // Ensure audio is not already playing to avoid overlapping
-            if (audioRef.current.paused) {
-              audioRef.current.src = toneUrl;
-              audioRef.current.loop = true;
-              audioRef.current.load();
-              const playPromise = audioRef.current.play();
-              if (playPromise !== undefined) {
-                playPromise.catch(() => {});
-              }
-            }
-          } else if (!toneUrl) {
-            // Fallback beep for polling if no custom tone
-            const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
-            if (AudioContext) {
-              try {
-                const ctx = new AudioContext();
-                const osc = ctx.createOscillator();
-                const gain = ctx.createGain();
-                osc.type = 'sine';
-                osc.frequency.setValueAtTime(880, ctx.currentTime);
-                osc.frequency.exponentialRampToValueAtTime(1760, ctx.currentTime + 0.1);
-                gain.gain.setValueAtTime(0, ctx.currentTime);
-                gain.gain.linearRampToValueAtTime(0.5, ctx.currentTime + 0.05);
-                gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.5);
-                osc.connect(gain);
-                gain.connect(ctx.destination);
-                osc.start();
-                osc.stop(ctx.currentTime + 0.6);
-              } catch(e) {}
-            }
-          }
-        }
-        
-        lastChecked = Date.now();
-      } catch (err) {
-        // Silently fail polling errors
-      }
-    };
-
-    const interval = setInterval(pollOrders, 10000);
-    return () => clearInterval(interval);
-  }, [pathname, toneUrl]);
 
   if (incomingOrder) {
     return (
