@@ -1,9 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Search, MapPin, Truck, PackageCheck, Package, Clock, Phone, Hash, ChevronRight, Check, XCircle } from "lucide-react";
 import Image from "next/image";
-import Link from "next/link";
 import { cn } from "@/lib/utils";
 
 
@@ -33,18 +32,6 @@ export default function TrackOrderPage() {
   const [showResult, setShowResult] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
   const [orderData, setOrderData] = useState<any>(null);
-  const [logoUrl, setLogoUrl] = useState<string>("/readywear logo.png");
-
-  useEffect(() => {
-    fetch("/api/settings/public")
-      .then(res => res.json())
-      .then(data => {
-        if (data.success && data.logoUrl) {
-          setLogoUrl(data.logoUrl);
-        }
-      })
-      .catch(console.error);
-  }, []);
 
   const handleTrack = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -94,33 +81,18 @@ export default function TrackOrderPage() {
 
   return (
     <>
-      <div className="min-h-screen flex flex-col bg-gray-50/50 pb-20 md:pb-32">
-        
-        {/* Top Logo Area */}
-        <div className="w-full flex justify-center pt-10 pb-6">
-          <Link href="/">
-            <Image
-              src={logoUrl}
-              alt="Logo"
-              width={180}
-              height={60}
-              className="object-contain h-12 w-auto"
-              priority
-            />
-          </Link>
-        </div>
-
+      <div className="min-h-[calc(100vh-200px)] bg-gray-50/50 pb-20 md:pb-32">
         {/* Hero Header */}
-      <div className="pt-8 pb-12">
-        <div className="container mx-auto px-4 max-w-2xl text-center">
-          <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3">আপনার অর্ডার ট্র্যাক করুন</h1>
-          <p className="text-gray-500 text-sm md:text-base">আপনার অর্ডার আইডি এবং ফোন নাম্বার দিয়ে সর্বশেষ অবস্থা জানুন</p>
+        <div className="pt-8 pb-12">
+          <div className="container mx-auto px-4 text-left">
+            <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3">আপনার অর্ডার ট্র্যাক করুন</h1>
+            <p className="text-gray-500 text-sm md:text-base">আপনার অর্ডার আইডি এবং ফোন নাম্বার দিয়ে সর্বশেষ অবস্থা জানুন</p>
+          </div>
         </div>
-      </div>
 
-      <div className="container mx-auto px-4 max-w-3xl -mt-8 relative z-10">
-        {/* Search Card */}
-        <div className="bg-white rounded-2xl shadow-xl shadow-black/[0.03] border border-gray-100 p-6 md:p-8">
+        <div className="container mx-auto px-4 -mt-8 relative z-10">
+          {/* Search Card */}
+          <div className="bg-white rounded-2xl shadow-xl shadow-black/[0.03] border border-gray-100 p-6 md:p-8">
           <form onSubmit={handleTrack} className="flex flex-col md:flex-row gap-4">
             <div className="flex-1 relative">
               <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-2">অর্ডার আইডি</label>
