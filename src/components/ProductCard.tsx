@@ -81,7 +81,7 @@ export function ProductCard({ product, priority = false }: ProductProps) {
   return (
     <div className={`group bg-white rounded-xl border border-gray-100 p-3 shadow-sm transition-all duration-300 flex flex-col h-full ${isOutOfStock ? 'opacity-75 grayscale-[30%]' : 'hover:shadow-lg'}`}>
       {/* Image & Badges */}
-      <Link href={`/product/${product.slug}`} className="relative w-full aspect-[4/5] rounded-lg overflow-hidden bg-gray-50 mb-4 block group/image border border-gray-100">
+      <Link href={`/product/${product.slug}`} className="relative w-full aspect-[3/4] rounded-lg overflow-hidden bg-gray-50 mb-4 block group/image border border-gray-100">
         <Image
           src={mainImage}
           alt={product.name}
