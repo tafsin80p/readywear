@@ -87,6 +87,7 @@ export function ProductCard({ product, priority = false }: ProductProps) {
           alt={product.name}
           width={400}
           height={600}
+          quality={100}
           priority={priority}
           fetchPriority={priority ? "high" : "auto"}
           sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 20vw"
