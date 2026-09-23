@@ -3,6 +3,7 @@ import Category from "@/models/Category";
 import Product from "@/models/Product";
 import { notFound } from "next/navigation";
 import { ProductCard } from "@/components/ProductCard";
+import { CategorySidebar } from "@/components/CategorySidebar";
 
 import { cn } from "@/lib/utils";
 import Link from "next/link";
@@ -65,13 +66,20 @@ export default async function CategoryShopPage({ params }: { params: Promise<{ s
   }).lean();
   const subCategories = JSON.parse(JSON.stringify(subCategoriesDocs));
 
+  // Fetch ALL categories for the sidebar
+  const allCategoriesDocs = await Category.find({ isActive: true }).lean();
+  const allCategories = JSON.parse(JSON.stringify(allCategoriesDocs));
+
   return (
     <>
       <main className="flex-1 bg-gray-50/30 pb-24 pt-4 md:pt-8">
         <div className="container mx-auto px-4 lg:px-8">
           <div className="flex flex-col md:flex-row gap-8">
+            {/* Sidebar */}
+            <CategorySidebar categories={allCategories} activeSlug={activeSlug} />
+
             {/* Product Grid */}
-            <div className="flex-1">
+            <div className="flex-1 mt-4 md:mt-0">
               <div className="mb-6 flex justify-between items-center bg-white p-4 rounded-xl shadow-sm border border-gray-100 hidden md:flex">
                 <h1 className="text-xl font-bold text-gray-900">{activeCategoryLabel}</h1>
                 <span className="text-sm font-medium bg-gray-100 text-gray-600 px-3 py-1 rounded-full">{totalCount} টি পণ্য</span>
@@ -82,20 +90,7 @@ export default async function CategoryShopPage({ params }: { params: Promise<{ s
                 <span className="text-xs font-medium text-gray-500">{totalCount} টি পণ্য</span>
               </div>
               
-              {/* Subcategories Tabs */}
-              {subCategories.length > 0 && (
-                <div className="flex overflow-x-auto pb-4 mb-4 gap-3 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-                  {subCategories.map((sub: any) => (
-                    <Link
-                      key={sub.slug}
-                      href={`/category/${sub.slug}`}
-                      className="shrink-0 whitespace-nowrap px-5 py-2 rounded-full text-sm font-bold transition-all duration-300 bg-white border border-gray-200 text-gray-700 shadow-sm hover:border-primary hover:text-primary active:scale-95 flex items-center justify-center"
-                    >
-                      {sub.name}
-                    </Link>
-                  ))}
-                </div>
-              )}
+              {/* Removed duplicate Subcategories Tabs since they are now in the sidebar */}
               
               {filteredProducts.length > 0 ? (
                 <div className="grid grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-3 md:gap-6">
