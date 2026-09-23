@@ -34,10 +34,8 @@ export async function POST(request: Request) {
       resource_type: "auto",
     };
 
-    // If it's explicitly not an audio file, we force webp optimization
-    if (type !== "audio") {
-      uploadOptions.format = "webp";
-    } else {
+    // Audio files need specific resource_type
+    if (type === "audio") {
       uploadOptions.resource_type = "video"; // Cloudinary uses video for audio
     }
 
