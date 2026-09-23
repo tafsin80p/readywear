@@ -196,6 +196,13 @@ export function ProductDetails({ product, relatedProducts }: { product: Product,
                 )}
               </div>
 
+              {/* Main Description (Moved above price) */}
+              {product.description && (
+                <div className="mb-6 text-gray-600 leading-relaxed text-[15px] whitespace-pre-wrap">
+                  {product.description}
+                </div>
+              )}
+
               <div className="flex items-end gap-3 pb-6 border-b border-gray-100">
                 <span className="text-3xl md:text-4xl font-bold text-primary">
                   ৳ {toBengaliNumber(product.price)}
@@ -341,13 +348,6 @@ export function ProductDetails({ product, relatedProducts }: { product: Product,
               </h2>
 
               <div className="space-y-6">
-                {/* Main Description */}
-                {product.description && (
-                  <div className="space-y-4 text-gray-600 leading-relaxed text-[15px] whitespace-pre-wrap">
-                    {product.description}
-                  </div>
-                )}
-                
                 {/* Specifications Table */}
                 {product.specifications && product.specifications.length > 0 && (
                   <div className="overflow-hidden rounded-xl border border-gray-100 bg-white shadow-sm">
