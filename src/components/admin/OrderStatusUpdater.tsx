@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Save, Printer, ChevronDown, Trash2 } from "lucide-react";
 import toast from "react-hot-toast";
+import { useConfirm } from "@/context/ConfirmContext";
 
 interface Option {
   value: string;
@@ -83,6 +84,7 @@ interface OrderStatusUpdaterProps {
 
 export function OrderStatusUpdater({ orderId, currentStatus, currentPaymentStatus, verificationStatus = "pending_verification" }: OrderStatusUpdaterProps) {
   const router = useRouter();
+  const { confirm } = useConfirm();
   
   const [status, setStatus] = useState(currentStatus);
   const [paymentStatus, setPaymentStatus] = useState(currentPaymentStatus);
@@ -126,7 +128,12 @@ export function OrderStatusUpdater({ orderId, currentStatus, currentPaymentStatu
   };
 
   const handleDelete = async () => {
-    if (!window.confirm("Are you sure you want to delete this order? This action cannot be undone.")) {
+    if (!(await confirm({
+      title: "Delete Order",
+      message: "Are you sure you want to delete this order? This action cannot be undone.",
+      confirmText: "Delete",
+      variant: "danger"
+    }))) {
       return;
     }
 
@@ -156,7 +163,12 @@ export function OrderStatusUpdater({ orderId, currentStatus, currentPaymentStatu
   };
 
   const handleVerification = async (action: 'confirm' | 'fake') => {
-    if (!window.confirm(`Are you sure you want to ${action === 'confirm' ? 'confirm' : 'mark this order as fake'}?`)) {
+    if (!(await confirm({
+      title: action === 'confirm' ? "Confirm Order" : "Mark as Fake",
+      message: `Are you sure you want to ${action === 'confirm' ? 'confirm' : 'mark this order as fake'}?`,
+      confirmText: action === 'confirm' ? "Yes, Confirm" : "Mark as Fake",
+      variant: action === 'confirm' ? "info" : "warning"
+    }))) {
       return;
     }
     

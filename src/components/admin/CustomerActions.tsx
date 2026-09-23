@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import { MoreVertical, Trash2, ShieldBan, ShieldCheck } from "lucide-react";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
+import { useConfirm } from "@/context/ConfirmContext";
 
 interface CustomerActionsProps {
   customerId: string;
@@ -15,6 +16,7 @@ export function CustomerActions({ customerId, isBanned }: CustomerActionsProps) 
   const [isProcessing, setIsProcessing] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
+  const { confirm } = useConfirm();
 
   // Close dropdown on outside click
   useEffect(() => {
@@ -32,7 +34,12 @@ export function CustomerActions({ customerId, isBanned }: CustomerActionsProps) 
     setIsOpen(false);
     
     const actionName = isBanned ? "unban" : "ban";
-    if (!window.confirm(`Are you sure you want to ${actionName} this customer?`)) return;
+    if (!(await confirm({
+      title: `${isBanned ? 'Unban' : 'Ban'} Customer`,
+      message: `Are you sure you want to ${actionName} this customer?`,
+      confirmText: isBanned ? "Unban" : "Ban",
+      variant: isBanned ? "info" : "warning"
+    }))) return;
 
     setIsProcessing(true);
     const loadingToast = toast.loading(`${isBanned ? 'Unbanning' : 'Banning'} customer...`);
@@ -61,7 +68,12 @@ export function CustomerActions({ customerId, isBanned }: CustomerActionsProps) 
     e.stopPropagation();
     setIsOpen(false);
 
-    if (!window.confirm("Are you sure you want to delete this customer? This action cannot be undone.")) return;
+    if (!(await confirm({
+      title: "Delete Customer",
+      message: "Are you sure you want to delete this customer? This action cannot be undone.",
+      confirmText: "Delete",
+      variant: "danger"
+    }))) return;
 
     setIsProcessing(true);
     const loadingToast = toast.loading("Deleting customer...");

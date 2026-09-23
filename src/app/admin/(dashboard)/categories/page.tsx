@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { Plus, Trash2, Edit, Loader2, LayoutList, Search, ImageIcon } from "lucide-react";
 import { useToast } from "@/context/ToastContext";
+import { useConfirm } from "@/context/ConfirmContext";
 import Image from "next/image";
 import { ImageUpload } from "@/components/ImageUpload";
 
@@ -12,6 +13,7 @@ export default function CategoriesPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const { toast } = useToast();
+  const { confirm } = useConfirm();
 
   const [formData, setFormData] = useState({
     name: "",
@@ -101,7 +103,12 @@ export default function CategoriesPage() {
   };
 
   const handleDelete = async (id: string, name: string) => {
-    if (!window.confirm(`Are you sure you want to delete "${name}"?`)) {
+    if (!(await confirm({
+      title: "Delete Category",
+      message: `Are you sure you want to delete "${name}"? This action cannot be undone.`,
+      confirmText: "Delete",
+      variant: "danger"
+    }))) {
       return;
     }
 

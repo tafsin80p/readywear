@@ -5,6 +5,7 @@ import { Plus, Search, Filter, MoreVertical, Edit, Trash2, Eye, PackageX, Copy }
 import Link from "next/link";
 import Image from "next/image";
 import { useToast } from "@/context/ToastContext";
+import { useConfirm } from "@/context/ConfirmContext";
 
 export default function ProductsList() {
   const [products, setProducts] = useState<any[]>([]);
@@ -16,6 +17,7 @@ export default function ProductsList() {
   const [statusFilter, setStatusFilter] = useState("all");
   const [categories, setCategories] = useState<any[]>([]);
   const { toast } = useToast();
+  const { confirm } = useConfirm();
 
   useEffect(() => {
     fetchProducts();
@@ -49,7 +51,12 @@ export default function ProductsList() {
   };
 
   const handleDelete = async (id: string, name: string) => {
-    if (!window.confirm(`Are you sure you want to delete "${name}"? This action cannot be undone.`)) {
+    if (!(await confirm({
+      title: "Delete Product",
+      message: `Are you sure you want to delete "${name}"? This action cannot be undone.`,
+      confirmText: "Delete",
+      variant: "danger"
+    }))) {
       return;
     }
     
@@ -71,7 +78,12 @@ export default function ProductsList() {
   };
 
   const handleDuplicate = async (id: string, name: string) => {
-    if (!window.confirm(`Are you sure you want to duplicate "${name}"?`)) {
+    if (!(await confirm({
+      title: "Duplicate Product",
+      message: `Are you sure you want to create a copy of "${name}"?`,
+      confirmText: "Duplicate",
+      variant: "info"
+    }))) {
       return;
     }
     

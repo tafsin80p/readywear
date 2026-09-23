@@ -6,6 +6,7 @@ import GoogleAnalytics from "@/components/GoogleAnalytics";
 import TikTokPixel from "@/components/TikTokPixel";
 import PushNotificationManager from "@/components/PushNotificationManager";
 import PwaManifest from "@/components/PwaManifest";
+import { ConfirmProvider } from "@/context/ConfirmContext";
 
 const bengaliFont = Hind_Siliguri({
   subsets: ["bengali"],
@@ -123,8 +124,10 @@ export default async function RootLayout({
         <GoogleAnalytics />
         <TikTokPixel />
         <PushNotificationManager toneUrl={notificationTone} />
-        <Toaster position="top-right" />
-        {children}
+        <ConfirmProvider>
+          <Toaster position="top-right" />
+          {children}
+        </ConfirmProvider>
       </body>
     </html>
   );
