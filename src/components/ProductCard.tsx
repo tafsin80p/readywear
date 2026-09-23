@@ -90,7 +90,7 @@ export function ProductCard({ product, priority = false }: ProductProps) {
           priority={priority}
           fetchPriority={priority ? "high" : "auto"}
           sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 20vw"
-          className="object-cover object-top group-hover/image:scale-105 transition-transform duration-500"
+          className="object-cover object-center group-hover/image:scale-105 transition-transform duration-500"
         />
         
         {/* Stock Status Badges */}
