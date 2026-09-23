@@ -58,13 +58,13 @@ export async function POST(req: NextRequest) {
     await transporter.sendMail({
       from: fromEmail,
       to: user.email,
-      subject: "ReadyWear Admin Login OTP",
+      subject: "Mehzin Offers Admin Login OTP",
       text: `Your Admin Login OTP is: ${otp}\n\nThis OTP is valid for 10 minutes. Do not share it with anyone.`,
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eee; border-radius: 10px;">
-          <h2 style="color: #333; text-align: center;">ReadyWear Admin Portal</h2>
+          <h2 style="color: #333; text-align: center;">Mehzin Offers Admin Portal</h2>
           <p style="color: #555; font-size: 16px;">Hello ${user.name},</p>
-          <p style="color: #555; font-size: 16px;">You are trying to log into the ReadyWear admin dashboard. Use the following OTP to complete your login:</p>
+          <p style="color: #555; font-size: 16px;">You are trying to log into the Mehzin Offers admin dashboard. Use the following OTP to complete your login:</p>
           <div style="background-color: #f4f4f4; padding: 15px; text-align: center; border-radius: 8px; margin: 20px 0;">
             <span style="font-size: 32px; font-weight: bold; letter-spacing: 5px; color: #1a2b4b;">${otp}</span>
           </div>

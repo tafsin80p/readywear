@@ -31,8 +31,8 @@ export async function POST(req: NextRequest) {
     await transporter.sendMail({
       from: fromEmail,
       to: session.user.email || fromEmail,
-      subject: "ReadyWear SMTP Test",
-      text: "If you received this email, your SMTP configuration is successfully working on ReadyWear!",
+      subject: "Mehzin Offers SMTP Test",
+      text: "If you received this email, your SMTP configuration is successfully working on Mehzin Offers!",
     });
 
     return NextResponse.json({ success: true, message: "Test email sent successfully!" });
