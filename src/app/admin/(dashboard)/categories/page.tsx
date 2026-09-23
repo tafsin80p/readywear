@@ -230,6 +230,7 @@ export default function CategoriesPage() {
             </div>
 
             <div className="pt-4 flex gap-3">
+              {editingId && (
                 <button 
                   type="button"
                   onClick={() => {
