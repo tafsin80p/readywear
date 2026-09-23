@@ -81,7 +81,7 @@ export function ProductCard({ product, priority = false }: ProductProps) {
   return (
     <div className={`group bg-white rounded-xl border border-gray-100 p-3 shadow-sm transition-all duration-300 flex flex-col h-full ${isOutOfStock ? 'opacity-75 grayscale-[30%]' : 'hover:shadow-lg'}`}>
       {/* Image & Badges */}
-      <Link href={`/product/${product.slug}`} className="relative w-full rounded-lg overflow-hidden bg-gray-50 mb-4 block group/image border border-gray-100">
+      <Link href={`/product/${product.slug}`} className="relative w-full aspect-square rounded-lg overflow-hidden bg-gray-50 mb-4 block group/image border border-gray-100 flex items-center justify-center">
         <Image
           src={mainImage}
           alt={product.name}
@@ -90,7 +90,7 @@ export function ProductCard({ product, priority = false }: ProductProps) {
           priority={priority}
           fetchPriority={priority ? "high" : "auto"}
           sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 20vw"
-          className="w-full h-auto object-cover group-hover/image:scale-105 transition-transform duration-500"
+          className="w-full h-full object-contain group-hover/image:scale-105 transition-transform duration-500 p-1"
         />
         
         {/* Stock Status Badges */}
