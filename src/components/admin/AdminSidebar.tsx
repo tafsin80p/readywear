@@ -119,7 +119,6 @@ export function AdminSidebar({
         { name: "Attributes", href: "/admin/attributes" },
         { name: "Orders", href: "/admin/orders" },
         { name: "Customers", href: "/admin/customers" },
-        { name: "Coupons", href: "/admin/coupons" },
         { name: "Inventory", href: "/admin/inventory" },
         { name: "Shipping", href: "/admin/shipping" },
       ]
@@ -128,14 +127,6 @@ export function AdminSidebar({
       title: "ANALYTICS",
       items: [
         { name: "Visitors", href: "/admin/analytics" }
-      ]
-    },
-    {
-      title: "CMS & CONTENT",
-      items: [
-        { name: "Pages", href: "/admin/pages" },
-        { name: "Blog", href: "/admin/blog" },
-        { name: "Banners", href: "/admin/banners" },
       ]
     },
     {
