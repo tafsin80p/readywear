@@ -166,6 +166,7 @@ export default function IntegrationsPage() {
       if (data.success) {
         if (!overridePayload?.isLogoUpload) {
           toast.success("Settings saved successfully!");
+          handleCloseModal();
         }
       } else {
         toast.error(data.error || "Failed to save settings");
