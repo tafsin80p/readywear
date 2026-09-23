@@ -12,7 +12,7 @@ export async function generateMetadata(
   
   await connectToDatabase();
   const decodedSlug = decodeURIComponent(resolvedParams.slug);
-  const product = await Product.findOne({ slug: decodedSlug }).lean();
+  const product = await Product.findOne({ slug: decodedSlug, status: 'published' }).lean();
 
   if (!product) {
     return {
@@ -62,7 +62,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
   
   await connectToDatabase();
   const decodedSlug = decodeURIComponent(resolvedParams.slug);
-  const productDoc = await Product.findOne({ slug: decodedSlug }).lean();
+  const productDoc = await Product.findOne({ slug: decodedSlug, status: 'published' }).lean();
 
   if (!productDoc) {
     notFound();
@@ -71,6 +71,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
   // Get related products (same category, excluding this one)
   const relatedDocs = await Product.find({ 
     category: productDoc.category,
+    status: 'published',
     _id: { $ne: productDoc._id }
   }).limit(4).lean();
 

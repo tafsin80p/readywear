@@ -245,8 +245,7 @@ export default function EditProduct() {
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSave = async (status: 'draft' | 'published') => {
     setIsLoading(true);
 
     if (formData.images.length === 0) {
@@ -272,9 +271,6 @@ export default function EditProduct() {
         }))
         .filter(attr => attr.values.length > 0);
 
-      // Map intuitive user inputs to our DB schema:
-      // DB price = actual selling price (discount price if provided, else regular price)
-      // DB oldPrice = crossed out original price (regular price ONLY if discount is provided)
       const regPrice = Number(formData.regularPrice);
       const discPrice = formData.discountPrice ? Number(formData.discountPrice) : undefined;
       
@@ -287,7 +283,8 @@ export default function EditProduct() {
         oldPrice: payloadOldPrice,
         stock: Number(formData.stock),
         specifications: validSpecs,
-        attributes: parsedAttributes
+        attributes: parsedAttributes,
+        status: status
       };
 
       const res = await fetch(`/api/admin/products/${id}`, {
@@ -302,7 +299,7 @@ export default function EditProduct() {
         throw new Error(data.message || data.error || "Failed to update product");
       }
 
-      toast("success", "Product updated successfully!");
+      toast("success", `Product ${status === 'draft' ? 'saved as draft' : 'updated successfully'}!`);
       router.push("/admin/products");
 
     } catch (error: any) {
@@ -324,7 +321,7 @@ export default function EditProduct() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="p-6 md:p-8 w-full animate-in fade-in duration-500">
+    <form onSubmit={(e) => { e.preventDefault(); handleSave('published'); }} className="p-6 md:p-8 w-full animate-in fade-in duration-500">
       
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 bg-white p-4 md:p-6 rounded-2xl border border-gray-100 shadow-sm sticky top-0 z-30">
@@ -340,9 +337,17 @@ export default function EditProduct() {
           <button 
             type="button"
             onClick={() => router.push(`/product/${formData.slug}`)}
-            className="px-5 py-2.5 text-primary font-bold bg-primary/10 hover:bg-primary/20 rounded-xl transition-colors hidden sm:block"
+            className="px-5 py-2.5 text-gray-600 font-bold bg-gray-100 hover:bg-gray-200 rounded-xl transition-colors hidden sm:block"
           >
             View Live
+          </button>
+          <button 
+            type="button"
+            onClick={() => handleSave('draft')}
+            disabled={isLoading}
+            className="px-5 py-2.5 text-primary font-bold bg-primary/10 hover:bg-primary/20 rounded-xl transition-colors hidden sm:block disabled:opacity-70"
+          >
+            Save Draft
           </button>
           <button 
             type="submit"

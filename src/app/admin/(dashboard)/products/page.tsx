@@ -13,6 +13,7 @@ export default function ProductsList() {
   const [showFilters, setShowFilters] = useState(false);
   const [categoryFilter, setCategoryFilter] = useState("all");
   const [stockFilter, setStockFilter] = useState("all");
+  const [statusFilter, setStatusFilter] = useState("all");
   const [categories, setCategories] = useState<any[]>([]);
   const { toast } = useToast();
 
@@ -76,8 +77,9 @@ export default function ProductsList() {
     const matchesCategory = categoryFilter === "all" || p.category === categoryFilter;
     const matchesStock = stockFilter === "all" || 
                          (stockFilter === "in-stock" ? p.inStock : !p.inStock);
+    const matchesStatus = statusFilter === "all" || p.status === statusFilter;
 
-    return matchesSearch && matchesCategory && matchesStock;
+    return matchesSearch && matchesCategory && matchesStock && matchesStatus;
   });
 
   return (
@@ -115,13 +117,13 @@ export default function ProductsList() {
           <button 
             onClick={() => setShowFilters(!showFilters)}
             className={`flex items-center justify-center gap-2 px-5 py-2.5 border rounded-xl font-medium text-sm transition-colors md:w-auto ${
-              showFilters || categoryFilter !== "all" || stockFilter !== "all" 
+              showFilters || categoryFilter !== "all" || stockFilter !== "all" || statusFilter !== "all"
                 ? "bg-pink-50 border-pink-200 text-primary" 
                 : "border-gray-200 hover:bg-gray-50 text-gray-700"
             }`}
           >
             <Filter className="w-4 h-4" />
-            Filters {(categoryFilter !== "all" || stockFilter !== "all") && "(Active)"}
+            Filters {(categoryFilter !== "all" || stockFilter !== "all" || statusFilter !== "all") && "(Active)"}
           </button>
 
           {showFilters && (
@@ -154,11 +156,25 @@ export default function ProductsList() {
                   </select>
                 </div>
 
+                <div>
+                  <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Product Status</label>
+                  <select 
+                    value={statusFilter}
+                    onChange={(e) => setStatusFilter(e.target.value)}
+                    className="w-full p-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-pink-500/20"
+                  >
+                    <option value="all">All</option>
+                    <option value="published">Published</option>
+                    <option value="draft">Draft</option>
+                  </select>
+                </div>
+
                 <div className="pt-2 border-t border-gray-100">
                   <button 
                     onClick={() => {
                       setCategoryFilter("all");
                       setStockFilter("all");
+                      setStatusFilter("all");
                       setSearchQuery("");
                       setShowFilters(false);
                     }}
@@ -227,7 +243,14 @@ export default function ProductsList() {
                           )}
                         </div>
                         <div>
-                          <p className="font-bold text-gray-900 line-clamp-1">{product.name}</p>
+                          <div className="flex items-center gap-2">
+                            <p className="font-bold text-gray-900 line-clamp-1">{product.name}</p>
+                            {product.status === 'draft' && (
+                              <span className="text-[10px] font-bold uppercase px-2 py-0.5 rounded-full bg-amber-100 text-amber-700 border border-amber-200">
+                                Draft
+                              </span>
+                            )}
+                          </div>
                           <p className="text-xs text-gray-500 mt-0.5">Added {new Date(product.createdAt).toLocaleDateString()}</p>
                         </div>
                       </div>

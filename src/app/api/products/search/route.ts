@@ -23,7 +23,7 @@ export async function GET(request: Request) {
         { sku: searchRegex },
         { category: searchRegex },
       ],
-      // Optional: Only show products that are active/inStock if desired, but for now we search all
+      status: 'published',
     })
       .select('name sku price oldPrice images category _id slug')
       .limit(10)

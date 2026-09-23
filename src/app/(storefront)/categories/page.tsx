@@ -20,7 +20,7 @@ export default async function ShopPage() {
 
   const categories = [{ slug: "all", label: "সকল পণ্য" }, ...dbCategories];
   
-  const productsDocs = await Product.find({}).sort({ createdAt: -1 }).lean();
+  const productsDocs = await Product.find({ status: 'published' }).sort({ createdAt: -1 }).lean();
   const filteredProducts = JSON.parse(JSON.stringify(productsDocs));
 
   return (

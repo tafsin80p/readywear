@@ -49,12 +49,12 @@ export default async function CategoryShopPage({ params }: { params: Promise<{ s
   const activeCategoryLabel = activeCategoryObj.name;
   
   // Fetch products that belong to this category by slug (limited for performance)
-  const productsDocs = await Product.find({ category: activeCategoryObj.slug })
+  const productsDocs = await Product.find({ category: activeCategoryObj.slug, status: 'published' })
     .sort({ createdAt: -1 })
     .limit(24)
     .lean();
     
-  const totalCount = await Product.countDocuments({ category: activeCategoryObj.slug });
+  const totalCount = await Product.countDocuments({ category: activeCategoryObj.slug, status: 'published' });
   
   const filteredProducts = JSON.parse(JSON.stringify(productsDocs));
 

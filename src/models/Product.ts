@@ -16,6 +16,7 @@ export interface IProduct extends Document {
   reviews: number;
   specifications: { label: string; value: string }[];
   attributes: { name: string; values: { value: string; meta: string; stock: number }[] }[];
+  status: 'published' | 'draft';
   createdAt: Date;
   updatedAt: Date;
 }
@@ -53,6 +54,7 @@ const ProductSchema: Schema<IProduct> = new Schema(
         ],
       },
     ],
+    status: { type: String, enum: ['published', 'draft'], default: 'published' },
   },
   { timestamps: true }
 );
