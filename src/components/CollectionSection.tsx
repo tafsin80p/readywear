@@ -7,8 +7,8 @@ import Link from "next/link";
 export function CollectionSection({ products = [], initialCategories = [] }: { products?: any[], initialCategories?: any[] }) {
   const categories = [{ slug: "all", label: "সকল পণ্য" }, ...initialCategories];
   
-  // On the home page, we will show some default products (e.g., first 10)
-  const defaultProducts = products.slice(0, 10);
+  // Show all provided products
+  const defaultProducts = products;
 
   return (
     <section className="pt-4 pb-12 md:py-12 bg-white container mx-auto px-4 lg:px-8">
