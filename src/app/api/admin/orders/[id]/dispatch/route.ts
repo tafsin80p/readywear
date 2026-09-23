@@ -114,7 +114,7 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
         note: itemDescription + (order.customerInfo.note ? ` | Note: ${order.customerInfo.note}` : "")
       };
 
-      const orderRes = await fetch("https://portal.steadfast.com.bd/api/v1/create_order", {
+      const orderRes = await fetch("https://portal.packzy.com/api/v1/create_order", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
