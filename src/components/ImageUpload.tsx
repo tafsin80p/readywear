@@ -12,7 +12,16 @@ interface ImageUploadProps {
   folder?: string;
 }
 
-const convertToWebP = (file: File): Promise<string> => {
+const convertToBase64 = (file: File): Promise<string> => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = (event) => resolve(event.target?.result as string);
+    reader.onerror = (err) => reject(new Error("Failed to read file"));
+  });
+};
+
+const convertToWebP = (file: File, quality: number = 0.98): Promise<string> => {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.readAsDataURL(file);
@@ -22,34 +31,19 @@ const convertToWebP = (file: File): Promise<string> => {
       img.onload = () => {
         const canvas = document.createElement("canvas");
         
-        // Maintain original dimensions, just convert to webp for better compression
-        let width = img.width;
-        let height = img.height;
-        
-        // Optional: limit max dimensions to prevent huge memory usage on canvas
-        const MAX_DIMENSION = 2500;
-        if (width > MAX_DIMENSION || height > MAX_DIMENSION) {
-          if (width > height) {
-            height = Math.round((height * MAX_DIMENSION) / width);
-            width = MAX_DIMENSION;
-          } else {
-            width = Math.round((width * MAX_DIMENSION) / height);
-            height = MAX_DIMENSION;
-          }
-        }
-
-        canvas.width = width;
-        canvas.height = height;
+        // Maintain exact original dimensions
+        canvas.width = img.width;
+        canvas.height = img.height;
         const ctx = canvas.getContext("2d");
         
         if (!ctx) {
           return reject(new Error("Canvas context is not supported"));
         }
         
-        ctx.drawImage(img, 0, 0, width, height);
+        ctx.drawImage(img, 0, 0, img.width, img.height);
         
-        // Convert to WebP with 0.85 quality (maintains high quality while reducing size)
-        const webpDataUrl = canvas.toDataURL("image/webp", 0.85);
+        // Convert to WebP with very high quality (0.98)
+        const webpDataUrl = canvas.toDataURL("image/webp", quality);
         resolve(webpDataUrl);
       };
       img.onerror = (err) => reject(new Error("Failed to load image for conversion"));
@@ -77,9 +71,14 @@ export function ImageUpload({ onUpload, disabled, className, children, folder }:
     try {
       setIsUploading(true);
 
-      // Convert image to WebP client-side to reduce payload size
-      // This solves the 413 JSON Payload Too Large error for 4-5MB images
-      const base64File = await convertToWebP(file);
+      // If file is smaller than 2.5MB, keep it exactly original.
+      // If it's larger (e.g. 4-5MB), convert it to WebP with 98% quality to avoid Vercel 4.5MB payload limit.
+      let base64File = "";
+      if (file.size > 2.5 * 1024 * 1024) {
+        base64File = await convertToWebP(file, 0.98);
+      } else {
+        base64File = await convertToBase64(file);
+      }
       
       // Send to our backend API with optional folder
       const res = await fetch("/api/upload", {

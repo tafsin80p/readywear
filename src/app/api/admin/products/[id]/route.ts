@@ -4,6 +4,7 @@ import { authOptions } from "@/lib/auth";
 import connectToDatabase from "@/lib/mongodb";
 import Product from "@/models/Product";
 import { activityLogService } from "@/lib/services/activityLogService";
+import { revalidatePath } from "next/cache";
 
 // Check if user is admin
 async function isAdmin() {
@@ -104,6 +105,9 @@ export async function PUT(
       link: `/admin/products/edit/${product._id}`,
     });
 
+    revalidatePath('/');
+    revalidatePath('/categories');
+
     return NextResponse.json(product);
   } catch (error: any) {
     console.error("Update product error:", error);
@@ -148,6 +152,9 @@ export async function DELETE(
       type: "product",
       link: `/admin/products`,
     });
+
+    revalidatePath('/');
+    revalidatePath('/categories');
 
     return NextResponse.json({ message: "Product deleted successfully" });
   } catch (error: any) {

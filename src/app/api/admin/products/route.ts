@@ -5,6 +5,7 @@ import connectToDatabase from "@/lib/mongodb";
 import Product from "@/models/Product";
 import Category from "@/models/Category";
 import { activityLogService } from "@/lib/services/activityLogService";
+import { revalidatePath } from "next/cache";
 
 export const dynamic = 'force-dynamic';
 
@@ -70,6 +71,10 @@ export async function POST(req: Request) {
       type: "product",
       link: `/admin/products/edit/${savedProduct._id}`,
     });
+
+    // Clear the Next.js cache so the new product shows up instantly on the storefront
+    revalidatePath('/');
+    revalidatePath('/categories');
 
     return NextResponse.json(
       { message: "Product created successfully", product: savedProduct },
