@@ -8,7 +8,14 @@ export const revalidate = 60; // Cache for 60 seconds (ISR)
 export default async function Home() {
   await connectToDatabase();
   const productsDocs = await Product.find({ status: 'published' }).sort({ createdAt: -1 }).lean();
-  const categoryDocs = await Category.find({ isActive: true }).lean();
+  const categoryDocs = await Category.find({ 
+    isActive: true,
+    $or: [
+      { parentCategory: null }, 
+      { parentCategory: "" },
+      { parentCategory: { $exists: false } }
+    ]
+  }).lean();
   
   // Serialize Mongoose documents to plain JS objects for Client Components
   const products = JSON.parse(JSON.stringify(productsDocs));

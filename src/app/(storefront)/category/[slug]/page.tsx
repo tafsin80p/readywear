@@ -58,6 +58,13 @@ export default async function CategoryShopPage({ params }: { params: Promise<{ s
   
   const filteredProducts = JSON.parse(JSON.stringify(productsDocs));
 
+  // Fetch subcategories
+  const subCategoriesDocs = await Category.find({ 
+    parentCategory: activeCategoryObj.slug,
+    isActive: true
+  }).lean();
+  const subCategories = JSON.parse(JSON.stringify(subCategoriesDocs));
+
   return (
     <>
       <main className="flex-1 bg-gray-50/30 pb-24 pt-4 md:pt-8">
@@ -74,6 +81,21 @@ export default async function CategoryShopPage({ params }: { params: Promise<{ s
                 <h1 className="text-lg font-bold text-gray-900">{activeCategoryLabel}</h1>
                 <span className="text-xs font-medium text-gray-500">{totalCount} টি পণ্য</span>
               </div>
+              
+              {/* Subcategories Tabs */}
+              {subCategories.length > 0 && (
+                <div className="flex overflow-x-auto pb-4 mb-4 gap-3 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+                  {subCategories.map((sub: any) => (
+                    <Link
+                      key={sub.slug}
+                      href={`/category/${sub.slug}`}
+                      className="shrink-0 whitespace-nowrap px-5 py-2 rounded-full text-sm font-bold transition-all duration-300 bg-white border border-gray-200 text-gray-700 shadow-sm hover:border-primary hover:text-primary active:scale-95 flex items-center justify-center"
+                    >
+                      {sub.name}
+                    </Link>
+                  ))}
+                </div>
+              )}
               
               {filteredProducts.length > 0 ? (
                 <div className="grid grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-3 md:gap-6">
