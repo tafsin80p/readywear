@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Plus, Search, Filter, MoreVertical, Edit, Trash2, Eye, PackageX, Copy } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
@@ -266,8 +266,23 @@ export default function ProductsList() {
                   </td>
                 </tr>
               ) : (
-                filteredProducts.map((product) => (
-                  <tr key={product._id} className="hover:bg-gray-50/50 transition-colors group">
+                Object.entries(
+                  filteredProducts.reduce((acc, product) => {
+                    const cat = product.category || 'Uncategorized';
+                    if (!acc[cat]) acc[cat] = [];
+                    acc[cat].push(product);
+                    return acc;
+                  }, {} as Record<string, any[]>)
+                ).map(([categoryName, categoryProducts]) => (
+                  <React.Fragment key={categoryName}>
+                    {/* Category Header Row */}
+                    <tr className="bg-gray-100/80">
+                      <td colSpan={6} className="px-6 py-3 text-sm font-bold text-gray-700 capitalize border-t border-gray-200">
+                        {categoryName} <span className="text-gray-500 font-medium ml-1">({categoryProducts.length} items)</span>
+                      </td>
+                    </tr>
+                    {categoryProducts.map((product) => (
+                      <tr key={product._id} className="hover:bg-gray-50/50 transition-colors group">
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-4">
                         <div className="w-12 h-12 rounded-lg border border-gray-100 overflow-hidden relative shrink-0 bg-gray-50">
@@ -339,6 +354,8 @@ export default function ProductsList() {
                       </button>
                     </td>
                   </tr>
+                    ))}
+                  </React.Fragment>
                 ))
               )}
             </tbody>
