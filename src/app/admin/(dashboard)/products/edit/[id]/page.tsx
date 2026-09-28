@@ -209,14 +209,7 @@ export default function EditProduct() {
   const handleAttributeNameChange = (attrIndex: number, name: string) => {
     const newAttributes = [...attributes];
     newAttributes[attrIndex].name = name;
-    
-    const globalAttr = globalAttributes.find(g => g.name === name);
-    if (globalAttr && globalAttr.values.length > 0) {
-      newAttributes[attrIndex].values = globalAttr.values.map(val => ({ value: val.name, meta: val.meta, stock: "" }));
-    } else {
-      newAttributes[attrIndex].values = [{ value: "", meta: "", stock: "" }];
-    }
-    
+    newAttributes[attrIndex].values = [];
     setAttributes(newAttributes);
   };
 
@@ -242,10 +235,8 @@ export default function EditProduct() {
 
   const removeAttributeValue = (attrIndex: number, valIndex: number) => {
     const newAttributes = [...attributes];
-    if (newAttributes[attrIndex].values.length > 1) {
-      newAttributes[attrIndex].values = newAttributes[attrIndex].values.filter((_, idx) => idx !== valIndex);
-      setAttributes(newAttributes);
-    }
+    newAttributes[attrIndex].values = newAttributes[attrIndex].values.filter((_, idx) => idx !== valIndex);
+    setAttributes(newAttributes);
   };
 
   const handleSave = async (status: 'draft' | 'published') => {
@@ -877,10 +868,20 @@ export default function EditProduct() {
                                 </div>
                               )}
                               
-                              {/* Value name (read-only) */}
-                              <span className="flex-1 text-sm font-medium text-gray-900 min-w-0 truncate">
-                                {v.value}
-                              </span>
+                              {/* Value name (read-only or input) */}
+                              {!globalAttr ? (
+                                <input 
+                                  type="text"
+                                  value={v.value}
+                                  onChange={(e) => handleAttributeValueChange(idx, vIdx, 'value', e.target.value)}
+                                  placeholder="Enter value"
+                                  className="flex-1 text-sm font-medium text-gray-900 min-w-0 bg-transparent focus:outline-none"
+                                />
+                              ) : (
+                                <span className="flex-1 text-sm font-medium text-gray-900 min-w-0 truncate">
+                                  {v.value}
+                                </span>
+                              )}
                               
                               {/* Stock input */}
                               <div className="flex items-center gap-1.5 shrink-0">
@@ -894,13 +895,59 @@ export default function EditProduct() {
                                   className="w-16 px-2 py-1 bg-gray-50 border border-gray-200 rounded-md focus:outline-none focus:ring-1 focus:ring-primary/30 focus:border-primary transition-all text-xs text-center font-semibold"
                                 />
                               </div>
+                              
+                              {/* Delete Value Button */}
+                              <button 
+                                type="button"
+                                onClick={() => removeAttributeValue(idx, vIdx)}
+                                className="w-7 h-7 flex items-center justify-center text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors shrink-0"
+                              >
+                                <Trash2 className="w-3.5 h-3.5" />
+                              </button>
                             </div>
                           ))}
                         </div>
 
+                        {/* Add Values Options */}
+                        <div className="mt-4">
+                          {globalAttr ? (
+                            <div className="flex flex-wrap gap-2">
+                              {globalAttr.values
+                                .filter(gv => !attr.values.some(v => v.value === gv.name))
+                                .map(gv => (
+                                  <button
+                                    key={gv.name}
+                                    type="button"
+                                    onClick={() => {
+                                      const newAttributes = [...attributes];
+                                      newAttributes[idx].values.push({ value: gv.name, meta: gv.meta, stock: "" });
+                                      setAttributes(newAttributes);
+                                    }}
+                                    className="px-3 py-1.5 bg-gray-50 hover:bg-gray-100 text-sm font-medium text-gray-700 rounded-lg transition-colors border border-gray-200 flex items-center gap-1.5"
+                                  >
+                                    <Plus className="w-3.5 h-3.5 text-gray-400" /> 
+                                    {isColorType && gv.meta && (
+                                      <span className="w-3 h-3 rounded-full" style={{ backgroundColor: gv.meta }}></span>
+                                    )}
+                                    {gv.name}
+                                  </button>
+                                ))
+                              }
+                            </div>
+                          ) : (
+                            <button
+                              type="button"
+                              onClick={() => addAttributeValue(idx)}
+                              className="px-3 py-1.5 bg-gray-50 hover:bg-gray-100 text-sm font-medium text-gray-700 rounded-lg transition-colors border border-gray-200 flex items-center gap-1.5"
+                            >
+                              <Plus className="w-3.5 h-3.5 text-gray-400" /> Add Custom Value
+                            </button>
+                          )}
+                        </div>
+
                         {attr.values.length === 0 && (
                           <div className="text-center py-4">
-                            <p className="text-xs text-gray-400">No values configured for this attribute. Add values from the Attributes menu.</p>
+                            <p className="text-xs text-gray-400">Select values to add them to this attribute.</p>
                           </div>
                         )}
                       </div>
