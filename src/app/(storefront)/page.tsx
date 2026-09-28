@@ -33,7 +33,7 @@ export default async function Home() {
         
         <div className="pt-2 pb-8 md:py-8 bg-gray-50/50 flex flex-col gap-4">
           {categories.map((category: any) => {
-            const categoryProducts = products.filter((p: any) => p.category === category.name);
+            const categoryProducts = products.filter((p: any) => p.category === category.slug || p.category === category.name);
             if (categoryProducts.length === 0) return null;
             return (
               <CollectionSection 
