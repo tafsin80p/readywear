@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { ArrowLeft, Save, Plus, Trash2, Loader2, Info, Package, DollarSign, Image as ImageIcon, Tag, List, Star, Search, ChevronDown, Check, Palette } from "lucide-react";
+import { ArrowLeft, Save, Plus, Trash2, Loader2, Info, Package, DollarSign, Image as ImageIcon, Tag, List, Star, Search, ChevronDown, Check, Palette, GripVertical } from "lucide-react";
 import Link from "next/link";
 import { useToast } from "@/context/ToastContext";
 import { ImageUpload } from "@/components/ImageUpload";
@@ -41,6 +41,56 @@ export default function EditProduct() {
   const [openAttrDropdown, setOpenAttrDropdown] = useState<number | null>(null);
   const [attrSearchQuery, setAttrSearchQuery] = useState("");
   const dropdownRefs = useRef<(HTMLDivElement | null)[]>([]);
+
+  // Drag and drop state for Attributes
+  const [draggedAttrIdx, setDraggedAttrIdx] = useState<number | null>(null);
+  const [draggedValItem, setDraggedValItem] = useState<{attrIdx: number, valIdx: number} | null>(null);
+
+  const handleAttrDragStart = (e: React.DragEvent, idx: number) => {
+    setDraggedAttrIdx(idx);
+    e.dataTransfer.effectAllowed = "move";
+  };
+
+  const handleAttrDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = "move";
+  };
+
+  const handleAttrDrop = (e: React.DragEvent, targetIdx: number) => {
+    e.preventDefault();
+    if (draggedAttrIdx !== null && draggedAttrIdx !== targetIdx) {
+      const newAttributes = [...attributes];
+      const [removed] = newAttributes.splice(draggedAttrIdx, 1);
+      newAttributes.splice(targetIdx, 0, removed);
+      setAttributes(newAttributes);
+    }
+    setDraggedAttrIdx(null);
+  };
+
+  const handleValDragStart = (e: React.DragEvent, attrIdx: number, valIdx: number) => {
+    e.stopPropagation();
+    setDraggedValItem({ attrIdx, valIdx });
+    e.dataTransfer.effectAllowed = "move";
+  };
+
+  const handleValDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = "move";
+  };
+
+  const handleValDrop = (e: React.DragEvent, targetAttrIdx: number, targetValIdx: number) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (draggedValItem && draggedValItem.attrIdx === targetAttrIdx && draggedValItem.valIdx !== targetValIdx) {
+      const newAttributes = [...attributes];
+      const values = [...newAttributes[targetAttrIdx].values];
+      const [removed] = values.splice(draggedValItem.valIdx, 1);
+      values.splice(targetValIdx, 0, removed);
+      newAttributes[targetAttrIdx].values = values;
+      setAttributes(newAttributes);
+    }
+    setDraggedValItem(null);
+  };
 
   // Close dropdown on click outside
   useEffect(() => {
@@ -725,10 +775,22 @@ export default function EditProduct() {
                 const isColorType = globalAttr?.type === "color";
                 
                 return (
-                  <div key={idx} className="rounded-xl border border-gray-200 bg-gray-50/30 transition-all hover:border-gray-300 relative">
+                  <div 
+                    key={idx} 
+                    draggable
+                    onDragStart={(e) => handleAttrDragStart(e, idx)}
+                    onDragOver={handleAttrDragOver}
+                    onDrop={(e) => handleAttrDrop(e, idx)}
+                    className={`rounded-xl border border-gray-200 bg-gray-50/30 transition-all hover:border-gray-300 relative ${
+                      draggedAttrIdx === idx ? 'opacity-50 border-primary ring-2 ring-primary/20' : ''
+                    }`}
+                  >
                     {/* Attribute Header */}
                     <div className="flex items-center justify-between px-4 py-3 bg-white border-b border-gray-100">
                       <div className="flex items-center gap-3 flex-1 min-w-0" ref={el => { dropdownRefs.current[idx] = el; }}>
+                        <div className="cursor-grab hover:text-primary text-gray-400 active:cursor-grabbing flex items-center justify-center shrink-0 -ml-2 mr-1">
+                          <GripVertical className="w-4 h-4" />
+                        </div>
                         <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${attr.name ? "bg-primary/10" : "bg-gray-100"}`}>
                           {isColorType ? (
                             <Palette className="w-4 h-4 text-primary" />
@@ -854,8 +916,17 @@ export default function EditProduct() {
                           {attr.values.map((v, vIdx) => (
                             <div 
                               key={vIdx} 
-                              className="flex items-center gap-3 px-3 py-2.5 rounded-lg border bg-white border-gray-200 transition-all hover:border-gray-300"
+                              draggable
+                              onDragStart={(e) => handleValDragStart(e, idx, vIdx)}
+                              onDragOver={handleValDragOver}
+                              onDrop={(e) => handleValDrop(e, idx, vIdx)}
+                              className={`flex items-center gap-3 px-3 py-2.5 rounded-lg border bg-white transition-all hover:border-gray-300 ${
+                                draggedValItem?.attrIdx === idx && draggedValItem?.valIdx === vIdx ? 'opacity-50 border-primary ring-1 ring-primary/20' : 'border-gray-200'
+                              }`}
                             >
+                              <div className="cursor-grab hover:text-primary text-gray-400 active:cursor-grabbing flex items-center justify-center shrink-0 -ml-1">
+                                <GripVertical className="w-4 h-4" />
+                              </div>
                               {/* Color swatch or number badge */}
                               {isColorType && v.meta ? (
                                 <div 
