@@ -32,10 +32,10 @@ export async function generateMetadata(): Promise<Metadata> {
   const storeName = settings?.storeName || "Mehzin Offers";
   const storeTagline = settings?.storeTagline || "Premium E-commerce in Bangladesh";
   const storeDescription = settings?.storeDescription || "Mehzin Offers - স্টাইলের দেখা নতুন যাত্রা। সেরা মানের পোশাক ও প্রিমিয়াম ই-কমার্স অভিজ্ঞতা।";
-  const favicon = settings?.favicon || "/favicon.ico";
+  const favicon = settings?.favicon;
   const ogImage = settings?.socialImage || settings?.headerLogo || "/readywear logo.png";
 
-  return {
+  const metadata: Metadata = {
     metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://readywear.com.bd'),
     title: {
       default: `${storeName} - ${storeTagline}`,
@@ -43,11 +43,13 @@ export async function generateMetadata(): Promise<Metadata> {
     },
     description: storeDescription,
     keywords: [storeName, "E-commerce", "Bangladesh", "Fashion", "Clothing", "Premium Wear", "পাঞ্জাবি", "শার্ট"],
-    icons: {
-      icon: favicon,
-      shortcut: favicon,
-      apple: favicon,
-    },
+    ...(favicon && {
+      icons: {
+        icon: favicon,
+        shortcut: favicon,
+        apple: favicon,
+      }
+    }),
     appleWebApp: {
       capable: true,
       statusBarStyle: "default",
@@ -76,6 +78,8 @@ export async function generateMetadata(): Promise<Metadata> {
       images: [ogImage],
     }
   };
+
+  return metadata;
 }
 
 export default async function RootLayout({
