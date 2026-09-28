@@ -31,8 +31,23 @@ export default async function Home() {
       <main className="flex-1 bg-gray-50/30">
         <h1 className="sr-only">Mehzin Offers - Premium E-commerce in Bangladesh</h1>
         
-        <div className="pt-2 pb-8 md:py-8 bg-gray-50/50">
-          <CollectionSection products={products} initialCategories={categories} />
+        <div className="pt-2 pb-8 md:py-8 bg-gray-50/50 flex flex-col gap-4">
+          {categories.map((category: any) => {
+            const categoryProducts = products.filter((p: any) => p.category === category.name);
+            if (categoryProducts.length === 0) return null;
+            return (
+              <CollectionSection 
+                key={category._id}
+                title={category.name}
+                subtitle=""
+                description={`${category.name} কালেকশন থেকে আপনার পছন্দের পণ্যটি বেছে নিন`}
+                products={categoryProducts} 
+                initialCategories={[]}
+                showTabs={false}
+                viewAllLink={`/category/${category.slug}`}
+              />
+            );
+          })}
         </div>
       </main>
     </>
