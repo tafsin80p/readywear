@@ -273,7 +273,7 @@ export default function ProductsList() {
                     acc[cat].push(product);
                     return acc;
                   }, {} as Record<string, any[]>)
-                ).map(([categoryName, categoryProducts]) => (
+                ).map(([categoryName, categoryProducts]: [string, any]) => (
                   <React.Fragment key={categoryName}>
                     {/* Category Header Row */}
                     <tr className="bg-gray-100/80">
@@ -281,7 +281,7 @@ export default function ProductsList() {
                         {categoryName} <span className="text-gray-500 font-medium ml-1">({categoryProducts.length} items)</span>
                       </td>
                     </tr>
-                    {categoryProducts.map((product) => (
+                    {(categoryProducts as any[]).map((product: any) => (
                       <tr key={product._id} className="hover:bg-gray-50/50 transition-colors group">
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-4">
