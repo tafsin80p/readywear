@@ -93,7 +93,7 @@ export default async function CategoryShopPage({ params }: { params: Promise<{ s
               {/* Removed duplicate Subcategories Tabs since they are now in the sidebar */}
               
               {filteredProducts.length > 0 ? (
-                <div className="grid grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-3 md:gap-6">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-6">
                   {filteredProducts.map((product: any, index: number) => (
                     <ProductCard key={product._id} product={product} priority={index < 2} />
                   ))}
