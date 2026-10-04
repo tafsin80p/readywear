@@ -337,9 +337,9 @@ export function ProductDetails({ product, relatedProducts }: { product: Product,
               </div>
               <div className="flex flex-col items-center text-center gap-2">
                 <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
-                  <Scissors className="w-5 h-5" />
+                  <Star className="w-5 h-5" />
                 </div>
-                <span className="text-xs font-medium text-gray-600">রেডি টু ওয়্যার স্টিচিং</span>
+                <span className="text-xs font-medium text-gray-600">প্রিমিয়াম কোয়ালিটি</span>
               </div>
             </div>
             {/* Product Details Section (Moved inside) */}
