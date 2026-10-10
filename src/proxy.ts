@@ -40,12 +40,12 @@ export default withAuth(
       rateLimitMap.set(ip, current);
     };
     
-    // If the user tries to access the admin login page while already authenticated as admin
-    if (pathname === "/admin/login") {
+    // If the user tries to access the admin login page or forgot password page while already authenticated as admin
+    if (pathname === "/admin/login" || pathname === "/admin/forgot-password") {
       if (req.nextauth.token?.role === "admin") {
         return NextResponse.redirect(new URL("/admin", req.url));
       }
-      // If they are just visiting login, we don't penalize them.
+      // If they are just visiting login or forgot password, we don't penalize them.
       return NextResponse.next();
     }
 
