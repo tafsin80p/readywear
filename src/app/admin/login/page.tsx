@@ -3,6 +3,7 @@
 import { useRef, useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import Link from "next/link";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { Lock, Mail, ArrowRight, ShieldCheck } from "lucide-react";
@@ -169,7 +170,7 @@ export default function AdminLogin() {
                   <div className="login-element space-y-2">
                     <div className="flex justify-between items-center">
                       <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">Password</label>
-                      <a href="#" className="text-xs font-bold text-primary hover:underline">Forgot password?</a>
+                      <Link href="/admin/forgot-password" className="text-xs font-bold text-primary hover:underline">Forgot password?</Link>
                     </div>
                     <div className="relative">
                       <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
