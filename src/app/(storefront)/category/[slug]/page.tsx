@@ -41,21 +41,39 @@ export default async function CategoryShopPage({ params }: { params: Promise<{ s
   const activeSlug = resolvedParams.slug;
   
   await connectToDatabase();
+  const { getActiveOfferCategoryFilter } = await import('@/lib/services/offerCategoryService');
+  const offerFilter = await getActiveOfferCategoryFilter();
+
   const activeCategoryObj = await Category.findOne({ slug: activeSlug }).lean();
   
   if (!activeCategoryObj) {
     notFound();
   }
+
+  // If offer exclusive mode is on, hide category if it's not in the offer
+  if (offerFilter.isOfferCategoryOnly) {
+    const isAllowed = 
+      offerFilter.allowedCategorySlugs.includes(activeSlug) ||
+      offerFilter.allowedCategoryNames.includes(activeCategoryObj.name);
+    if (!isAllowed) {
+      notFound();
+    }
+  }
   
   const activeCategoryLabel = activeCategoryObj.name;
   
-  // Fetch products that belong to this category by slug (limited for performance)
-  const productsDocs = await Product.find({ category: activeCategoryObj.slug, status: 'published' })
+  // Fetch products that belong to this category by slug (or name fallback)
+  const productFilter: any = {
+    $or: [{ category: activeCategoryObj.slug }, { category: activeCategoryObj.name }],
+    status: 'published'
+  };
+
+  const productsDocs = await Product.find(productFilter)
     .sort({ createdAt: -1 })
     .limit(24)
     .lean();
     
-  const totalCount = await Product.countDocuments({ category: activeCategoryObj.slug, status: 'published' });
+  const totalCount = await Product.countDocuments(productFilter);
   
   const filteredProducts = JSON.parse(JSON.stringify(productsDocs));
 
@@ -66,8 +84,15 @@ export default async function CategoryShopPage({ params }: { params: Promise<{ s
   }).lean();
   const subCategories = JSON.parse(JSON.stringify(subCategoriesDocs));
 
-  // Fetch ALL categories for the sidebar
-  const allCategoriesDocs = await Category.find({ isActive: true }).lean();
+  // Fetch categories for the sidebar (respecting offer filter)
+  let allCategoriesQuery: any = { isActive: true };
+  if (offerFilter.isOfferCategoryOnly) {
+    allCategoriesQuery.$or = [
+      { slug: { $in: offerFilter.allowedCategorySlugs } },
+      { name: { $in: offerFilter.allowedCategoryNames } }
+    ];
+  }
+  const allCategoriesDocs = await Category.find(allCategoriesQuery).lean();
   const allCategories = JSON.parse(JSON.stringify(allCategoriesDocs));
 
   return (

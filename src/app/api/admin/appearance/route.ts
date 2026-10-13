@@ -67,6 +67,10 @@ export async function POST(req: NextRequest) {
 
       // Discount Price / Offer Price Toggle
       if (body.showDiscountPrice !== undefined) settings.showDiscountPrice = body.showDiscountPrice;
+
+      // Exclusive Offer Category Mode
+      if (body.offerCategoriesOnly !== undefined) settings.offerCategoriesOnly = body.offerCategoriesOnly;
+      if (body.offerCategorySlugs !== undefined) settings.offerCategorySlugs = body.offerCategorySlugs;
     }
     
     await settings.save();

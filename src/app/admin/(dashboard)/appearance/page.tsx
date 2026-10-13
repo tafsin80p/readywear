@@ -13,7 +13,8 @@ import {
   ShoppingBag, 
   Eye, 
   Calendar, 
-  Check
+  Check,
+  Layers
 } from "lucide-react";
 import Image from "next/image";
 import toast from "react-hot-toast";
@@ -78,6 +79,11 @@ export default function AppearanceSettings() {
 
   // Discount Price toggle state
   const [showDiscountPrice, setShowDiscountPrice] = useState(true);
+
+  // Exclusive Offer Category Mode state
+  const [offerCategoriesOnly, setOfferCategoriesOnly] = useState(false);
+  const [offerCategorySlugs, setOfferCategorySlugs] = useState<string[]>([]);
+  const [availableCategories, setAvailableCategories] = useState<{ slug: string; name: string; image?: string }[]>([]);
 
   // Live timer for admin preview
   const [previewTime, setPreviewTime] = useState({ days: 3, hours: 12, minutes: 45, seconds: 30 });
@@ -156,6 +162,12 @@ export default function AppearanceSettings() {
           if (data.settings.showDiscountPrice !== undefined) {
             setShowDiscountPrice(data.settings.showDiscountPrice);
           }
+          if (data.settings.offerCategoriesOnly !== undefined) {
+            setOfferCategoriesOnly(data.settings.offerCategoriesOnly);
+          }
+          if (data.settings.offerCategorySlugs) {
+            setOfferCategorySlugs(data.settings.offerCategorySlugs);
+          }
         }
       } catch (error) {
         console.error("Failed to load appearance settings:", error);
@@ -164,7 +176,35 @@ export default function AppearanceSettings() {
       }
     };
     fetchSettings();
+
+    // Fetch store categories for offer selection
+    fetch('/api/admin/categories')
+      .then(res => res.json())
+      .then(data => {
+        if (data.categories) {
+          setAvailableCategories(data.categories.map((c: any) => ({
+            slug: c.slug,
+            name: c.name,
+            image: c.image
+          })));
+        }
+      })
+      .catch(() => {});
   }, []);
+
+  const toggleCategorySlug = (slug: string) => {
+    setOfferCategorySlugs(prev =>
+      prev.includes(slug) ? prev.filter(s => s !== slug) : [...prev, slug]
+    );
+  };
+
+  const selectAllCategories = () => {
+    setOfferCategorySlugs(availableCategories.map(c => c.slug));
+  };
+
+  const clearCategorySelection = () => {
+    setOfferCategorySlugs([]);
+  };
 
   const setPresetCountdown = (days: number) => {
     const target = new Date(Date.now() + days * 24 * 60 * 60 * 1000);
@@ -276,6 +316,8 @@ export default function AppearanceSettings() {
           offerBarBgGradient,
           offerBarAutoFallbackOnExpire,
           showDiscountPrice,
+          offerCategoriesOnly,
+          offerCategorySlugs,
         }),
       });
 
@@ -762,7 +804,163 @@ export default function AppearanceSettings() {
         </div>
 
         {/* ========================================================================= */}
-        {/* 3. BASIC STORE INFO */}
+        {/* 3. EXCLUSIVE OFFER CATEGORY FILTER SECTION (Hide other categories)        */}
+        {/* ========================================================================= */}
+        <div className="bg-white rounded-2xl border-2 border-primary/20 shadow-md p-5 sm:p-6 relative overflow-hidden">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-gray-100">
+            <div className="flex items-center gap-3">
+              <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-amber-500 to-rose-600 text-white flex items-center justify-center shadow-md shadow-amber-500/25">
+                <Layers className="w-6 h-6" />
+              </div>
+              <div>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <h2 className="text-lg font-black text-gray-900">
+                    অফার ক্যাটাগরি এক্সক্লুসিভ মোড (Offer Exclusive Category Filter)
+                  </h2>
+                  <span
+                    className={`px-2.5 py-0.5 rounded-full text-xs font-bold ${
+                      offerCategoriesOnly
+                        ? "bg-rose-50 text-rose-700 border border-rose-200"
+                        : "bg-gray-100 text-gray-600 border border-gray-200"
+                    }`}
+                  >
+                    {offerCategoriesOnly ? "🔥 অফার ক্যাটাগরি মোড সক্রিয়" : "🌐 স্বাভাবিক মোড (সব ক্যাটাগরি চালু)"}
+                  </span>
+                </div>
+                <p className="text-xs sm:text-sm text-gray-500 mt-0.5">
+                  যে ক্যাটাগরিতে অফার চলবে শুধুমাত্র সেটিই ওয়েবসাইটে দেখাবে, বাকি সমস্ত ক্যাটাগরি ও প্রোডাক্ট হাইড থাকবে
+                </p>
+              </div>
+            </div>
+
+            {/* Master Toggle */}
+            <label className="flex items-center gap-3 cursor-pointer self-start sm:self-auto bg-gray-50 px-4 py-2 rounded-xl border border-gray-200 hover:bg-gray-100 transition-colors">
+              <div className="relative inline-flex items-center">
+                <input
+                  type="checkbox"
+                  checked={offerCategoriesOnly}
+                  onChange={(e) => setOfferCategoriesOnly(e.target.checked)}
+                  className="sr-only peer"
+                />
+                <div className="w-11 h-6 bg-gray-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+              </div>
+              <span className="text-sm font-bold text-gray-800">
+                {offerCategoriesOnly ? "ফিল্টার সক্রিয় (ON)" : "ফিল্টার বন্ধ (OFF)"}
+              </span>
+            </label>
+          </div>
+
+          <div className="mt-5 space-y-4">
+            {/* Category Selector */}
+            <div>
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
+                <div className="flex items-center gap-2">
+                  <label className="text-xs font-bold text-gray-700 uppercase tracking-wider">
+                    যেসব ক্যাটাগরিতে অফার চলবে (Select Offer Categories):
+                  </label>
+                  <span className="text-xs font-bold text-primary bg-primary/10 px-2 py-0.5 rounded-full">
+                    {offerCategorySlugs.length} টি সিলেক্টেড
+                  </span>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={selectAllCategories}
+                    className="text-xs font-semibold text-primary hover:underline"
+                  >
+                    সবগুলো নির্বাচন করুন
+                  </button>
+                  <span className="text-gray-300">•</span>
+                  <button
+                    type="button"
+                    onClick={clearCategorySelection}
+                    className="text-xs font-semibold text-gray-500 hover:text-gray-700 hover:underline"
+                  >
+                    ক্লিয়ার করুন
+                  </button>
+                </div>
+              </div>
+
+              {availableCategories.length === 0 ? (
+                <div className="text-center py-6 bg-gray-50 rounded-xl text-gray-400 text-sm">
+                  ক্যাটাগরি লোড হচ্ছে...
+                </div>
+              ) : (
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+                  {availableCategories.map((cat) => {
+                    const isSelected = offerCategorySlugs.includes(cat.slug);
+                    return (
+                      <button
+                        key={cat.slug}
+                        type="button"
+                        onClick={() => toggleCategorySlug(cat.slug)}
+                        className={`p-3 rounded-xl border text-left transition-all flex items-center justify-between group cursor-pointer ${
+                          isSelected
+                            ? "bg-primary/5 border-primary ring-2 ring-primary/20 shadow-xs"
+                            : "bg-gray-50/50 border-gray-200 hover:border-gray-300 hover:bg-gray-50"
+                        }`}
+                      >
+                        <div className="flex flex-col min-w-0 pr-2">
+                          <span className={`text-sm font-bold truncate ${isSelected ? "text-primary" : "text-gray-800"}`}>
+                            {cat.name}
+                          </span>
+                          <span className="text-[11px] text-gray-400 font-mono truncate">
+                            {cat.slug}
+                          </span>
+                        </div>
+                        <div className={`w-5 h-5 rounded-md flex items-center justify-center shrink-0 transition-colors ${
+                          isSelected ? "bg-primary text-white" : "border border-gray-300 bg-white"
+                        }`}>
+                          {isSelected && <Check className="w-3.5 h-3.5 stroke-[3]" />}
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+
+            {/* Impact / Explanation Alert Box */}
+            <div className={`p-4 rounded-xl border transition-all ${
+              offerCategoriesOnly
+                ? "bg-rose-50/70 border-rose-200"
+                : "bg-gray-50 border-gray-200"
+            }`}>
+              <div className="flex items-start gap-3">
+                <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 mt-0.5 ${
+                  offerCategoriesOnly ? "bg-rose-500 text-white" : "bg-gray-200 text-gray-600"
+                }`}>
+                  {offerCategoriesOnly ? <Flame className="w-4 h-4 animate-pulse" /> : <Eye className="w-4 h-4" />}
+                </div>
+                <div>
+                  <h4 className="text-sm font-bold text-gray-900 mb-1">
+                    {offerCategoriesOnly ? "লাইভ স্টোরফ্রন্ট প্রভাব (Live Impact):" : "স্বাভাবিক মোড নির্দেশনা:"}
+                  </h4>
+                  <p className="text-xs sm:text-sm text-gray-600 leading-relaxed">
+                    {offerCategoriesOnly ? (
+                      offerCategorySlugs.length > 0 ? (
+                        <>
+                          <span className="font-bold text-rose-700">অফার মোড চালু আছে:</span> কাস্টমাররা ওয়েবসাইটে ভিজিট করলে হোমপেজের পণ্য তালিকা, ক্যাটাগরি মেনু, ড্রয়ার এবং সার্চবারে <strong>শুধুমাত্র নির্বাচিত {offerCategorySlugs.length}টি ক্যাটাগরির পণ্যই দেখতে পাবেন</strong>। অন্যান্য সমস্ত ক্যাটাগরি ও পণ্য সাময়িকভাবে হাইড থাকবে।
+                        </>
+                      ) : (
+                        <span className="text-amber-700 font-semibold">
+                          ⚠️ অফার মোড অন করা আছে কিন্তু কোনো ক্যাটাগরি সিলেক্ট করা হয়নি! অনুগ্রহ করে উপরে অন্তত ১টি ক্যাটাগরি সিলেক্ট করুন।
+                        </span>
+                      )
+                    ) : (
+                      "বর্তমানে অফার ফিল্টার বন্ধ রয়েছে। ওয়েবসাইটের সমস্ত ক্যাটাগরি ও পণ্য সাধারণ নিয়মে সবার জন্য উন্মুক্ত আছে।"
+                    )}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        {/* ========================================================================= */}
+        {/* 4. BASIC STORE INFO */}
         {/* ========================================================================= */}
         <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
           <h3 className="font-bold text-gray-900 mb-4">Basic Information</h3>

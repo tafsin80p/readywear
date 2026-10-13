@@ -13,10 +13,14 @@ import { StoreSettingsProvider } from "@/context/StoreSettingsContext";
 
 export function Providers({ 
   children, 
-  showDiscountPrice = true 
+  showDiscountPrice = true,
+  offerCategoriesOnly = false,
+  offerCategorySlugs = []
 }: { 
   children: ReactNode; 
   showDiscountPrice?: boolean; 
+  offerCategoriesOnly?: boolean;
+  offerCategorySlugs?: string[];
 }) {
   useEffect(() => {
     try {
@@ -44,7 +48,11 @@ export function Providers({
 
   return (
     <SessionProvider>
-      <StoreSettingsProvider initialShowDiscountPrice={showDiscountPrice}>
+      <StoreSettingsProvider 
+        initialShowDiscountPrice={showDiscountPrice}
+        initialOfferCategoriesOnly={offerCategoriesOnly}
+        initialOfferCategorySlugs={offerCategorySlugs}
+      >
         <SearchProvider>
           <ToastProvider>
             <AuthProvider>

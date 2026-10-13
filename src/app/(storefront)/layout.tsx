@@ -17,6 +17,8 @@ export default async function StorefrontLayout({
   let socialLinks: any = {};
   let offerSettings: any = null;
   let showDiscountPrice = true;
+  let offerCategoriesOnly = false;
+  let offerCategorySlugs: string[] = [];
 
   try {
     const StoreSettings = (await import("@/models/StoreSettings")).default;
@@ -25,6 +27,12 @@ export default async function StorefrontLayout({
     if (settings) {
       if (settings.showDiscountPrice !== undefined) {
         showDiscountPrice = Boolean(settings.showDiscountPrice);
+      }
+      if (settings.offerCategoriesOnly !== undefined) {
+        offerCategoriesOnly = Boolean(settings.offerCategoriesOnly);
+      }
+      if (settings.offerCategorySlugs) {
+        offerCategorySlugs = settings.offerCategorySlugs;
       }
       headerLogo = settings.headerLogo || "";
       footerLogo = settings.footerLogo || "";
@@ -52,7 +60,11 @@ export default async function StorefrontLayout({
   }
 
   return (
-    <Providers showDiscountPrice={showDiscountPrice}>
+    <Providers 
+      showDiscountPrice={showDiscountPrice}
+      offerCategoriesOnly={offerCategoriesOnly}
+      offerCategorySlugs={offerCategorySlugs}
+    >
       <div className="flex flex-col min-h-screen">
         <AnnouncementBar offerSettings={offerSettings} />
         <Header logoUrl={headerLogo} />

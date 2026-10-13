@@ -17,14 +17,30 @@ export async function GET(request: Request) {
 
     const searchRegex = new RegExp(query.trim(), 'i');
 
-    const products = await Product.find({
+    const { getActiveOfferCategoryFilter } = await import('@/lib/services/offerCategoryService');
+    const offerFilter = await getActiveOfferCategoryFilter();
+
+    const productQuery: any = {
       $or: [
         { name: searchRegex },
         { sku: searchRegex },
         { category: searchRegex },
       ],
       status: 'published',
-    })
+    };
+
+    if (offerFilter.isOfferCategoryOnly) {
+      productQuery.$and = [
+        {
+          $or: [
+            { category: { $in: offerFilter.allowedSlugsAndNames } },
+            { subCategory: { $in: offerFilter.allowedSlugsAndNames } }
+          ]
+        }
+      ];
+    }
+
+    const products = await Product.find(productQuery)
       .select('name sku price oldPrice images category _id slug')
       .limit(10)
       .lean();

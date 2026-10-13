@@ -7,15 +7,38 @@ export const revalidate = 60; // Cache for 60 seconds (ISR)
 
 export default async function Home() {
   await connectToDatabase();
-  const productsDocs = await Product.find({ status: 'published' }).sort({ createdAt: -1 }).lean();
-  const categoryDocs = await Category.find({ 
+  const { getActiveOfferCategoryFilter } = await import('@/lib/services/offerCategoryService');
+  const offerFilter = await getActiveOfferCategoryFilter();
+
+  const productQuery: any = { status: 'published' };
+  if (offerFilter.isOfferCategoryOnly) {
+    productQuery.$or = [
+      { category: { $in: offerFilter.allowedSlugsAndNames } },
+      { subCategory: { $in: offerFilter.allowedSlugsAndNames } }
+    ];
+  }
+
+  const categoryQuery: any = { 
     isActive: true,
     $or: [
       { parentCategory: null }, 
       { parentCategory: "" },
       { parentCategory: { $exists: false } }
     ]
-  }).lean();
+  };
+  if (offerFilter.isOfferCategoryOnly) {
+    categoryQuery.$and = [
+      {
+        $or: [
+          { slug: { $in: offerFilter.allowedCategorySlugs } },
+          { name: { $in: offerFilter.allowedCategoryNames } }
+        ]
+      }
+    ];
+  }
+
+  const productsDocs = await Product.find(productQuery).sort({ createdAt: -1 }).lean();
+  const categoryDocs = await Category.find(categoryQuery).lean();
   
   // Serialize Mongoose documents to plain JS objects for Client Components
   const products = JSON.parse(JSON.stringify(productsDocs));

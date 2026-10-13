@@ -10,16 +10,38 @@ import Link from "next/link";
 export default async function ShopPage() {
   await connectToDatabase();
   
-  const categoryDocs = await Category.find({ isActive: true }).lean();
+  const { getActiveOfferCategoryFilter } = await import('@/lib/services/offerCategoryService');
+  const offerFilter = await getActiveOfferCategoryFilter();
+
+  let categoryQuery: any = { isActive: true };
+  if (offerFilter.isOfferCategoryOnly) {
+    categoryQuery.$or = [
+      { slug: { $in: offerFilter.allowedCategorySlugs } },
+      { name: { $in: offerFilter.allowedCategoryNames } }
+    ];
+  }
+
+  const categoryDocs = await Category.find(categoryQuery).lean();
   const activeSlug = "all";
-  const activeCategoryLabel = "সকল পণ্য";
 
   const dbCategories = JSON.parse(JSON.stringify(categoryDocs)).map((cat: any) => ({
     ...cat,
     label: cat.name
   }));
+
+  const activeCategoryLabel = offerFilter.isOfferCategoryOnly && dbCategories.length === 1
+    ? dbCategories[0].name
+    : "সকল পণ্য";
   
-  const productsDocs = await Product.find({ status: 'published' }).sort({ createdAt: -1 }).lean();
+  let productQuery: any = { status: 'published' };
+  if (offerFilter.isOfferCategoryOnly) {
+    productQuery.$or = [
+      { category: { $in: offerFilter.allowedSlugsAndNames } },
+      { subCategory: { $in: offerFilter.allowedSlugsAndNames } }
+    ];
+  }
+
+  const productsDocs = await Product.find(productQuery).sort({ createdAt: -1 }).lean();
   const filteredProducts = JSON.parse(JSON.stringify(productsDocs));
 
   return (

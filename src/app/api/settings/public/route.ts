@@ -11,7 +11,9 @@ export async function GET() {
     return NextResponse.json({ 
       success: true, 
       logoUrl: settings?.headerLogo || "/readywear logo.png",
-      showDiscountPrice: settings?.showDiscountPrice !== false
+      showDiscountPrice: settings?.showDiscountPrice !== false,
+      offerCategoriesOnly: Boolean(settings?.offerCategoriesOnly),
+      offerCategorySlugs: settings?.offerCategorySlugs || []
     });
   } catch (error: any) {
     return NextResponse.json({ success: false, logoUrl: "/readywear logo.png" }, { status: 500 });

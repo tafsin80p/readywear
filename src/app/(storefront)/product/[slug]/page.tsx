@@ -68,6 +68,19 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
     notFound();
   }
 
+  const { getActiveOfferCategoryFilter } = await import('@/lib/services/offerCategoryService');
+  const offerFilter = await getActiveOfferCategoryFilter();
+
+  // If exclusive offer category mode is on, hide products from other categories
+  if (offerFilter.isOfferCategoryOnly) {
+    const isAllowed = 
+      offerFilter.allowedSlugsAndNames.includes(productDoc.category) ||
+      (productDoc.subCategory && offerFilter.allowedSlugsAndNames.includes(productDoc.subCategory));
+    if (!isAllowed) {
+      notFound();
+    }
+  }
+
   // Get related products (same category, excluding this one)
   const relatedDocs = await Product.find({ 
     category: productDoc.category,

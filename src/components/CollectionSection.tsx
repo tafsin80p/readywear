@@ -5,7 +5,10 @@ import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 
 export function CollectionSection({ products = [], initialCategories = [] }: { products?: any[], initialCategories?: any[] }) {
-  const categories = [{ slug: "all", label: "সকল পণ্য" }, ...initialCategories];
+  const isSingleCategoryOffer = initialCategories.length === 1;
+  const categories = isSingleCategoryOffer 
+    ? initialCategories 
+    : [{ slug: "all", label: "সকল পণ্য" }, ...initialCategories];
   
   // Show all provided products
   const defaultProducts = products;
@@ -15,9 +18,16 @@ export function CollectionSection({ products = [], initialCategories = [] }: { p
       <div className="hidden md:flex flex-col md:flex-row md:items-end justify-between mb-6 gap-4">
         <div>
           <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2 flex items-center gap-2">
-            সকল পণ্য <span className="text-gray-500 font-normal text-xl">(Full Collection)</span>
+            {isSingleCategoryOffer ? initialCategories[0].label : "সকল পণ্য"}{" "}
+            <span className="text-gray-500 font-normal text-xl">
+              {isSingleCategoryOffer ? "(Exclusive Offer)" : "(Full Collection)"}
+            </span>
           </h2>
-          <p className="text-gray-500">আমাদের সব নতুন এবং জনপ্রিয় পণ্য এখন এক জায়গায়</p>
+          <p className="text-gray-500">
+            {isSingleCategoryOffer 
+              ? `${initialCategories[0].label} কালেকশনে আকর্ষণীয় অফার চলছে` 
+              : "আমাদের সব নতুন এবং জনপ্রিয় পণ্য এখন এক জায়গায়"}
+          </p>
         </div>
         
         <Link 

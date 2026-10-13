@@ -8,8 +8,19 @@ export async function GET() {
   try {
     await connectToDatabase();
     
+    const { getActiveOfferCategoryFilter } = await import('@/lib/services/offerCategoryService');
+    const offerFilter = await getActiveOfferCategoryFilter();
+
+    let query: any = { isActive: true };
+    if (offerFilter.isOfferCategoryOnly) {
+      query.$or = [
+        { slug: { $in: offerFilter.allowedCategorySlugs } },
+        { name: { $in: offerFilter.allowedCategoryNames } }
+      ];
+    }
+
     // Fetch categories with active status
-    const categories = await Category.find({ isActive: true })
+    const categories = await Category.find(query)
       .select('name slug description image parentCategory isActive isFeatured')
       .lean();
       

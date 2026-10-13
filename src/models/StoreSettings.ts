@@ -30,6 +30,10 @@ export interface IStoreSettings extends Document {
   // Discount Price / Offer Price Toggle
   showDiscountPrice?: boolean;
 
+  // Exclusive Offer Category Mode (Hide other categories & products during offer)
+  offerCategoriesOnly?: boolean;
+  offerCategorySlugs?: string[];
+
   createdAt: Date;
   updatedAt: Date;
 }
@@ -63,7 +67,11 @@ const StoreSettingsSchema: Schema<IStoreSettings> = new Schema(
     offerBarAutoFallbackOnExpire: { type: Boolean, default: true },
 
     // Discount Price / Offer Price Toggle
-    showDiscountPrice: { type: Boolean, default: true }
+    showDiscountPrice: { type: Boolean, default: true },
+
+    // Exclusive Offer Category Mode
+    offerCategoriesOnly: { type: Boolean, default: false },
+    offerCategorySlugs: { type: [String], default: [] }
   },
   { timestamps: true }
 );
