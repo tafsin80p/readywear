@@ -73,6 +73,13 @@ const buildOrderMessageText = (order: any, extraText: string = "") => {
   else if (order.verificationStatus === "fake") statusText = "❌ FAKE \\/ CANCELLED";
   else if (order.verificationStatus === "lead") statusText = "🎯 REAL ORDER \\(LEAD\\)";
 
+  let stockStatusText = "⏳ On Hold \\(Pending Confirmation\\)";
+  if (order.stockDeducted) {
+    stockStatusText = "📉 Deducted from Stock";
+  } else if (order.inventoryStatus === "restocked" || order.status === "cancelled" || order.verificationStatus === "fake") {
+    stockStatusText = "🔄 Restocked to Inventory";
+  }
+
   const message = `
 🛒 *New Order Placed: ${totalQty}*
 *Order ID:* ${escapeMarkdown(order.orderId)}
@@ -92,6 +99,7 @@ const buildOrderMessageText = (order: any, extraText: string = "") => {
 
 *Payment:* ${escapeMarkdown(order.paymentMethod)}
 *Status:* ${statusText}
+*Stock:* ${stockStatusText}
 ${extraText ? `\n${extraText}` : ''}`;
   
   return message;
@@ -244,8 +252,21 @@ Lead: ${order.metaLeadEventStatus === "sent" ? "✅ SENT" : "🚫 NOT SENT"}
       // Send a reply message mimicking the requested format
       if (isConfirmed || isLead) {
         const replyText = isConfirmed
-          ? `✅ *Order confirmed and Purchase sent to Meta*\n\nOrder ID: ${escapeMarkdown(order.orderId)}\nConfirmed by: ${escapeMarkdown(order.confirmedBy || "Admin")}\nMeta Dataset: ${escapeMarkdown(settings.meta?.datasetName || "Mehzin Offers")}\nStatus: Purchase event processed by server`
+          ? `✅ *Order confirmed and Purchase sent to Meta*\n\nOrder ID: ${escapeMarkdown(order.orderId)}\nConfirmed by: ${escapeMarkdown(order.confirmedBy || "Admin")}\n📦 *Stock:* Deducted from inventory\nMeta Dataset: ${escapeMarkdown(settings.meta?.datasetName || "Mehzin Offers")}\nStatus: Purchase event processed by server`
           : `✅ *Real Order — Lead sent to Meta*\n\nOrder ID: ${escapeMarkdown(order.orderId)}\nReviewed by: ${escapeMarkdown(order.confirmedBy || "Admin")}\nMeta Dataset: ${escapeMarkdown(settings.meta?.datasetName || "Mehzin Offers")}\nStatus: Lead event processed by server`;
+
+        await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            chat_id: order.telegramChatId,
+            reply_to_message_id: order.telegramMessageId,
+            text: replyText,
+            parse_mode: "Markdown"
+          })
+        });
+      } else if (isFake) {
+        const replyText = `❌ *Order Cancelled / Fake*\n\nOrder ID: ${escapeMarkdown(order.orderId)}\nMarked by: ${escapeMarkdown(order.confirmedBy || "Admin")}\n📦 *Stock:* Restocked to inventory\nStatus: Order cancelled`;
 
         await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
           method: "POST",

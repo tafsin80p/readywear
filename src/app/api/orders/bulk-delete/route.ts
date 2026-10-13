@@ -19,13 +19,22 @@ export async function POST(req: NextRequest) {
 
     await connectToDatabase();
 
+    // Restock any orders that have had stock deducted
+    const { inventoryService } = await import("@/lib/services/inventoryService");
+    const deductedOrders = await Order.find({ _id: { $in: orderIds }, stockDeducted: true });
+    for (const ord of deductedOrders) {
+      await inventoryService.restockOrderStock(ord);
+    }
+
     // Soft delete orders by setting isDeleted: true and deletedAt
     const result = await Order.updateMany(
       { _id: { $in: orderIds } },
       { 
         $set: { 
           isDeleted: true, 
-          deletedAt: new Date() 
+          deletedAt: new Date(),
+          stockDeducted: false,
+          inventoryStatus: "restocked"
         } 
       }
     );

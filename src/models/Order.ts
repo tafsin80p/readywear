@@ -32,6 +32,8 @@ export interface IOrder extends Document {
   paymentStatus: "unpaid" | "paid" | "refunded";
   status: "pending" | "processing" | "shipped" | "delivered" | "cancelled";
   isRead: boolean;
+  stockDeducted: boolean;
+  inventoryStatus: "hold" | "deducted" | "restocked";
   
   // Verification & Integrations
   verificationStatus: "pending_verification" | "confirmed" | "fake" | "cancelled";
@@ -110,6 +112,12 @@ const OrderSchema: Schema<IOrder> = new Schema(
       default: "pending",
     },
     isRead: { type: Boolean, default: false },
+    stockDeducted: { type: Boolean, default: false },
+    inventoryStatus: {
+      type: String,
+      enum: ["hold", "deducted", "restocked"],
+      default: "hold",
+    },
     
     // Verification & Integrations
     verificationStatus: {

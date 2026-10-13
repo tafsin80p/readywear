@@ -52,6 +52,8 @@ export async function POST(req: NextRequest) {
       paymentMethod: paymentMethod || "cod",
       status: "pending",
       source: source || "Website",
+      stockDeducted: false,
+      inventoryStatus: "hold",
     };
 
     // If user is logged in, attach their userId

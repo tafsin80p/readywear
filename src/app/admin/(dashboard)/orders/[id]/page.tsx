@@ -3,7 +3,7 @@ import Order from "@/models/Order";
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowLeft, MapPin, Phone, User, Calendar, CreditCard, ShoppingBag, Hash, Package, Truck, CheckCircle2, AlertCircle } from "lucide-react";
+import { ArrowLeft, MapPin, Phone, User, Calendar, CreditCard, ShoppingBag, Hash, Package, Truck, CheckCircle2, AlertCircle, RotateCcw, Clock } from "lucide-react";
 import { OrderStatusUpdater } from "@/components/admin/OrderStatusUpdater";
 
 export const dynamic = 'force-dynamic';
@@ -53,8 +53,21 @@ export default async function AdminOrderDetailsPage({ params }: { params: Promis
             <ArrowLeft className="w-5 h-5" />
           </Link>
           <div>
-            <h1 className="text-lg sm:text-xl font-bold text-gray-900 flex items-center gap-2 leading-tight">
-              Order #{order.orderId}
+            <h1 className="text-lg sm:text-xl font-bold text-gray-900 flex flex-wrap items-center gap-2 leading-tight">
+              <span>Order #{order.orderId}</span>
+              {order.stockDeducted ? (
+                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                  <CheckCircle2 className="w-3 h-3" /> Stock Deducted
+                </span>
+              ) : order.inventoryStatus === 'restocked' || order.status === 'cancelled' || order.verificationStatus === 'fake' ? (
+                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-purple-50 text-purple-700 border border-purple-200">
+                  <RotateCcw className="w-3 h-3" /> Restocked
+                </span>
+              ) : (
+                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-200">
+                  <Clock className="w-3 h-3" /> Stock On Hold
+                </span>
+              )}
             </h1>
             <p className="text-[11px] sm:text-xs text-gray-500 flex items-center gap-1 mt-1 sm:mt-0.5">
               <Calendar className="w-3 h-3 shrink-0" />
@@ -138,9 +151,24 @@ export default async function AdminOrderDetailsPage({ params }: { params: Promis
             
             {/* Ordered Items Table */}
             <div className="bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm">
-              <div className="px-5 py-3.5 border-b border-gray-200 bg-gray-50/80 flex items-center gap-2">
-                <ShoppingBag className="w-4 h-4 text-gray-500" />
-                <h2 className="text-sm font-bold text-gray-900 uppercase tracking-wide">Products ({order.items.length})</h2>
+              <div className="px-5 py-3.5 border-b border-gray-200 bg-gray-50/80 flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <ShoppingBag className="w-4 h-4 text-gray-500" />
+                  <h2 className="text-sm font-bold text-gray-900 uppercase tracking-wide">Products ({order.items.length})</h2>
+                </div>
+                {order.stockDeducted ? (
+                  <span className="text-[11px] font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
+                    Stock: Deducted
+                  </span>
+                ) : order.inventoryStatus === 'restocked' || order.status === 'cancelled' || order.verificationStatus === 'fake' ? (
+                  <span className="text-[11px] font-semibold text-purple-700 bg-purple-50 px-2 py-0.5 rounded border border-purple-200">
+                    Stock: Restocked
+                  </span>
+                ) : (
+                  <span className="text-[11px] font-semibold text-amber-700 bg-amber-50 px-2 py-0.5 rounded border border-amber-200">
+                    Stock: On Hold (Pending Confirmation)
+                  </span>
+                )}
               </div>
               <div className="overflow-x-auto">
                 <table className="w-full text-left border-collapse text-sm">

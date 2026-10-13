@@ -212,7 +212,22 @@ export function OrderRow({
         </div>
       </td>
       <td className="px-6 py-4">
-        {getStatusBadge(order.status)}
+        <div className="flex flex-col gap-1 items-start">
+          {getStatusBadge(order.status)}
+          {order.stockDeducted ? (
+            <span className="inline-flex items-center text-[10px] font-semibold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200 whitespace-nowrap">
+              ● Stock Deducted
+            </span>
+          ) : order.inventoryStatus === 'restocked' || order.status === 'cancelled' || order.verificationStatus === 'fake' ? (
+            <span className="inline-flex items-center text-[10px] font-semibold text-purple-700 bg-purple-50 px-1.5 py-0.5 rounded border border-purple-200 whitespace-nowrap">
+              ● Restocked
+            </span>
+          ) : (
+            <span className="inline-flex items-center text-[10px] font-semibold text-amber-700 bg-amber-50 px-1.5 py-0.5 rounded border border-amber-200 whitespace-nowrap">
+              ● Stock Hold
+            </span>
+          )}
+        </div>
       </td>
       <td className="px-6 py-4">
         <div className="flex flex-col gap-1.5 items-start">

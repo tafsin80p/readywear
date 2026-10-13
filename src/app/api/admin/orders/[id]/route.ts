@@ -29,6 +29,8 @@ export async function GET(
   }
 }
 
+import { inventoryService } from "@/lib/services/inventoryService";
+
 export async function PATCH(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -44,33 +46,59 @@ export async function PATCH(
 
     await connectToDatabase();
 
-    const allowedFields = ["status", "paymentStatus"];
-    const updateData: any = {};
+    const order = await Order.findById(id);
+    if (!order) {
+      return NextResponse.json({ message: "Order not found" }, { status: 404 });
+    }
 
-    for (const key of allowedFields) {
-      if (body[key] !== undefined) {
-        updateData[key] = body[key];
+    const oldStatus = order.status;
+    const newStatus = body.status;
+
+    if (newStatus && newStatus !== oldStatus) {
+      order.status = newStatus;
+
+      if (newStatus === "cancelled") {
+        // Order cancelled: restock inventory if previously deducted
+        if (order.stockDeducted) {
+          await inventoryService.restockOrderStock(order);
+          order.stockDeducted = false;
+          order.inventoryStatus = "restocked";
+        }
+        if (order.verificationStatus === "pending_verification") {
+          order.verificationStatus = "cancelled";
+        }
+      } else if (["processing", "shipped", "delivered"].includes(newStatus)) {
+        // Order confirmed / in progress: deduct inventory if currently on hold
+        if (!order.stockDeducted) {
+          await inventoryService.deductOrderStock(order);
+          order.stockDeducted = true;
+          order.inventoryStatus = "deducted";
+        }
+        if (order.verificationStatus === "pending_verification") {
+          order.verificationStatus = "confirmed";
+          order.confirmedAt = new Date();
+          order.confirmedBy = session.user.name || "Admin (Dashboard)";
+        }
+      } else if (newStatus === "pending") {
+        // Reverted to pending: return deducted stock back to hold
+        if (order.stockDeducted) {
+          await inventoryService.restockOrderStock(order);
+          order.stockDeducted = false;
+          order.inventoryStatus = "hold";
+        }
       }
     }
 
-    if (Object.keys(updateData).length === 0) {
-      return NextResponse.json({ message: "No valid fields to update" }, { status: 400 });
+    if (body.paymentStatus !== undefined) {
+      order.paymentStatus = body.paymentStatus;
     }
 
-    const updatedOrder = await Order.findByIdAndUpdate(
-      id,
-      { $set: updateData },
-      { new: true }
-    );
-
-    if (!updatedOrder) {
-      return NextResponse.json({ message: "Order not found" }, { status: 404 });
-    }
+    await order.save();
 
     return NextResponse.json({
       success: true,
       message: "Order updated successfully",
-      order: updatedOrder
+      order,
     });
   } catch (error: any) {
     console.error("Order update error:", error);
@@ -94,10 +122,17 @@ export async function DELETE(
     const { id } = await params;
     await connectToDatabase();
     
-    const deletedOrder = await Order.findByIdAndDelete(id);
-    if (!deletedOrder) {
+    const order = await Order.findById(id);
+    if (!order) {
       return NextResponse.json({ message: "Order not found" }, { status: 404 });
     }
+
+    // If stock was deducted, restock it before removing the order
+    if (order.stockDeducted) {
+      await inventoryService.restockOrderStock(order);
+    }
+    
+    await Order.findByIdAndDelete(id);
     
     return NextResponse.json({
       success: true,
