@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { Heart, Star, ShoppingCart, Minus, Plus, ChevronRight, Truck, ShieldCheck, RefreshCw, Check, Banknote, Scissors, ZoomIn, X } from "lucide-react";
 import { ProductCard } from "./ProductCard";
 import { useCart } from "@/context/CartContext";
+import { useStoreSettings } from "@/context/StoreSettingsContext";
 
 interface Product {
   _id: string;
@@ -37,6 +38,11 @@ const toBengaliNumber = (num: number) => {
 export function ProductDetails({ product, relatedProducts }: { product: Product, relatedProducts: Product[] }) {
   const router = useRouter();
   const { addToCart } = useCart();
+  const { showDiscountPrice } = useStoreSettings();
+
+  const hasDiscount = Boolean(showDiscountPrice && product.oldPrice && product.oldPrice > product.price);
+  const displayPrice = hasDiscount ? product.price : (product.oldPrice || product.price);
+
   const [quantity, setQuantity] = useState(1);
   const [selectedAttributes, setSelectedAttributes] = useState<Record<string, string>>({});
   const [activeImageIndex, setActiveImageIndex] = useState(0);
@@ -55,7 +61,7 @@ export function ProductDetails({ product, relatedProducts }: { product: Product,
   const handleAddToCart = () => {
     if (isAdded) return;
     
-    addToCart(product, quantity, undefined, undefined, selectedAttributes);
+    addToCart({ ...product, price: displayPrice } as any, quantity, undefined, undefined, selectedAttributes);
     setIsAdded(true);
     
     setTimeout(() => setIsAdded(false), 2000);
@@ -206,9 +212,9 @@ export function ProductDetails({ product, relatedProducts }: { product: Product,
 
               <div className="flex items-end gap-3 pb-6 border-b border-gray-100">
                 <span className="text-3xl md:text-4xl font-bold text-primary">
-                  ৳ {toBengaliNumber(product.price)}
+                  ৳ {toBengaliNumber(displayPrice)}
                 </span>
-                {product.oldPrice && product.oldPrice > product.price && (
+                {hasDiscount && product.oldPrice && (
                   <span className="text-lg text-gray-400 line-through mb-1">
                     ৳{toBengaliNumber(product.oldPrice)}
                   </span>
@@ -310,7 +316,7 @@ export function ProductDetails({ product, relatedProducts }: { product: Product,
                 {/* Buy Now */}
                 <button 
                   onClick={() => {
-                    addToCart(product as any, quantity, undefined, undefined, selectedAttributes, false);
+                    addToCart({ ...product, price: displayPrice } as any, quantity, undefined, undefined, selectedAttributes, false);
                     router.push('/checkout');
                   }}
                   disabled={isOutOfStock}

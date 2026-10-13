@@ -27,6 +27,9 @@ export interface IStoreSettings extends Document {
   offerBarBgGradient?: string;
   offerBarAutoFallbackOnExpire?: boolean;
 
+  // Discount Price / Offer Price Toggle
+  showDiscountPrice?: boolean;
+
   createdAt: Date;
   updatedAt: Date;
 }
@@ -57,7 +60,10 @@ const StoreSettingsSchema: Schema<IStoreSettings> = new Schema(
     offerBarButtonText: { type: String, default: "অফার দেখুন" },
     offerBarButtonLink: { type: String, default: "/categories" },
     offerBarBgGradient: { type: String, default: "bg-primary" },
-    offerBarAutoFallbackOnExpire: { type: Boolean, default: true }
+    offerBarAutoFallbackOnExpire: { type: Boolean, default: true },
+
+    // Discount Price / Offer Price Toggle
+    showDiscountPrice: { type: Boolean, default: true }
   },
   { timestamps: true }
 );

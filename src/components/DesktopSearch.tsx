@@ -5,6 +5,7 @@ import { useEffect, useState, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useStoreSettings } from "@/context/StoreSettingsContext";
 
 const toBengaliNumber = (num: number) => {
   const bengaliDigits = ['০', '১', '২', '৩', '৪', '৫', '৬', '৭', '৮', '৯'];
@@ -14,6 +15,7 @@ const toBengaliNumber = (num: number) => {
 const popularSearches = ["শাড়ি", "পাঞ্জাবি", "থ্রি পিস", "শার্ট", "কিডস কালেকশন", "RW-1002"];
 
 export function DesktopSearch() {
+  const { showDiscountPrice } = useStoreSettings();
   const [query, setQuery] = useState("");
   const [isSearching, setIsSearching] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
@@ -146,9 +148,22 @@ export function DesktopSearch() {
                         <p className="text-[10px] text-gray-400">SKU: {product.sku}</p>
                       )}
                       <div className="mt-1 flex items-center gap-2">
-                        <span className="font-bold text-primary text-xs">
-                          ৳ {toBengaliNumber(product.price)}
-                        </span>
+                        {(() => {
+                          const hasDiscount = Boolean(showDiscountPrice && product.oldPrice && product.oldPrice > product.price);
+                          const displayPrice = hasDiscount ? product.price : (product.oldPrice || product.price);
+                          return (
+                            <>
+                              <span className="font-bold text-primary text-xs">
+                                ৳ {toBengaliNumber(displayPrice)}
+                              </span>
+                              {hasDiscount && product.oldPrice && (
+                                <span className="text-[10px] text-gray-400 line-through">
+                                  ৳ {toBengaliNumber(product.oldPrice)}
+                                </span>
+                              )}
+                            </>
+                          );
+                        })()}
                       </div>
                     </div>
                   </Link>

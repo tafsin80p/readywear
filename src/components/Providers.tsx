@@ -9,7 +9,15 @@ import { SearchProvider } from "@/context/SearchContext";
 import { SessionProvider } from "next-auth/react";
 import { useEffect } from "react";
 
-export function Providers({ children }: { children: ReactNode }) {
+import { StoreSettingsProvider } from "@/context/StoreSettingsContext";
+
+export function Providers({ 
+  children, 
+  showDiscountPrice = true 
+}: { 
+  children: ReactNode; 
+  showDiscountPrice?: boolean; 
+}) {
   useEffect(() => {
     try {
       const urlParams = new URLSearchParams(window.location.search);
@@ -36,15 +44,17 @@ export function Providers({ children }: { children: ReactNode }) {
 
   return (
     <SessionProvider>
-      <SearchProvider>
-        <ToastProvider>
-          <AuthProvider>
-            <CartProvider>
-              {children}
-            </CartProvider>
-          </AuthProvider>
-        </ToastProvider>
-      </SearchProvider>
+      <StoreSettingsProvider initialShowDiscountPrice={showDiscountPrice}>
+        <SearchProvider>
+          <ToastProvider>
+            <AuthProvider>
+              <CartProvider>
+                {children}
+              </CartProvider>
+            </AuthProvider>
+          </ToastProvider>
+        </SearchProvider>
+      </StoreSettingsProvider>
     </SessionProvider>
   );
 }

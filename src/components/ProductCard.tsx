@@ -33,10 +33,16 @@ const toBengaliNumber = (num: number) => {
 };
 
 import { useCart } from "@/context/CartContext";
+import { useStoreSettings } from "@/context/StoreSettingsContext";
 
 export function ProductCard({ product, priority = false }: ProductProps) {
   const { addToCart } = useCart();
+  const { showDiscountPrice } = useStoreSettings();
   const [isAdded, setIsAdded] = useState(false);
+
+  const hasDiscount = Boolean(showDiscountPrice && product.oldPrice && product.oldPrice > product.price);
+  const displayPrice = hasDiscount ? product.price : (product.oldPrice || product.price);
+
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
     if (isAdded) return;
@@ -56,11 +62,11 @@ export function ProductCard({ product, priority = false }: ProductProps) {
     const cartProduct = {
       id: product._id as any, // Temporary cast until cart context is fully updated
       title: product.name,
-      price: product.price,
+      price: displayPrice,
       image: product.images[0] || "",
       category: product.category,
-      oldPrice: product.oldPrice || 0,
-      discount: product.discount || 0,
+      oldPrice: hasDiscount ? (product.oldPrice || 0) : 0,
+      discount: hasDiscount ? (product.discount || 0) : 0,
       rating: product.rating || 0,
       reviews: product.reviews || 0,
       sku: product.sku
@@ -99,7 +105,7 @@ export function ProductCard({ product, priority = false }: ProductProps) {
             স্টক আউট
           </div>
         ) : (
-          (product.discount || 0) > 0 ? (
+          hasDiscount && (product.discount || 0) > 0 ? (
             <div className="absolute top-2 left-2 bg-primary text-white text-[13px] font-bold px-2.5 py-1 rounded shadow-sm z-10">
               {toBengaliNumber(product.discount!)}% ছাড়
             </div>
@@ -131,9 +137,9 @@ export function ProductCard({ product, priority = false }: ProductProps) {
         
         <div className="flex flex-wrap items-baseline gap-1.5 md:gap-2 mt-auto mb-3 md:mb-4">
           <span className="text-[17px] md:text-[19px] font-bold text-primary">
-            ৳ {toBengaliNumber(product.price)}
+            ৳ {toBengaliNumber(displayPrice)}
           </span>
-          {product.oldPrice && product.oldPrice > product.price && (
+          {hasDiscount && product.oldPrice && (
             <span className="text-[13px] md:text-[14px] text-gray-500 line-through">
               ৳{toBengaliNumber(product.oldPrice)}
             </span>

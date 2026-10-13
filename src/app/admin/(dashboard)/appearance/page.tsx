@@ -76,6 +76,9 @@ export default function AppearanceSettings() {
   const [offerBarBgGradient, setOfferBarBgGradient] = useState("bg-primary");
   const [offerBarAutoFallbackOnExpire, setOfferBarAutoFallbackOnExpire] = useState(true);
 
+  // Discount Price toggle state
+  const [showDiscountPrice, setShowDiscountPrice] = useState(true);
+
   // Live timer for admin preview
   const [previewTime, setPreviewTime] = useState({ days: 3, hours: 12, minutes: 45, seconds: 30 });
 
@@ -149,6 +152,9 @@ export default function AppearanceSettings() {
           if (data.settings.offerBarBgGradient) setOfferBarBgGradient(data.settings.offerBarBgGradient);
           if (data.settings.offerBarAutoFallbackOnExpire !== undefined) {
             setOfferBarAutoFallbackOnExpire(data.settings.offerBarAutoFallbackOnExpire);
+          }
+          if (data.settings.showDiscountPrice !== undefined) {
+            setShowDiscountPrice(data.settings.showDiscountPrice);
           }
         }
       } catch (error) {
@@ -269,6 +275,7 @@ export default function AppearanceSettings() {
           offerBarButtonLink,
           offerBarBgGradient,
           offerBarAutoFallbackOnExpire,
+          showDiscountPrice,
         }),
       });
 
@@ -650,7 +657,112 @@ export default function AppearanceSettings() {
         </div>
 
         {/* ========================================================================= */}
-        {/* 2. BASIC STORE INFO */}
+        {/* 2. DISCOUNT PRICE ON/OFF SWITCH SECTION */}
+        {/* ========================================================================= */}
+        <div className="bg-white rounded-2xl border-2 border-primary/20 shadow-md p-5 sm:p-6 relative overflow-hidden">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-gray-100">
+            <div className="flex items-center gap-3">
+              <div className="w-11 h-11 rounded-xl bg-primary text-white flex items-center justify-center shadow-md shadow-primary/25">
+                <Tag className="w-6 h-6" />
+              </div>
+              <div>
+                <div className="flex items-center gap-2">
+                  <h2 className="text-lg font-black text-gray-900">
+                    ডিসকাউন্ট প্রাইস অন/অফ সুইচ (Discount Price Toggle)
+                  </h2>
+                  <span
+                    className={`px-2.5 py-0.5 rounded-full text-xs font-bold ${
+                      showDiscountPrice
+                        ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
+                        : "bg-amber-50 text-amber-700 border border-amber-200"
+                    }`}
+                  >
+                    {showDiscountPrice ? "🏷️ ডিসকাউন্ট প্রাইস চালু" : "🛡️ রেগুলার প্রাইস মোড (ছাড় বন্ধ)"}
+                  </span>
+                </div>
+                <p className="text-xs sm:text-sm text-gray-500 mt-0.5">
+                  অফার চলাকালীন ডিসকাউন্ট প্রাইস দেখান অথবা সাধারণ সময়ে রেগুলার প্রাইসে বিক্রি করুন
+                </p>
+              </div>
+            </div>
+
+            {/* Master Toggle */}
+            <label className="flex items-center gap-3 cursor-pointer self-start sm:self-auto bg-gray-50 px-4 py-2 rounded-xl border border-gray-200 hover:bg-gray-100 transition-colors">
+              <div className="relative inline-flex items-center">
+                <input
+                  type="checkbox"
+                  checked={showDiscountPrice}
+                  onChange={(e) => setShowDiscountPrice(e.target.checked)}
+                  className="sr-only peer"
+                />
+                <div className="w-11 h-6 bg-gray-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+              </div>
+              <span className="text-sm font-bold text-gray-800">
+                {showDiscountPrice ? "ডিসকাউন্ট সক্রিয় (ON)" : "ডিসকাউন্ট বন্ধ (OFF)"}
+              </span>
+            </label>
+          </div>
+
+          <div className="mt-5 grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Explanation box */}
+            <div className="p-4 rounded-xl bg-gray-50 border border-gray-100 flex flex-col justify-between">
+              <div>
+                <h4 className="text-xs font-bold uppercase tracking-wider text-gray-700 mb-2">
+                  কার্যপ্রণালী (How it works):
+                </h4>
+                <ul className="text-xs sm:text-sm text-gray-600 space-y-2">
+                  <li className="flex items-start gap-2">
+                    <span className="text-emerald-600 font-bold">✓ চালু থাকলে (ON):</span>
+                    <span>অফার চলাকালীন সময়ে ওয়েবসাইটে সব প্রোডাক্টে ছাড়ের মূল্য (Discount Price), মূল দাম কাটা দাগ (<s>৳১,৫০০</s>) এবং % ছাড় ব্যাজ প্রদর্শিত হবে।</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-amber-600 font-bold">✗ বন্ধ রাখলে (OFF):</span>
+                    <span>কোনো ছাড়ের ব্যাজ বা কাটা দাগ থাকবে না। সরাসরি প্রতিটি পণ্যের মূল রেগুলার প্রাইস (যেমন: ৳১,৫০০) প্রদর্শিত হবে এবং কার্ট/অর্ডারেও রেগুলার প্রাইস হিসাব হবে।</span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+
+            {/* Live Pricing Preview Box */}
+            <div className="p-4 rounded-xl bg-white border border-gray-200 shadow-2xs flex flex-col justify-between">
+              <span className="text-xs font-bold uppercase tracking-wider text-gray-500 mb-2 flex items-center gap-1.5">
+                <Eye className="w-3.5 h-3.5 text-primary" />
+                প্রোডাক্ট কার্ডে যেভাবে দাম দেখাবে (Live Preview):
+              </span>
+              
+              <div className="p-3.5 rounded-xl bg-gray-50 border border-gray-100 flex items-center justify-between">
+                <div>
+                  <span className="text-xs font-medium text-gray-500 block mb-0.5">প্রোডাক্টের নাম (নমুনা ড্রেস)</span>
+                  <div className="flex items-baseline gap-2">
+                    <span className="text-lg font-bold text-primary">
+                      {showDiscountPrice ? "৳ ১,২০০" : "৳ ১,৫০০"}
+                    </span>
+                    {showDiscountPrice && (
+                      <span className="text-xs text-gray-400 line-through">
+                        ৳ ১,৫০০
+                      </span>
+                    )}
+                  </div>
+                </div>
+
+                <div>
+                  {showDiscountPrice ? (
+                    <span className="bg-primary text-white text-[11px] font-bold px-2 py-1 rounded shadow-2xs">
+                      ২০% ছাড়
+                    </span>
+                  ) : (
+                    <span className="bg-emerald-500/90 text-white text-[11px] font-bold px-2 py-1 rounded shadow-2xs">
+                      ইন স্টক
+                    </span>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* ========================================================================= */}
+        {/* 3. BASIC STORE INFO */}
         {/* ========================================================================= */}
         <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
           <h3 className="font-bold text-gray-900 mb-4">Basic Information</h3>

@@ -5,6 +5,7 @@ import { Search, X, ShoppingBag, Loader2, ArrowLeft } from "lucide-react";
 import { useEffect, useState, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useStoreSettings } from "@/context/StoreSettingsContext";
 
 const toBengaliNumber = (num: number) => {
   const bengaliDigits = ['০', '১', '২', '৩', '৪', '৫', '৬', '৭', '৮', '৯'];
@@ -15,6 +16,7 @@ const popularSearches = ["শাড়ি", "পাঞ্জাবি", "থ্র�
 
 export function SearchModal() {
   const { isSearchOpen, closeSearch } = useSearch();
+  const { showDiscountPrice } = useStoreSettings();
   const [query, setQuery] = useState("");
   const [isSearching, setIsSearching] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -170,14 +172,22 @@ export function SearchModal() {
                       <p className="text-[10px] text-gray-400 mt-0.5">SKU: {product.sku}</p>
                     )}
                     <div className="mt-1.5 flex items-center gap-1.5">
-                      <span className="font-bold text-primary text-[14px]">
-                        ৳ {toBengaliNumber(product.price)}
-                      </span>
-                      {product.oldPrice && (
-                        <span className="text-[11px] text-gray-400 line-through">
-                          ৳ {toBengaliNumber(product.oldPrice)}
-                        </span>
-                      )}
+                      {(() => {
+                        const hasDiscount = Boolean(showDiscountPrice && product.oldPrice && product.oldPrice > product.price);
+                        const displayPrice = hasDiscount ? product.price : (product.oldPrice || product.price);
+                        return (
+                          <>
+                            <span className="font-bold text-primary text-[14px]">
+                              ৳ {toBengaliNumber(displayPrice)}
+                            </span>
+                            {hasDiscount && product.oldPrice && (
+                              <span className="text-[11px] text-gray-400 line-through">
+                                ৳ {toBengaliNumber(product.oldPrice)}
+                              </span>
+                            )}
+                          </>
+                        );
+                      })()}
                     </div>
                   </div>
                 </Link>

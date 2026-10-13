@@ -10,7 +10,8 @@ export async function GET() {
     const settings = await StoreSettings.findOne().lean();
     return NextResponse.json({ 
       success: true, 
-      logoUrl: settings?.headerLogo || "/readywear logo.png"
+      logoUrl: settings?.headerLogo || "/readywear logo.png",
+      showDiscountPrice: settings?.showDiscountPrice !== false
     });
   } catch (error: any) {
     return NextResponse.json({ success: false, logoUrl: "/readywear logo.png" }, { status: 500 });

@@ -16,12 +16,16 @@ export default async function StorefrontLayout({
   let footerLogo = "";
   let socialLinks: any = {};
   let offerSettings: any = null;
+  let showDiscountPrice = true;
 
   try {
     const StoreSettings = (await import("@/models/StoreSettings")).default;
     await connectToDatabase();
     const settings: any = await StoreSettings.findOne().lean();
     if (settings) {
+      if (settings.showDiscountPrice !== undefined) {
+        showDiscountPrice = Boolean(settings.showDiscountPrice);
+      }
       headerLogo = settings.headerLogo || "";
       footerLogo = settings.footerLogo || "";
       socialLinks = {
@@ -48,7 +52,7 @@ export default async function StorefrontLayout({
   }
 
   return (
-    <Providers>
+    <Providers showDiscountPrice={showDiscountPrice}>
       <div className="flex flex-col min-h-screen">
         <AnnouncementBar offerSettings={offerSettings} />
         <Header logoUrl={headerLogo} />

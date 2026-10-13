@@ -64,6 +64,9 @@ export async function POST(req: NextRequest) {
       if (body.offerBarButtonLink !== undefined) settings.offerBarButtonLink = body.offerBarButtonLink;
       if (body.offerBarBgGradient !== undefined) settings.offerBarBgGradient = body.offerBarBgGradient;
       if (body.offerBarAutoFallbackOnExpire !== undefined) settings.offerBarAutoFallbackOnExpire = body.offerBarAutoFallbackOnExpire;
+
+      // Discount Price / Offer Price Toggle
+      if (body.showDiscountPrice !== undefined) settings.showDiscountPrice = body.showDiscountPrice;
     }
     
     await settings.save();
