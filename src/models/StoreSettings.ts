@@ -15,6 +15,18 @@ export interface IStoreSettings extends Document {
   youtubeUrl?: string;
   whatsappUrl?: string;
   messengerUrl?: string;
+
+  // Offer Top Header / Countdown Banner
+  offerBarEnabled?: boolean;
+  offerBarTitle?: string;
+  offerBarSubtitle?: string;
+  offerBarBadgeText?: string;
+  offerBarEndDate?: string;
+  offerBarButtonText?: string;
+  offerBarButtonLink?: string;
+  offerBarBgGradient?: string;
+  offerBarAutoFallbackOnExpire?: boolean;
+
   createdAt: Date;
   updatedAt: Date;
 }
@@ -34,7 +46,18 @@ const StoreSettingsSchema: Schema<IStoreSettings> = new Schema(
     instagramUrl: { type: String, default: "" },
     youtubeUrl: { type: String, default: "" },
     whatsappUrl: { type: String, default: "" },
-    messengerUrl: { type: String, default: "" }
+    messengerUrl: { type: String, default: "" },
+
+    // Offer Top Header / Countdown Banner
+    offerBarEnabled: { type: Boolean, default: false },
+    offerBarTitle: { type: String, default: "পূজার সেল অফার!" },
+    offerBarSubtitle: { type: String, default: "অফার চলবে ৩ দিন — সমস্ত পোশাকে আকর্ষণীয় ছাড়" },
+    offerBarBadgeText: { type: String, default: "পূজা স্পেশাল" },
+    offerBarEndDate: { type: String, default: "" },
+    offerBarButtonText: { type: String, default: "অফার দেখুন" },
+    offerBarButtonLink: { type: String, default: "/categories" },
+    offerBarBgGradient: { type: String, default: "from-rose-600 via-pink-600 to-amber-600" },
+    offerBarAutoFallbackOnExpire: { type: Boolean, default: true }
   },
   { timestamps: true }
 );

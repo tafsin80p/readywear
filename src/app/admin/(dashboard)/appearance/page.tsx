@@ -1,9 +1,52 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Save, Image as ImageIcon, Loader2, Music } from "lucide-react";
+import { 
+  Save, 
+  Image as ImageIcon, 
+  Loader2, 
+  Music, 
+  Sparkles, 
+  Clock, 
+  Flame, 
+  ArrowRight, 
+  Eye, 
+  Calendar, 
+  Truck, 
+  ShieldCheck, 
+  Star,
+  Check
+} from "lucide-react";
 import Image from "next/image";
 import toast from "react-hot-toast";
+
+const GRADIENT_PRESETS = [
+  {
+    name: "পূজা স্পেশাল (উৎসবমুখর লাল ও সোনালী)",
+    value: "from-rose-600 via-pink-600 to-amber-600",
+    className: "bg-gradient-to-r from-rose-600 via-pink-600 to-amber-600",
+  },
+  {
+    name: "গাঢ় লাল ও রুবি (Deep Ruby)",
+    value: "from-red-600 via-rose-600 to-amber-500",
+    className: "bg-gradient-to-r from-red-600 via-rose-600 to-amber-500",
+  },
+  {
+    name: "রয়্যাল পার্পল (Royal Purple & Rose)",
+    value: "from-purple-700 via-pink-600 to-rose-500",
+    className: "bg-gradient-to-r from-purple-700 via-pink-600 to-rose-500",
+  },
+  {
+    name: "পান্না ও ফিরোজা (Emerald & Teal)",
+    value: "from-emerald-600 via-teal-600 to-cyan-600",
+    className: "bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600",
+  },
+  {
+    name: "লাক্সারি ডার্ক ও গোল্ড (Luxury Dark)",
+    value: "from-slate-900 via-neutral-900 to-amber-900",
+    className: "bg-gradient-to-r from-slate-900 via-neutral-900 to-amber-900",
+  },
+];
 
 export default function AppearanceSettings() {
   const [isLoading, setIsLoading] = useState(false);
@@ -23,6 +66,58 @@ export default function AppearanceSettings() {
   const [youtubeUrl, setYoutubeUrl] = useState("");
   const [whatsappUrl, setWhatsappUrl] = useState("");
   const [messengerUrl, setMessengerUrl] = useState("");
+
+  // Offer Top Header state
+  const [offerBarEnabled, setOfferBarEnabled] = useState(false);
+  const [offerBarTitle, setOfferBarTitle] = useState("পূজার সেল অফার!");
+  const [offerBarSubtitle, setOfferBarSubtitle] = useState("অফার চলবে ৩ দিন — সমস্ত কালেকশনে আকর্ষণীয় ছাড়");
+  const [offerBarBadgeText, setOfferBarBadgeText] = useState("পূজা স্পেশাল");
+  const [offerBarEndDate, setOfferBarEndDate] = useState("");
+  const [offerBarButtonText, setOfferBarButtonText] = useState("অফার দেখুন");
+  const [offerBarButtonLink, setOfferBarButtonLink] = useState("/categories");
+  const [offerBarBgGradient, setOfferBarBgGradient] = useState("from-rose-600 via-pink-600 to-amber-600");
+  const [offerBarAutoFallbackOnExpire, setOfferBarAutoFallbackOnExpire] = useState(true);
+
+  // Live timer for admin preview
+  const [previewTime, setPreviewTime] = useState({ days: 3, hours: 12, minutes: 45, seconds: 30 });
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      if (!offerBarEndDate) {
+        setPreviewTime((prev) => {
+          let s = prev.seconds - 1;
+          let m = prev.minutes;
+          let h = prev.hours;
+          let d = prev.days;
+          if (s < 0) {
+            s = 59;
+            m -= 1;
+          }
+          if (m < 0) {
+            m = 59;
+            h -= 1;
+          }
+          if (h < 0) {
+            h = 23;
+            d = Math.max(0, d - 1);
+          }
+          return { days: d, hours: h, minutes: m, seconds: s };
+        });
+        return;
+      }
+
+      const diff = new Date(offerBarEndDate).getTime() - Date.now();
+      if (diff > 0) {
+        setPreviewTime({
+          days: Math.floor(diff / (1000 * 60 * 60 * 24)),
+          hours: Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
+          minutes: Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60)),
+          seconds: Math.floor((diff % (1000 * 60)) / 1000),
+        });
+      }
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [offerBarEndDate]);
 
   useEffect(() => {
     const fetchSettings = async () => {
@@ -44,6 +139,19 @@ export default function AppearanceSettings() {
           if (data.settings.youtubeUrl) setYoutubeUrl(data.settings.youtubeUrl);
           if (data.settings.whatsappUrl) setWhatsappUrl(data.settings.whatsappUrl);
           if (data.settings.messengerUrl) setMessengerUrl(data.settings.messengerUrl);
+
+          // Offer bar settings
+          if (data.settings.offerBarEnabled !== undefined) setOfferBarEnabled(data.settings.offerBarEnabled);
+          if (data.settings.offerBarTitle) setOfferBarTitle(data.settings.offerBarTitle);
+          if (data.settings.offerBarSubtitle) setOfferBarSubtitle(data.settings.offerBarSubtitle);
+          if (data.settings.offerBarBadgeText) setOfferBarBadgeText(data.settings.offerBarBadgeText);
+          if (data.settings.offerBarEndDate) setOfferBarEndDate(data.settings.offerBarEndDate);
+          if (data.settings.offerBarButtonText) setOfferBarButtonText(data.settings.offerBarButtonText);
+          if (data.settings.offerBarButtonLink) setOfferBarButtonLink(data.settings.offerBarButtonLink);
+          if (data.settings.offerBarBgGradient) setOfferBarBgGradient(data.settings.offerBarBgGradient);
+          if (data.settings.offerBarAutoFallbackOnExpire !== undefined) {
+            setOfferBarAutoFallbackOnExpire(data.settings.offerBarAutoFallbackOnExpire);
+          }
         }
       } catch (error) {
         console.error("Failed to load appearance settings:", error);
@@ -53,6 +161,17 @@ export default function AppearanceSettings() {
     };
     fetchSettings();
   }, []);
+
+  const setPresetCountdown = (days: number) => {
+    const target = new Date(Date.now() + days * 24 * 60 * 60 * 1000);
+    const year = target.getFullYear();
+    const month = String(target.getMonth() + 1).padStart(2, "0");
+    const day = String(target.getDate()).padStart(2, "0");
+    const hours = String(target.getHours()).padStart(2, "0");
+    const minutes = String(target.getMinutes()).padStart(2, "0");
+    setOfferBarEndDate(`${year}-${month}-${day}T${hours}:${minutes}`);
+    toast.success(`কাউন্টডাউন ${days} দিনের জন্য সেট করা হয়েছে`);
+  };
 
   const handleFileUpload = async (file: File, type: 'header' | 'footer' | 'favicon' | 'tone' | 'social') => {
     try {
@@ -142,14 +261,22 @@ export default function AppearanceSettings() {
           instagramUrl,
           youtubeUrl,
           whatsappUrl,
-          messengerUrl
+          messengerUrl,
+          offerBarEnabled,
+          offerBarTitle,
+          offerBarSubtitle,
+          offerBarBadgeText,
+          offerBarEndDate,
+          offerBarButtonText,
+          offerBarButtonLink,
+          offerBarBgGradient,
+          offerBarAutoFallbackOnExpire,
         }),
       });
 
       const data = await res.json();
       if (data.success) {
         toast.success("Appearance settings updated successfully");
-        // Force reload to apply favicon immediately
         window.location.reload();
       } else {
         toast.error(data.error || "Failed to update settings");
@@ -169,26 +296,363 @@ export default function AppearanceSettings() {
     );
   }
 
+  const pad = (n: number) => String(n).padStart(2, "0");
+
   return (
-    <div className="w-full p-6 space-y-6 mb-20">
-      <div className="flex items-center justify-between mb-8">
+    <div className="w-full p-4 sm:p-6 space-y-6 mb-20 max-w-7xl mx-auto">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-gray-100">
         <div>
-          <h1 className="text-2xl font-black text-gray-900">Appearance Settings</h1>
-          <p className="text-sm text-gray-500 mt-1">Manage your website's logos and identity</p>
+          <h1 className="text-2xl font-black text-gray-900 tracking-tight">Appearance & Promotion Settings</h1>
+          <p className="text-sm text-gray-500 mt-1">Manage your website's logos, branding, and promotional top headers</p>
         </div>
         <button
           onClick={handleSave}
           disabled={isLoading}
-          className="px-6 py-2.5 bg-primary text-white rounded-xl font-bold text-sm hover:bg-primary/80 transition-all shadow-lg shadow-primary/25 disabled:opacity-50 flex items-center gap-2"
+          className="px-6 py-2.5 bg-primary text-white rounded-xl font-bold text-sm hover:bg-primary/90 transition-all shadow-lg shadow-primary/25 disabled:opacity-50 flex items-center justify-center gap-2"
         >
           {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
           {isLoading ? "Saving..." : "Save Changes"}
         </button>
       </div>
 
-      <div className="space-y-6">
-        
-        {/* Basic Info */}
+      <div className="space-y-8">
+
+        {/* ========================================================================= */}
+        {/* 1. OFFER TOP HEADER & COUNTDOWN TIMER SECTION */}
+        {/* ========================================================================= */}
+        <div className="bg-white rounded-2xl border-2 border-primary/20 shadow-md p-5 sm:p-6 relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-bl from-rose-100/60 to-transparent rounded-full -mr-20 -mt-20 pointer-events-none" />
+
+          {/* Section Header */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 border-b border-gray-100 relative z-10">
+            <div className="flex items-center gap-3">
+              <div className="w-11 h-11 rounded-xl bg-gradient-to-tr from-rose-500 to-amber-500 text-white flex items-center justify-center shadow-md shadow-rose-500/20">
+                <Sparkles className="w-6 h-6" />
+              </div>
+              <div>
+                <div className="flex items-center gap-2">
+                  <h2 className="text-lg font-black text-gray-900">
+                    পূজার সেল অফার & কাউন্টডাউন হেডার (Offer Top Header)
+                  </h2>
+                  <span
+                    className={`px-2.5 py-0.5 rounded-full text-xs font-bold ${
+                      offerBarEnabled
+                        ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
+                        : "bg-gray-100 text-gray-500 border border-gray-200"
+                    }`}
+                  >
+                    {offerBarEnabled ? "সক্রিয় (Active)" : "বন্ধ (Regular Header)"}
+                  </span>
+                </div>
+                <p className="text-xs sm:text-sm text-gray-500 mt-0.5">
+                  ওয়েবসাইটের শীর্ষে লাইভ কাউন্টডাউন টাইমার সহ অফার ব্যানার প্রদর্শন বা বন্ধ রাখুন
+                </p>
+              </div>
+            </div>
+
+            {/* Master Toggle */}
+            <label className="flex items-center gap-3 cursor-pointer self-start sm:self-auto bg-gray-50 px-4 py-2 rounded-xl border border-gray-200 hover:bg-gray-100 transition-colors">
+              <div className="relative inline-flex items-center">
+                <input
+                  type="checkbox"
+                  checked={offerBarEnabled}
+                  onChange={(e) => setOfferBarEnabled(e.target.checked)}
+                  className="sr-only peer"
+                />
+                <div className="w-11 h-6 bg-gray-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+              </div>
+              <span className="text-sm font-bold text-gray-800">
+                {offerBarEnabled ? "অফার ব্যানার চালু" : "অফার ব্যানার বন্ধ"}
+              </span>
+            </label>
+          </div>
+
+          {/* Form Fields */}
+          <div className="mt-6 space-y-6 relative z-10">
+            {/* Title, Subtitle, Badge in Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div>
+                <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">
+                  অফারের শিরোনাম (Offer Title)
+                </label>
+                <input
+                  type="text"
+                  value={offerBarTitle}
+                  onChange={(e) => setOfferBarTitle(e.target.value)}
+                  placeholder="যেমন: পূজার সেল অফার!"
+                  className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-sm font-medium"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">
+                  বিস্তারিত / সাবটাইটেল (Subtitle)
+                </label>
+                <input
+                  type="text"
+                  value={offerBarSubtitle}
+                  onChange={(e) => setOfferBarSubtitle(e.target.value)}
+                  placeholder="যেমন: অফার চলবে ৩ দিন — আকর্ষণীয় ছাড়"
+                  className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-sm font-medium"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">
+                  হাইলাইট ব্যাজ (Badge Text)
+                </label>
+                <input
+                  type="text"
+                  value={offerBarBadgeText}
+                  onChange={(e) => setOfferBarBadgeText(e.target.value)}
+                  placeholder="যেমন: পূজা স্পেশাল"
+                  className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-sm font-medium"
+                />
+              </div>
+            </div>
+
+            {/* Countdown Configuration */}
+            <div className="p-4 sm:p-5 bg-gradient-to-br from-rose-50/50 to-orange-50/40 rounded-xl border border-rose-100">
+              <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                <div className="flex-1">
+                  <div className="flex items-center gap-2 mb-1.5">
+                    <Clock className="w-4 h-4 text-rose-600" />
+                    <label className="text-xs font-bold text-gray-800 uppercase tracking-wider">
+                      কাউন্টডাউন শেষ হওয়ার তারিখ ও সময় (End Date & Time)
+                    </label>
+                  </div>
+                  <input
+                    type="datetime-local"
+                    value={offerBarEndDate}
+                    onChange={(e) => setOfferBarEndDate(e.target.value)}
+                    className="w-full max-w-md px-4 py-2.5 bg-white border border-rose-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-sm font-medium shadow-xs"
+                  />
+                  <p className="text-xs text-gray-500 mt-1">
+                    এই সময় পর্যন্ত লাইভ টাইমারটি সেকেন্ড গুনে গুনে চলবে।
+                  </p>
+                </div>
+
+                {/* Quick Presets */}
+                <div className="flex flex-col gap-2">
+                  <span className="text-xs font-bold text-gray-600 flex items-center gap-1">
+                    <Calendar className="w-3.5 h-3.5 text-primary" />
+                    দ্রুত সময় নির্ধারণ (Quick Presets):
+                  </span>
+                  <div className="flex flex-wrap gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setPresetCountdown(1)}
+                      className="px-3 py-1.5 bg-white hover:bg-rose-100 text-gray-700 hover:text-rose-700 text-xs font-bold rounded-lg border border-rose-200 transition-all shadow-2xs hover:scale-105 active:scale-95"
+                    >
+                      +১ দিন (24h)
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setPresetCountdown(2)}
+                      className="px-3 py-1.5 bg-white hover:bg-rose-100 text-gray-700 hover:text-rose-700 text-xs font-bold rounded-lg border border-rose-200 transition-all shadow-2xs hover:scale-105 active:scale-95"
+                    >
+                      +২ দিন (48h)
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setPresetCountdown(3)}
+                      className="px-3.5 py-1.5 bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold rounded-lg shadow-sm shadow-rose-500/25 transition-all hover:scale-105 active:scale-95"
+                    >
+                      ⭐ +৩ দিন (৩ দিনের সেল)
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setPresetCountdown(5)}
+                      className="px-3 py-1.5 bg-white hover:bg-rose-100 text-gray-700 hover:text-rose-700 text-xs font-bold rounded-lg border border-rose-200 transition-all shadow-2xs hover:scale-105 active:scale-95"
+                    >
+                      +৫ দিন
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setPresetCountdown(7)}
+                      className="px-3 py-1.5 bg-white hover:bg-rose-100 text-gray-700 hover:text-rose-700 text-xs font-bold rounded-lg border border-rose-200 transition-all shadow-2xs hover:scale-105 active:scale-95"
+                    >
+                      +৭ দিন (১ সপ্তাহ)
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              {/* Auto Fallback Checkbox */}
+              <div className="mt-4 pt-3 border-t border-rose-200/60 flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  id="autoFallbackCheckbox"
+                  checked={offerBarAutoFallbackOnExpire}
+                  onChange={(e) => setOfferBarAutoFallbackOnExpire(e.target.checked)}
+                  className="w-4 h-4 text-primary rounded border-gray-300 focus:ring-primary"
+                />
+                <label htmlFor="autoFallbackCheckbox" className="text-xs sm:text-sm text-gray-700 font-medium cursor-pointer">
+                  অফারের সময় শেষ হয়ে গেলে স্বয়ংক্রিয়ভাবে নিয়মিত হেডারে (হোম ডেলিভারি, নিরাপদ পেমেন্ট) ফিরে যাবে
+                </label>
+              </div>
+            </div>
+
+            {/* Button text & Link */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">
+                  বাটন টেক্সট (Button Text)
+                </label>
+                <input
+                  type="text"
+                  value={offerBarButtonText}
+                  onChange={(e) => setOfferBarButtonText(e.target.value)}
+                  placeholder="যেমন: অফার দেখুন"
+                  className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-sm font-medium"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">
+                  বাটন লিঙ্ক (Button Link)
+                </label>
+                <input
+                  type="text"
+                  value={offerBarButtonLink}
+                  onChange={(e) => setOfferBarButtonLink(e.target.value)}
+                  placeholder="যেমন: /categories বা /products"
+                  className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-sm font-medium"
+                />
+              </div>
+            </div>
+
+            {/* Gradient Theme Presets */}
+            <div>
+              <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">
+                ব্যানারের থিম ও গ্রেডিয়েন্ট স্টাইল (Theme Preset)
+              </label>
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2.5">
+                {GRADIENT_PRESETS.map((preset, idx) => (
+                  <button
+                    key={idx}
+                    type="button"
+                    onClick={() => setOfferBarBgGradient(preset.value)}
+                    className={`p-2.5 rounded-xl border text-left transition-all flex flex-col justify-between h-20 relative overflow-hidden group ${
+                      offerBarBgGradient === preset.value
+                        ? "border-primary ring-2 ring-primary/20 shadow-sm"
+                        : "border-gray-200 hover:border-gray-300"
+                    }`}
+                  >
+                    <div className={`w-full h-5 rounded-md ${preset.className} shadow-2xs mb-1.5 flex items-center justify-end px-1`}>
+                      {offerBarBgGradient === preset.value && (
+                        <Check className="w-3 h-3 text-white stroke-[3]" />
+                      )}
+                    </div>
+                    <span className="text-[11px] font-bold text-gray-800 line-clamp-2 leading-tight">
+                      {preset.name}
+                    </span>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Real-time Interactive Live Preview */}
+            <div className="mt-6 pt-5 border-t border-gray-100">
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center gap-2">
+                  <Eye className="w-4 h-4 text-primary" />
+                  <span className="text-xs font-bold text-gray-800 uppercase tracking-wider">
+                    লাইভ প্রিভিউ (Live Preview - স্টোরে যেমন দেখাবে)
+                  </span>
+                </div>
+                <span className="text-xs font-bold text-gray-500">
+                  {offerBarEnabled ? "✨ অফার ব্যানার সক্রিয়" : "🛡️ নিয়মিত হেডার সক্রিয়"}
+                </span>
+              </div>
+
+              {/* Preview Window Box */}
+              <div className="rounded-xl overflow-hidden border border-gray-200 shadow-sm bg-gray-50">
+                {offerBarEnabled ? (
+                  <div className={`w-full bg-gradient-to-r ${offerBarBgGradient} text-white py-2.5 px-4 shadow-inner`}>
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        {offerBarBadgeText && (
+                          <span className="inline-flex items-center gap-1 bg-yellow-400/20 text-yellow-200 border border-yellow-300/30 px-2 py-0.5 rounded-full text-[10px] sm:text-xs font-bold tracking-wide uppercase">
+                            <Sparkles className="w-3 h-3 text-yellow-300 animate-pulse" />
+                            <span>{offerBarBadgeText}</span>
+                          </span>
+                        )}
+                        <span className="font-bold text-xs sm:text-sm drop-shadow-xs">{offerBarTitle}</span>
+                        {offerBarSubtitle && (
+                          <>
+                            <span className="text-white/50 hidden sm:inline">•</span>
+                            <span className="text-white/90 font-medium hidden md:inline text-xs sm:text-sm">
+                              {offerBarSubtitle}
+                            </span>
+                          </>
+                        )}
+                      </div>
+
+                      <div className="flex items-center gap-3">
+                        {/* Countdown preview */}
+                        <div className="flex items-center gap-1 text-white">
+                          <Clock className="w-3.5 h-3.5 text-yellow-200 hidden xs:inline" />
+                          <div className="flex flex-col items-center bg-black/30 px-1.5 py-0.5 rounded border border-white/15 min-w-[26px]">
+                            <span className="font-mono text-xs font-black leading-none">{pad(previewTime.days)}</span>
+                            <span className="text-[8px] text-yellow-200 font-medium leading-none mt-0.5">দিন</span>
+                          </div>
+                          <span className="text-white/60 font-mono font-bold leading-none text-xs">:</span>
+                          <div className="flex flex-col items-center bg-black/30 px-1.5 py-0.5 rounded border border-white/15 min-w-[26px]">
+                            <span className="font-mono text-xs font-black leading-none">{pad(previewTime.hours)}</span>
+                            <span className="text-[8px] text-yellow-200 font-medium leading-none mt-0.5">ঘণ্টা</span>
+                          </div>
+                          <span className="text-white/60 font-mono font-bold leading-none text-xs">:</span>
+                          <div className="flex flex-col items-center bg-black/30 px-1.5 py-0.5 rounded border border-white/15 min-w-[26px]">
+                            <span className="font-mono text-xs font-black leading-none">{pad(previewTime.minutes)}</span>
+                            <span className="text-[8px] text-yellow-200 font-medium leading-none mt-0.5">মি</span>
+                          </div>
+                          <span className="text-white/60 font-mono font-bold leading-none text-xs">:</span>
+                          <div className="flex flex-col items-center bg-black/30 px-1.5 py-0.5 rounded border border-white/15 min-w-[26px]">
+                            <span className="font-mono text-xs font-black leading-none text-yellow-300 animate-pulse">{pad(previewTime.seconds)}</span>
+                            <span className="text-[8px] text-yellow-200 font-medium leading-none mt-0.5">সে</span>
+                          </div>
+                        </div>
+
+                        {offerBarButtonText && (
+                          <div className="inline-flex items-center gap-1 bg-white text-gray-900 px-2.5 py-1 rounded-full text-[11px] font-bold shadow-xs">
+                            <span>{offerBarButtonText}</span>
+                            <ArrowRight className="w-3 h-3 text-primary" />
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="w-full bg-primary text-white py-2 px-3 text-xs font-medium">
+                    <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1">
+                      <div className="flex items-center gap-1.5">
+                        <Truck className="w-3.5 h-3.5" />
+                        <span>সারা দেশে হোম ডেলিভারি</span>
+                      </div>
+                      <span className="opacity-40">|</span>
+                      <div className="flex items-center gap-1.5">
+                        <ShieldCheck className="w-3.5 h-3.5" />
+                        <span>নিরাপদ পেমেন্ট</span>
+                      </div>
+                      <span className="opacity-40">|</span>
+                      <div className="flex items-center gap-1.5">
+                        <Star className="w-3.5 h-3.5 text-amber-300 fill-amber-300" />
+                        <span>100% অরিজিনাল পণ্য</span>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        {/* ========================================================================= */}
+        {/* 2. BASIC STORE INFO */}
+        {/* ========================================================================= */}
         <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
           <h3 className="font-bold text-gray-900 mb-4">Basic Information</h3>
           <div className="space-y-4">
@@ -198,7 +662,7 @@ export default function AppearanceSettings() {
                 type="text" 
                 value={storeName}
                 onChange={(e) => setStoreName(e.target.value)}
-                className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm"
+                className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm font-medium"
                 placeholder="Mehzin Offers"
               />
             </div>
@@ -208,7 +672,7 @@ export default function AppearanceSettings() {
                 type="text" 
                 value={storeTagline}
                 onChange={(e) => setStoreTagline(e.target.value)}
-                className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm"
+                className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm font-medium"
                 placeholder="Premium E-commerce in Bangladesh"
               />
             </div>
@@ -218,7 +682,7 @@ export default function AppearanceSettings() {
                 value={storeDescription}
                 onChange={(e) => setStoreDescription(e.target.value)}
                 rows={3}
-                className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm resize-none"
+                className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm resize-none font-medium"
               />
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
@@ -287,7 +751,7 @@ export default function AppearanceSettings() {
                   type="text" 
                   value={primaryColor}
                   onChange={(e) => setPrimaryColor(e.target.value)}
-                  className="flex-1 px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm uppercase"
+                  className="flex-1 px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm uppercase font-mono"
                   placeholder="#F5426A"
                 />
               </div>
@@ -295,7 +759,9 @@ export default function AppearanceSettings() {
           </div>
         </div>
 
-        {/* Logos */}
+        {/* ========================================================================= */}
+        {/* 3. LOGOS & MEDIA ASSETS */}
+        {/* ========================================================================= */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           
           {/* Header Logo */}
@@ -368,10 +834,10 @@ export default function AppearanceSettings() {
                 </label>
               </div>
             </div>
-            </div>
+          </div>
             
           {/* Social Sharing Image */}
-          <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm md:col-span-2 mt-6">
+          <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm md:col-span-2">
             <h3 className="font-bold text-gray-900 mb-4">Social Sharing Image (OG Image)</h3>
             <div className="flex items-center gap-6">
               <div className="bg-gray-50 rounded-xl border border-dashed border-gray-200 w-48 h-24 flex items-center justify-center relative overflow-hidden shrink-0">

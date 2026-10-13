@@ -53,6 +53,17 @@ export async function POST(req: NextRequest) {
       if (body.youtubeUrl !== undefined) settings.youtubeUrl = body.youtubeUrl;
       if (body.whatsappUrl !== undefined) settings.whatsappUrl = body.whatsappUrl;
       if (body.messengerUrl !== undefined) settings.messengerUrl = body.messengerUrl;
+
+      // Offer Top Header / Countdown Banner
+      if (body.offerBarEnabled !== undefined) settings.offerBarEnabled = body.offerBarEnabled;
+      if (body.offerBarTitle !== undefined) settings.offerBarTitle = body.offerBarTitle;
+      if (body.offerBarSubtitle !== undefined) settings.offerBarSubtitle = body.offerBarSubtitle;
+      if (body.offerBarBadgeText !== undefined) settings.offerBarBadgeText = body.offerBarBadgeText;
+      if (body.offerBarEndDate !== undefined) settings.offerBarEndDate = body.offerBarEndDate;
+      if (body.offerBarButtonText !== undefined) settings.offerBarButtonText = body.offerBarButtonText;
+      if (body.offerBarButtonLink !== undefined) settings.offerBarButtonLink = body.offerBarButtonLink;
+      if (body.offerBarBgGradient !== undefined) settings.offerBarBgGradient = body.offerBarBgGradient;
+      if (body.offerBarAutoFallbackOnExpire !== undefined) settings.offerBarAutoFallbackOnExpire = body.offerBarAutoFallbackOnExpire;
     }
     
     await settings.save();
