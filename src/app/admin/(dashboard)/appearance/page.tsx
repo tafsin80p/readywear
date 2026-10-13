@@ -6,45 +6,43 @@ import {
   Image as ImageIcon, 
   Loader2, 
   Music, 
-  Sparkles, 
-  Clock, 
+  BadgePercent, 
+  Tag, 
+  Gift, 
   Flame, 
-  ArrowRight, 
+  ShoppingBag, 
   Eye, 
   Calendar, 
-  Truck, 
-  ShieldCheck, 
-  Star,
   Check
 } from "lucide-react";
 import Image from "next/image";
 import toast from "react-hot-toast";
 
-const GRADIENT_PRESETS = [
+const COLOR_PRESETS = [
   {
-    name: "পূজা স্পেশাল (উৎসবমুখর লাল ও সোনালী)",
-    value: "from-rose-600 via-pink-600 to-amber-600",
-    className: "bg-gradient-to-r from-rose-600 via-pink-600 to-amber-600",
+    name: "ওয়েবসাইট কালার (Brand Primary - ডিফল্ট)",
+    value: "bg-primary",
+    className: "bg-primary",
+  },
+  {
+    name: "উৎসবমুখর লাল ও রোজ (Festive Rose)",
+    value: "bg-gradient-to-r from-rose-600 to-pink-600",
+    className: "bg-gradient-to-r from-rose-600 to-pink-600",
   },
   {
     name: "গাঢ় লাল ও রুবি (Deep Ruby)",
-    value: "from-red-600 via-rose-600 to-amber-500",
+    value: "bg-gradient-to-r from-red-600 via-rose-600 to-amber-500",
     className: "bg-gradient-to-r from-red-600 via-rose-600 to-amber-500",
   },
   {
     name: "রয়্যাল পার্পল (Royal Purple & Rose)",
-    value: "from-purple-700 via-pink-600 to-rose-500",
+    value: "bg-gradient-to-r from-purple-700 via-pink-600 to-rose-500",
     className: "bg-gradient-to-r from-purple-700 via-pink-600 to-rose-500",
   },
   {
-    name: "পান্না ও ফিরোজা (Emerald & Teal)",
-    value: "from-emerald-600 via-teal-600 to-cyan-600",
-    className: "bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600",
-  },
-  {
-    name: "লাক্সারি ডার্ক ও গোল্ড (Luxury Dark)",
-    value: "from-slate-900 via-neutral-900 to-amber-900",
-    className: "bg-gradient-to-r from-slate-900 via-neutral-900 to-amber-900",
+    name: "লাক্সারি ডার্ক (Luxury Dark)",
+    value: "bg-gradient-to-r from-slate-900 via-neutral-900 to-amber-950",
+    className: "bg-gradient-to-r from-slate-900 via-neutral-900 to-amber-950",
   },
 ];
 
@@ -75,7 +73,7 @@ export default function AppearanceSettings() {
   const [offerBarEndDate, setOfferBarEndDate] = useState("");
   const [offerBarButtonText, setOfferBarButtonText] = useState("অফার দেখুন");
   const [offerBarButtonLink, setOfferBarButtonLink] = useState("/categories");
-  const [offerBarBgGradient, setOfferBarBgGradient] = useState("from-rose-600 via-pink-600 to-amber-600");
+  const [offerBarBgGradient, setOfferBarBgGradient] = useState("bg-primary");
   const [offerBarAutoFallbackOnExpire, setOfferBarAutoFallbackOnExpire] = useState(true);
 
   // Live timer for admin preview
@@ -327,8 +325,8 @@ export default function AppearanceSettings() {
           {/* Section Header */}
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 border-b border-gray-100 relative z-10">
             <div className="flex items-center gap-3">
-              <div className="w-11 h-11 rounded-xl bg-gradient-to-tr from-rose-500 to-amber-500 text-white flex items-center justify-center shadow-md shadow-rose-500/20">
-                <Sparkles className="w-6 h-6" />
+              <div className="w-11 h-11 rounded-xl bg-primary text-white flex items-center justify-center shadow-md shadow-primary/25">
+                <BadgePercent className="w-6 h-6" />
               </div>
               <div>
                 <div className="flex items-center gap-2">
@@ -417,7 +415,7 @@ export default function AppearanceSettings() {
               <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-1.5">
-                    <Clock className="w-4 h-4 text-rose-600" />
+                    <Tag className="w-4 h-4 text-primary" />
                     <label className="text-xs font-bold text-gray-800 uppercase tracking-wider">
                       কাউন্টডাউন শেষ হওয়ার তারিখ ও সময় (End Date & Time)
                     </label>
@@ -457,7 +455,7 @@ export default function AppearanceSettings() {
                     <button
                       type="button"
                       onClick={() => setPresetCountdown(3)}
-                      className="px-3.5 py-1.5 bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold rounded-lg shadow-sm shadow-rose-500/25 transition-all hover:scale-105 active:scale-95"
+                      className="px-3.5 py-1.5 bg-primary hover:bg-primary/90 text-white text-xs font-bold rounded-lg shadow-sm shadow-primary/25 transition-all hover:scale-105 active:scale-95"
                     >
                       ⭐ +৩ দিন (৩ দিনের সেল)
                     </button>
@@ -523,13 +521,13 @@ export default function AppearanceSettings() {
               </div>
             </div>
 
-            {/* Gradient Theme Presets */}
+            {/* Color Presets */}
             <div>
               <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">
-                ব্যানারের থিম ও গ্রেডিয়েন্ট স্টাইল (Theme Preset)
+                ব্যানারের কালার স্টাইল (Color Preset)
               </label>
               <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2.5">
-                {GRADIENT_PRESETS.map((preset, idx) => (
+                {COLOR_PRESETS.map((preset, idx) => (
                   <button
                     key={idx}
                     type="button"
@@ -570,20 +568,21 @@ export default function AppearanceSettings() {
               {/* Preview Window Box */}
               <div className="rounded-xl overflow-hidden border border-gray-200 shadow-sm bg-gray-50">
                 {offerBarEnabled ? (
-                  <div className={`w-full bg-gradient-to-r ${offerBarBgGradient} text-white py-2.5 px-4 shadow-inner`}>
+                  <div className={`w-full ${offerBarBgGradient === "bg-primary" || !offerBarBgGradient ? "bg-primary" : (offerBarBgGradient.startsWith("from-") ? `bg-gradient-to-r ${offerBarBgGradient}` : offerBarBgGradient)} text-white py-2.5 px-4 shadow-inner`}>
                     <div className="flex flex-wrap items-center justify-between gap-2">
                       <div className="flex items-center gap-2 flex-wrap">
                         {offerBarBadgeText && (
-                          <span className="inline-flex items-center gap-1 bg-yellow-400/20 text-yellow-200 border border-yellow-300/30 px-2 py-0.5 rounded-full text-[10px] sm:text-xs font-bold tracking-wide uppercase">
-                            <Sparkles className="w-3 h-3 text-yellow-300 animate-pulse" />
+                          <span className="inline-flex items-center gap-1.5 bg-white/20 text-white border border-white/30 px-2.5 py-0.5 rounded-full text-[10px] sm:text-xs font-bold tracking-wide uppercase">
+                            <BadgePercent className="w-3.5 h-3.5 text-white animate-pulse" />
                             <span>{offerBarBadgeText}</span>
                           </span>
                         )}
+                        <Flame className="w-4 h-4 text-amber-200 fill-amber-300 animate-pulse" />
                         <span className="font-bold text-xs sm:text-sm drop-shadow-xs">{offerBarTitle}</span>
                         {offerBarSubtitle && (
                           <>
-                            <span className="text-white/50 hidden sm:inline">•</span>
-                            <span className="text-white/90 font-medium hidden md:inline text-xs sm:text-sm">
+                            <span className="text-white/40 hidden sm:inline">•</span>
+                            <span className="text-white/95 font-medium hidden md:inline text-xs sm:text-sm">
                               {offerBarSubtitle}
                             </span>
                           </>
@@ -593,32 +592,32 @@ export default function AppearanceSettings() {
                       <div className="flex items-center gap-3">
                         {/* Countdown preview */}
                         <div className="flex items-center gap-1 text-white">
-                          <Clock className="w-3.5 h-3.5 text-yellow-200 hidden xs:inline" />
-                          <div className="flex flex-col items-center bg-black/30 px-1.5 py-0.5 rounded border border-white/15 min-w-[26px]">
-                            <span className="font-mono text-xs font-black leading-none">{pad(previewTime.days)}</span>
-                            <span className="text-[8px] text-yellow-200 font-medium leading-none mt-0.5">দিন</span>
+                          <Tag className="w-3.5 h-3.5 text-white/90 hidden xs:inline" />
+                          <div className="flex flex-col items-center bg-white/20 px-1.5 py-0.5 rounded border border-white/25 min-w-[26px]">
+                            <span className="font-mono text-xs font-black leading-none text-white">{pad(previewTime.days)}</span>
+                            <span className="text-[8px] text-white/90 font-medium leading-none mt-0.5">দিন</span>
                           </div>
-                          <span className="text-white/60 font-mono font-bold leading-none text-xs">:</span>
-                          <div className="flex flex-col items-center bg-black/30 px-1.5 py-0.5 rounded border border-white/15 min-w-[26px]">
-                            <span className="font-mono text-xs font-black leading-none">{pad(previewTime.hours)}</span>
-                            <span className="text-[8px] text-yellow-200 font-medium leading-none mt-0.5">ঘণ্টা</span>
+                          <span className="text-white/70 font-mono font-bold leading-none text-xs">:</span>
+                          <div className="flex flex-col items-center bg-white/20 px-1.5 py-0.5 rounded border border-white/25 min-w-[26px]">
+                            <span className="font-mono text-xs font-black leading-none text-white">{pad(previewTime.hours)}</span>
+                            <span className="text-[8px] text-white/90 font-medium leading-none mt-0.5">ঘণ্টা</span>
                           </div>
-                          <span className="text-white/60 font-mono font-bold leading-none text-xs">:</span>
-                          <div className="flex flex-col items-center bg-black/30 px-1.5 py-0.5 rounded border border-white/15 min-w-[26px]">
-                            <span className="font-mono text-xs font-black leading-none">{pad(previewTime.minutes)}</span>
-                            <span className="text-[8px] text-yellow-200 font-medium leading-none mt-0.5">মি</span>
+                          <span className="text-white/70 font-mono font-bold leading-none text-xs">:</span>
+                          <div className="flex flex-col items-center bg-white/20 px-1.5 py-0.5 rounded border border-white/25 min-w-[26px]">
+                            <span className="font-mono text-xs font-black leading-none text-white">{pad(previewTime.minutes)}</span>
+                            <span className="text-[8px] text-white/90 font-medium leading-none mt-0.5">মি</span>
                           </div>
-                          <span className="text-white/60 font-mono font-bold leading-none text-xs">:</span>
-                          <div className="flex flex-col items-center bg-black/30 px-1.5 py-0.5 rounded border border-white/15 min-w-[26px]">
-                            <span className="font-mono text-xs font-black leading-none text-yellow-300 animate-pulse">{pad(previewTime.seconds)}</span>
-                            <span className="text-[8px] text-yellow-200 font-medium leading-none mt-0.5">সে</span>
+                          <span className="text-white/70 font-mono font-bold leading-none text-xs">:</span>
+                          <div className="flex flex-col items-center bg-white/20 px-1.5 py-0.5 rounded border border-white/25 min-w-[26px]">
+                            <span className="font-mono text-xs font-black leading-none text-amber-200 animate-pulse">{pad(previewTime.seconds)}</span>
+                            <span className="text-[8px] text-white/90 font-medium leading-none mt-0.5">সে</span>
                           </div>
                         </div>
 
                         {offerBarButtonText && (
-                          <div className="inline-flex items-center gap-1 bg-white text-gray-900 px-2.5 py-1 rounded-full text-[11px] font-bold shadow-xs">
+                          <div className="inline-flex items-center gap-1.5 bg-white text-primary px-3 py-1 rounded-full text-[11px] font-bold shadow-xs">
+                            <Gift className="w-3 h-3 text-primary" />
                             <span>{offerBarButtonText}</span>
-                            <ArrowRight className="w-3 h-3 text-primary" />
                           </div>
                         )}
                       </div>
@@ -628,18 +627,18 @@ export default function AppearanceSettings() {
                   <div className="w-full bg-primary text-white py-2 px-3 text-xs font-medium">
                     <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1">
                       <div className="flex items-center gap-1.5">
-                        <Truck className="w-3.5 h-3.5" />
+                        <BadgePercent className="w-3.5 h-3.5" />
+                        <span>বিশেষ অফার ও আকর্ষণীয় ছাড়</span>
+                      </div>
+                      <span className="opacity-40">|</span>
+                      <div className="flex items-center gap-1.5">
+                        <Gift className="w-3.5 h-3.5" />
                         <span>সারা দেশে হোম ডেলিভারি</span>
                       </div>
                       <span className="opacity-40">|</span>
                       <div className="flex items-center gap-1.5">
-                        <ShieldCheck className="w-3.5 h-3.5" />
-                        <span>নিরাপদ পেমেন্ট</span>
-                      </div>
-                      <span className="opacity-40">|</span>
-                      <div className="flex items-center gap-1.5">
-                        <Star className="w-3.5 h-3.5 text-amber-300 fill-amber-300" />
-                        <span>100% অরিজিনাল পণ্য</span>
+                        <Tag className="w-3.5 h-3.5" />
+                        <span>১০০% অরিজিনাল ব্র্যান্ড পণ্য</span>
                       </div>
                     </div>
                   </div>

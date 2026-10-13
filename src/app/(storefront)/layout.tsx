@@ -39,7 +39,7 @@ export default async function StorefrontLayout({
         endDate: settings.offerBarEndDate || "",
         buttonText: settings.offerBarButtonText || "অফার দেখুন",
         buttonLink: settings.offerBarButtonLink || "/categories",
-        bgGradient: settings.offerBarBgGradient || "from-rose-600 via-pink-600 to-amber-600",
+        bgGradient: settings.offerBarBgGradient || "bg-primary",
         autoFallback: settings.offerBarAutoFallbackOnExpire !== false,
       };
     }

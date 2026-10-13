@@ -56,7 +56,7 @@ const StoreSettingsSchema: Schema<IStoreSettings> = new Schema(
     offerBarEndDate: { type: String, default: "" },
     offerBarButtonText: { type: String, default: "অফার দেখুন" },
     offerBarButtonLink: { type: String, default: "/categories" },
-    offerBarBgGradient: { type: String, default: "from-rose-600 via-pink-600 to-amber-600" },
+    offerBarBgGradient: { type: String, default: "bg-primary" },
     offerBarAutoFallbackOnExpire: { type: Boolean, default: true }
   },
   { timestamps: true }
