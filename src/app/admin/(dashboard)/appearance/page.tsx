@@ -991,7 +991,7 @@ export default function AppearanceSettings() {
               </div>
               <div className="flex-1">
                 <p className="text-sm text-gray-500 mb-4">
-                  Upload an audio file (e.g., MP3 or WAV) to be played when new orders or important notifications arrive in the admin panel. 
+                  Upload an audio file (e.g., MP3 or WAV) to be played when new orders arrive in the admin panel. 
                   Leave blank to use the default chime.
                 </p>
                 <div className="flex items-center gap-3">

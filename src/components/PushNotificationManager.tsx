@@ -87,31 +87,35 @@ export default function PushNotificationManager({ toneUrl }: { toneUrl?: string 
           const title = notification.title || "New Notification";
           const body = notification.body || "";
           
-          const isOrder = data?.type === 'order' || title.toLowerCase().includes('order');
+          const isOrder = data?.type === 'order' || 
+            title.toLowerCase().includes('order') || 
+            body.toLowerCase().includes('order') ||
+            (data?.url && String(data.url).includes('/orders'));
 
-          if (isOrder && pathname.startsWith('/admin')) {
-            setIncomingOrder({
-              title,
-              body,
-              url: data?.url || "/admin/orders"
-            });
-          } else {
-            toast.success(`${title}\n${body}`, {
-              duration: 5000,
-              icon: '🔔',
-            });
-          }
-
-          // Play audio using the unlocked reference
-          if (toneUrl && audioRef.current) {
-            audioRef.current.src = toneUrl;
-            audioRef.current.loop = true;
-            audioRef.current.load();
-            const playPromise = audioRef.current.play();
-            if (playPromise !== undefined) {
-              playPromise.catch(e => console.error("Failed to play order alert:", e));
+          if (isOrder) {
+            if (pathname.startsWith('/admin')) {
+              setIncomingOrder({
+                title,
+                body,
+                url: data?.url || "/admin/orders"
+              });
+            } else {
+              toast.success(`${title}\n${body}`, {
+                duration: 5000,
+                icon: '🛍️',
+              });
             }
-          } else if (!toneUrl) {
+
+            // Play audio ONLY when a new order arrives!
+            if (toneUrl && audioRef.current) {
+              audioRef.current.src = toneUrl;
+              audioRef.current.loop = pathname.startsWith('/admin');
+              audioRef.current.load();
+              const playPromise = audioRef.current.play();
+              if (playPromise !== undefined) {
+                playPromise.catch(e => console.error("Failed to play order alert:", e));
+              }
+            } else if (!toneUrl) {
               const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
               if (AudioContext) {
                 const ctx = new AudioContext();
@@ -129,6 +133,13 @@ export default function PushNotificationManager({ toneUrl }: { toneUrl?: string 
                 osc.stop(ctx.currentTime + 0.6);
               }
             }
+          } else {
+            // General / non-order notification: show toast silently with NO sound
+            toast.success(`${title}\n${body}`, {
+              duration: 5000,
+              icon: '🔔',
+            });
+          }
         };
 
         OneSignal.Notifications.addEventListener('foregroundWillDisplay', handleNotification);
