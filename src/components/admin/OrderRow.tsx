@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { Eye, Clock, Truck, CheckCircle, XCircle, AlertCircle, Send, CheckCircle2, ShieldAlert } from "lucide-react";
+import { Eye, Clock, Truck, CheckCircle, XCircle, AlertCircle, Send, CheckCircle2, ShieldAlert, RotateCcw } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 export function OrderRow({ 
@@ -53,6 +53,13 @@ export function OrderRow({
           <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-red-50 text-red-600 border border-red-200/50">
             <XCircle className="w-3.5 h-3.5" />
             <span className="text-xs font-semibold">Cancelled</span>
+          </div>
+        );
+      case 'returned':
+        return (
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-orange-50 text-orange-600 border border-orange-200/50">
+            <RotateCcw className="w-3.5 h-3.5" />
+            <span className="text-xs font-semibold">Returned</span>
           </div>
         );
       default:

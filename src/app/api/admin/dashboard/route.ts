@@ -158,6 +158,7 @@ export async function GET(req: NextRequest) {
       { name: 'Shipped', value: 0, color: '#8b5cf6' },
       { name: 'Delivered', value: 0, color: '#10b981' },
       { name: 'Cancelled', value: 0, color: '#ef4444' },
+      { name: 'Returned', value: 0, color: '#f97316' },
     ];
     
     // Process status for current period orders or all orders depending on preference
@@ -176,6 +177,9 @@ export async function GET(req: NextRequest) {
         if (item) item.value++;
       } else if (status === 'cancelled') {
         const item = orderStatuses.find(s => s.name === 'Cancelled');
+        if (item) item.value++;
+      } else if (status === 'returned') {
+        const item = orderStatuses.find(s => s.name === 'Returned');
         if (item) item.value++;
       } else {
         const item = orderStatuses.find(s => s.name === 'Pending');

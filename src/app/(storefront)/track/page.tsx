@@ -13,6 +13,7 @@ import {
   ChevronRight,
   Check,
   XCircle,
+  RotateCcw,
 } from "lucide-react";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
@@ -89,6 +90,7 @@ export default function TrackOrderPage() {
 
   const currentStep = orderData ? getStepNumber(orderData.status) : 1;
   const isCancelled = orderData?.status === "cancelled";
+  const isReturned = orderData?.status === "returned";
 
   const steps = [
     {
@@ -256,6 +258,18 @@ export default function TrackOrderPage() {
                             <p className="text-gray-500 max-w-sm">
                               আপনার অর্ডারটি কোনো কারণে বাতিল করা হয়েছে।
                               বিস্তারিত জানতে আমাদের সাথে যোগাযোগ করুন।
+                            </p>
+                          </div>
+                        ) : isReturned ? (
+                          <div className="flex flex-col items-center justify-center py-10 text-center">
+                            <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mb-4">
+                              <RotateCcw className="w-8 h-8 text-orange-600" />
+                            </div>
+                            <h3 className="text-xl font-bold text-gray-900 mb-2">
+                              অর্ডারটি রিটার্ন করা হয়েছে
+                            </h3>
+                            <p className="text-gray-500 max-w-sm">
+                              আপনার রিটার্নকৃত প্রোডাক্টটি আমরা পেয়েছি{orderData.paymentStatus === 'refunded' ? ' এবং রিফান্ড সম্পন্ন করা হয়েছে' : ''}। কোনো জিজ্ঞাসা থাকলে আমাদের হেল্পলাইনে যোগাযোগ করুন।
                             </p>
                           </div>
                         ) : (

@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Save, Printer, ChevronDown, Trash2, Send, Package } from "lucide-react";
+import { Save, Printer, ChevronDown, Trash2, Send, Package, RotateCcw } from "lucide-react";
 import toast from "react-hot-toast";
 import { useConfirm } from "@/context/ConfirmContext";
 
@@ -103,12 +103,17 @@ export function OrderStatusUpdater({
   const [showDispatchModal, setShowDispatchModal] = useState(false);
   const [selectedCourier, setSelectedCourier] = useState<"pathao" | "steadfast">("steadfast");
 
+  // Return modal state
+  const [showReturnModal, setShowReturnModal] = useState(false);
+  const [returnRestock, setReturnRestock] = useState(true);
+  const [returnRefund, setReturnRefund] = useState(currentPaymentStatus !== 'refunded');
+  const [returnReason, setReturnReason] = useState("Customer Return");
+  const [returnNotes, setReturnNotes] = useState("");
+
   // Check if anything actually changed
   const hasChanges = status !== currentStatus || paymentStatus !== currentPaymentStatus;
 
-  const handleUpdate = async () => {
-    if (!hasChanges) return;
-    
+  const executeUpdate = async (payload: any) => {
     setIsUpdating(true);
     const loadingToast = toast.loading("Updating order...");
     
@@ -116,7 +121,7 @@ export function OrderStatusUpdater({
       const res = await fetch(`/api/admin/orders/${orderId}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ status, paymentStatus }),
+        body: JSON.stringify(payload),
       });
 
       const data = await res.json();
@@ -125,7 +130,12 @@ export function OrderStatusUpdater({
         throw new Error(data.message || "Failed to update order");
       }
 
-      toast.success("Order updated successfully!", { id: loadingToast });
+      toast.success(
+        payload.status === 'returned'
+          ? (payload.restockInventory ? "Order marked as Returned & stock restocked!" : "Order marked as Returned!")
+          : "Order updated successfully!",
+        { id: loadingToast }
+      );
       router.refresh();
       
     } catch (error: any) {
@@ -137,7 +147,30 @@ export function OrderStatusUpdater({
       setPaymentStatus(currentPaymentStatus);
     } finally {
       setIsUpdating(false);
+      setShowReturnModal(false);
     }
+  };
+
+  const handleUpdate = async () => {
+    if (!hasChanges) return;
+    
+    // If updating to returned, open return modal for detailed options
+    if (status === 'returned' && currentStatus !== 'returned') {
+      setShowReturnModal(true);
+      return;
+    }
+
+    await executeUpdate({ status, paymentStatus });
+  };
+
+  const handleConfirmReturn = async () => {
+    await executeUpdate({
+      status: 'returned',
+      paymentStatus: returnRefund ? 'refunded' : paymentStatus,
+      restockInventory: returnRestock,
+      returnReason,
+      returnNotes,
+    });
   };
 
   const handleDelete = async () => {
@@ -330,6 +363,7 @@ export function OrderStatusUpdater({
             { value: 'shipped', label: 'Shipped' },
             { value: 'delivered', label: 'Delivered' },
             { value: 'cancelled', label: 'Cancelled' },
+            { value: 'returned', label: 'Returned' },
           ]}
         />
 
@@ -364,6 +398,106 @@ export function OrderStatusUpdater({
           Update
         </button>
       </div>
+
+      {/* Return & Restock Modal */}
+      {showReturnModal && (
+        <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-gray-900/40 backdrop-blur-[2px] animate-in fade-in duration-200">
+          <div className="bg-white rounded-2xl shadow-xl w-full max-w-[440px] overflow-hidden animate-in zoom-in-95 duration-300">
+            <div className="p-6">
+              <div className="flex items-start gap-4 mb-4">
+                <div className="w-12 h-12 rounded-full flex items-center justify-center shrink-0 bg-orange-50 text-orange-600">
+                  <RotateCcw className="w-6 h-6" />
+                </div>
+                <div className="pt-1">
+                  <h3 className="text-lg font-bold text-gray-900 leading-snug">প্রোডাক্ট রিটার্ন ও রিস্টক</h3>
+                  <p className="text-gray-500 font-medium text-xs mt-0.5">রিটার্ন ও ইনভেন্টরি সমন্বয় নিশ্চিত করুন</p>
+                </div>
+              </div>
+
+              <div className="space-y-3.5 my-4">
+                {/* Restock Toggle */}
+                <label className="flex items-start gap-3 p-3.5 border border-gray-200 rounded-xl hover:border-gray-300 transition-colors cursor-pointer bg-gray-50/50">
+                  <input
+                    type="checkbox"
+                    checked={returnRestock}
+                    onChange={(e) => setReturnRestock(e.target.checked)}
+                    className="w-4 h-4 mt-0.5 text-primary border-gray-300 rounded focus:ring-primary accent-primary"
+                  />
+                  <div className="flex flex-col">
+                    <span className="text-sm font-semibold text-gray-900">ইনভেন্টরিতে স্টক যোগ করুন (Restock)</span>
+                    <span className="text-xs text-gray-500 mt-0.5">পণ্যটি পুনরায় বিক্রয়যোগ্য হলে চেক রাখুন (স্টক স্বয়ংক্রিয়ভাবে বৃদ্ধি পাবে)।</span>
+                  </div>
+                </label>
+
+                {/* Refund Toggle */}
+                <label className="flex items-start gap-3 p-3.5 border border-gray-200 rounded-xl hover:border-gray-300 transition-colors cursor-pointer bg-gray-50/50">
+                  <input
+                    type="checkbox"
+                    checked={returnRefund}
+                    onChange={(e) => setReturnRefund(e.target.checked)}
+                    className="w-4 h-4 mt-0.5 text-primary border-gray-300 rounded focus:ring-primary accent-primary"
+                  />
+                  <div className="flex flex-col">
+                    <span className="text-sm font-semibold text-gray-900">পেমেন্ট রিফান্ডেড (Refunded) করুন</span>
+                    <span className="text-xs text-gray-500 mt-0.5">কাস্টমারকে টাকা ফেরত দেওয়া হলে বা রিফান্ড রেকর্ড রাখতে চেক রাখুন।</span>
+                  </div>
+                </label>
+
+                {/* Return Reason */}
+                <div>
+                  <label className="block text-xs font-semibold text-gray-700 mb-1.5">রিটার্নের কারণ (Return Reason)</label>
+                  <select
+                    value={returnReason}
+                    onChange={(e) => setReturnReason(e.target.value)}
+                    className="w-full text-xs font-medium border border-gray-200 rounded-lg p-2.5 bg-white focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                  >
+                    <option value="Customer Return">কাস্টমার ফেরত দিয়েছেন (Customer Return)</option>
+                    <option value="Wrong Size / Fit">সাইজ সমস্যা (Wrong Size / Fit)</option>
+                    <option value="Color / Design Mismatch">রং বা ডিজাইন পছন্দ হয়নি (Color/Design Mismatch)</option>
+                    <option value="Damaged / Defective">ত্রুটিপূর্ণ / ড্যামেজ প্রোডাক্ট (Damaged / Defective)</option>
+                    <option value="Customer Refused Delivery">ডেলিভারি রিসিভ করেনি (Customer Refused)</option>
+                  </select>
+                </div>
+
+                {/* Return Notes */}
+                <div>
+                  <label className="block text-xs font-semibold text-gray-700 mb-1.5">অতিরিক্ত নোট (ঐচ্ছিক)</label>
+                  <input
+                    type="text"
+                    placeholder="যেমন: কাস্টমার কুরিয়ার চার্জ দিয়ে ফেরত পাঠিয়েছে..."
+                    value={returnNotes}
+                    onChange={(e) => setReturnNotes(e.target.value)}
+                    className="w-full text-xs border border-gray-200 rounded-lg p-2.5 bg-white focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                  />
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex items-center gap-2.5 mt-5 pt-3 border-t border-gray-100">
+                <button
+                  type="button"
+                  disabled={isUpdating}
+                  onClick={() => {
+                    setShowReturnModal(false);
+                    setStatus(currentStatus);
+                  }}
+                  className="flex-1 px-4 py-2.5 text-xs font-semibold text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-xl transition-colors"
+                >
+                  বাতিল করুন
+                </button>
+                <button
+                  type="button"
+                  disabled={isUpdating}
+                  onClick={handleConfirmReturn}
+                  className="flex-1 px-4 py-2.5 text-xs font-bold text-white bg-orange-600 hover:bg-orange-700 rounded-xl transition-colors shadow-sm disabled:opacity-50"
+                >
+                  {isUpdating ? "প্রসেসিং..." : "কনফার্ম ও আপডেট"}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Custom Dispatch Modal */}
       {showDispatchModal && (

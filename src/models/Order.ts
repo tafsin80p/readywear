@@ -30,10 +30,16 @@ export interface IOrder extends Document {
   };
   paymentMethod: string;
   paymentStatus: "unpaid" | "paid" | "refunded";
-  status: "pending" | "processing" | "shipped" | "delivered" | "cancelled";
+  status: "pending" | "processing" | "shipped" | "delivered" | "cancelled" | "returned";
   isRead: boolean;
   stockDeducted: boolean;
   inventoryStatus: "hold" | "deducted" | "restocked";
+  returnInfo?: {
+    returnedAt?: Date;
+    reason?: string;
+    restocked?: boolean;
+    notes?: string;
+  };
   
   // Verification & Integrations
   verificationStatus: "pending_verification" | "confirmed" | "fake" | "cancelled";
@@ -108,7 +114,7 @@ const OrderSchema: Schema<IOrder> = new Schema(
     },
     status: {
       type: String,
-      enum: ["pending", "processing", "shipped", "delivered", "cancelled"],
+      enum: ["pending", "processing", "shipped", "delivered", "cancelled", "returned"],
       default: "pending",
     },
     isRead: { type: Boolean, default: false },
@@ -117,6 +123,12 @@ const OrderSchema: Schema<IOrder> = new Schema(
       type: String,
       enum: ["hold", "deducted", "restocked"],
       default: "hold",
+    },
+    returnInfo: {
+      returnedAt: { type: Date },
+      reason: { type: String },
+      restocked: { type: Boolean, default: true },
+      notes: { type: String },
     },
     
     // Verification & Integrations

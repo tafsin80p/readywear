@@ -59,7 +59,7 @@ export default async function AdminOrderDetailsPage({ params }: { params: Promis
                 <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
                   <CheckCircle2 className="w-3 h-3" /> Stock Deducted
                 </span>
-              ) : order.inventoryStatus === 'restocked' || order.status === 'cancelled' || order.verificationStatus === 'fake' ? (
+              ) : order.inventoryStatus === 'restocked' || order.status === 'cancelled' || order.status === 'returned' || order.verificationStatus === 'fake' ? (
                 <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-purple-50 text-purple-700 border border-purple-200">
                   <RotateCcw className="w-3 h-3" /> Restocked
                 </span>
@@ -108,6 +108,19 @@ export default async function AdminOrderDetailsPage({ params }: { params: Promis
                   <AlertCircle className="w-10 h-10 mb-2" />
                   <p className="font-bold text-lg">Order Cancelled</p>
                   <p className="text-sm text-red-400 mt-1">This order has been cancelled and will not be delivered.</p>
+                </div>
+              ) : order.status === 'returned' ? (
+                <div className="flex flex-col items-center justify-center py-6 text-orange-600 bg-orange-50 rounded-lg border border-orange-200">
+                  <RotateCcw className="w-10 h-10 mb-2" />
+                  <p className="font-bold text-lg">Order Returned</p>
+                  <p className="text-sm text-orange-700 mt-1">
+                    This order was marked as Returned. {order.returnInfo?.restocked ? 'Products have been restocked to inventory.' : 'Products were marked as not restocked.'}
+                  </p>
+                  {order.returnInfo?.reason && (
+                    <span className="text-xs font-semibold bg-white/80 px-2.5 py-1 rounded-full text-orange-800 border border-orange-200 mt-2">
+                      Reason: {order.returnInfo.reason} {order.returnInfo.notes ? `(${order.returnInfo.notes})` : ''}
+                    </span>
+                  )}
                 </div>
               ) : (
                 <div className="relative">

@@ -69,14 +69,15 @@ const buildOrderMessageText = (order: any, extraText: string = "") => {
   }));
   
   let statusText = "pending\\_verification";
-  if (order.verificationStatus === "confirmed") statusText = "✅ CONFIRMED";
+  if (order.status === "returned") statusText = "↩️ RETURNED";
+  else if (order.verificationStatus === "confirmed") statusText = "✅ CONFIRMED";
   else if (order.verificationStatus === "fake") statusText = "❌ FAKE \\/ CANCELLED";
   else if (order.verificationStatus === "lead") statusText = "🎯 REAL ORDER \\(LEAD\\)";
 
   let stockStatusText = "⏳ On Hold \\(Pending Confirmation\\)";
   if (order.stockDeducted) {
     stockStatusText = "📉 Deducted from Stock";
-  } else if (order.inventoryStatus === "restocked" || order.status === "cancelled" || order.verificationStatus === "fake") {
+  } else if (order.inventoryStatus === "restocked" || order.status === "cancelled" || order.status === "returned" || order.verificationStatus === "fake") {
     stockStatusText = "🔄 Restocked to Inventory";
   }
 

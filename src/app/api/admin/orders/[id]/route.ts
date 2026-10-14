@@ -67,8 +67,27 @@ export async function PATCH(
         if (order.verificationStatus === "pending_verification") {
           order.verificationStatus = "cancelled";
         }
+      } else if (newStatus === "returned") {
+        // Order returned: restock inventory if requested (default: true)
+        const shouldRestock = body.restockInventory !== false;
+        if (order.stockDeducted && shouldRestock) {
+          await inventoryService.restockOrderStock(order);
+          order.stockDeducted = false;
+          order.inventoryStatus = "restocked";
+        }
+
+        order.returnInfo = {
+          returnedAt: new Date(),
+          reason: body.returnReason || "Product Return",
+          restocked: shouldRestock,
+          notes: body.returnNotes || "",
+        };
+
+        if (body.refundPayment) {
+          order.paymentStatus = "refunded";
+        }
       } else if (["processing", "shipped", "delivered"].includes(newStatus)) {
-        // Order confirmed / in progress: deduct inventory if currently on hold
+        // Order confirmed / in progress: deduct inventory if currently on hold or restocked
         if (!order.stockDeducted) {
           await inventoryService.deductOrderStock(order);
           order.stockDeducted = true;

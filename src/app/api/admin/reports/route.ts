@@ -33,7 +33,7 @@ export async function GET(req: NextRequest) {
     
     // Status counters
     const statusMap: Record<string, number> = {
-      pending: 0, processing: 0, shipped: 0, delivered: 0, cancelled: 0
+      pending: 0, processing: 0, shipped: 0, delivered: 0, cancelled: 0, returned: 0
     };
     
     // Verification counters for 'verified orders' metric
@@ -57,7 +57,7 @@ export async function GET(req: NextRequest) {
 
     orders.forEach((order: any) => {
       const dateStr = new Date(order.createdAt).toISOString().split("T")[0];
-      const isValidRevenue = order.verificationStatus !== "fake" && order.status !== "cancelled";
+      const isValidRevenue = order.verificationStatus !== "fake" && order.status !== "cancelled" && order.status !== "returned";
 
       // Status
       statusMap[order.status] = (statusMap[order.status] || 0) + 1;

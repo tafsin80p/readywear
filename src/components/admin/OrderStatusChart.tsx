@@ -8,7 +8,8 @@ export function OrderStatusChart({ data }: { data?: any[] }) {
     { name: 'Processing', value: 0, color: '#F59E0B' },
     { name: 'Shipped', value: 0, color: '#3B82F6' },
     { name: 'Delivered', value: 0, color: '#10B981' },
-    { name: 'Cancelled', value: 0, color: '#ef4444' }
+    { name: 'Cancelled', value: 0, color: '#ef4444' },
+    { name: 'Returned', value: 0, color: '#f97316' }
   ];
 
   const totalOrders = chartData.reduce((sum, item) => sum + item.value, 0);
