@@ -8,7 +8,7 @@ import IntegrationSettings from "@/models/IntegrationSettings";
 export async function POST(req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const session = await getServerSession(authOptions);
-    if (!session?.user || session.user.role !== "admin") {
+    if (!session?.user || (session.user.role !== "admin" && session.user.role !== "staff")) {
       return NextResponse.json({ success: false, message: "Unauthorized" }, { status: 401 });
     }
 

@@ -35,7 +35,7 @@ export const authOptions: NextAuthOptions = {
             throw new Error("OTP is required");
           }
 
-          if (user.role !== "admin") {
+          if (user.role !== "admin" && user.role !== "staff") {
             throw new Error("Unauthorized");
           }
 
@@ -52,10 +52,9 @@ export const authOptions: NextAuthOptions = {
           user.otpExpiry = null;
           await user.save();
         } else {
-          // Standard password login (for non-admins, or if OTP is not strictly enforced globally yet)
-          // To strictly enforce OTP for all admins, we can check role here:
-          if (user.role === "admin" && !credentials.password && !credentials.otp) {
-             throw new Error("Admins must use OTP login");
+          // Standard password login
+          if ((user.role === "admin" || user.role === "staff") && !credentials.password && !credentials.otp) {
+             throw new Error("Credentials required");
           }
 
           if (credentials.password) {

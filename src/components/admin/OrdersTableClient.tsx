@@ -7,7 +7,7 @@ import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import { useConfirm } from "@/context/ConfirmContext";
 
-export function OrdersTableClient({ orders }: { orders: any[] }) {
+export function OrdersTableClient({ orders, canDelete = true }: { orders: any[], canDelete?: boolean }) {
   const [selectedOrders, setSelectedOrders] = useState<string[]>([]);
   const [isDeleting, setIsDeleting] = useState(false);
   const router = useRouter();
@@ -30,7 +30,7 @@ export function OrdersTableClient({ orders }: { orders: any[] }) {
   };
 
   const handleBulkDelete = async () => {
-    if (selectedOrders.length === 0) return;
+    if (!canDelete || selectedOrders.length === 0) return;
     if (!(await confirm({
       title: "Delete Orders",
       message: `Are you sure you want to move ${selectedOrders.length} orders to trash?`,
@@ -50,7 +50,7 @@ export function OrdersTableClient({ orders }: { orders: any[] }) {
       if (data.success) {
         toast.success(data.message, { id: loadingToast });
         setSelectedOrders([]);
-        router.refresh(); // Refresh page to remove deleted items
+        router.refresh();
       } else {
         toast.error(data.message || "Failed to delete", { id: loadingToast });
       }
@@ -72,7 +72,7 @@ export function OrdersTableClient({ orders }: { orders: any[] }) {
 
   return (
     <div className="w-full">
-      {selectedOrders.length > 0 && (
+      {selectedOrders.length > 0 && canDelete && (
         <div className="bg-red-50 px-6 py-3 flex items-center justify-between border-y border-red-100">
           <span className="text-sm font-medium text-red-800">
             {selectedOrders.length} order(s) selected
@@ -91,14 +91,16 @@ export function OrdersTableClient({ orders }: { orders: any[] }) {
         <table className="w-full text-left border-collapse">
           <thead>
             <tr className="bg-gray-50/80 border-b border-gray-200 text-sm font-semibold text-gray-600">
-              <th className="px-6 py-4 whitespace-nowrap w-10">
-                <input 
-                  type="checkbox" 
-                  className="rounded border-gray-300 text-primary focus:ring-primary"
-                  checked={selectedOrders.length === orders.length && orders.length > 0}
-                  onChange={handleSelectAll}
-                />
-              </th>
+              {canDelete && (
+                <th className="px-6 py-4 whitespace-nowrap w-10">
+                  <input 
+                    type="checkbox" 
+                    className="rounded border-gray-300 text-primary focus:ring-primary"
+                    checked={selectedOrders.length === orders.length && orders.length > 0}
+                    onChange={handleSelectAll}
+                  />
+                </th>
+              )}
               <th className="px-6 py-4 whitespace-nowrap">Customer Info</th>
               <th className="px-6 py-4 whitespace-nowrap">Order ID</th>
               <th className="px-6 py-4 whitespace-nowrap">Product</th>
@@ -113,7 +115,7 @@ export function OrdersTableClient({ orders }: { orders: any[] }) {
           <tbody className="divide-y divide-gray-100">
             {orders.length === 0 ? (
               <tr>
-                <td colSpan={10} className="px-6 py-16 text-center text-gray-500">
+                <td colSpan={canDelete ? 10 : 9} className="px-6 py-16 text-center text-gray-500">
                   No active orders found.
                 </td>
               </tr>
@@ -124,7 +126,7 @@ export function OrdersTableClient({ orders }: { orders: any[] }) {
                   order={order}
                   formattedDate={formatDate(order.createdAt)}
                   isSelected={selectedOrders.includes(order._id.toString())}
-                  onSelect={() => handleSelectOrder(order._id.toString())}
+                  onSelect={canDelete ? () => handleSelectOrder(order._id.toString()) : undefined}
                 />
               ))
             )}

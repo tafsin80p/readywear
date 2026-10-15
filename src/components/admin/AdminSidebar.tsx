@@ -48,6 +48,7 @@ const ICON_MAP: Record<string, LucideIcon> = {
   Banners: ImageIcon,
   Appearance: Palette,
   Settings: Settings,
+  Team: Users,
   Integrations: LinkIcon,
   Trash: Trash2,
   Visitors: BarChart2,
@@ -61,11 +62,13 @@ function renderIcon(name: string, className: string) {
 export function AdminSidebar({ 
   unreadOrdersCount: initialCount = 0,
   totalProductsCount = 0,
-  logo
+  logo,
+  userRole
 }: { 
   unreadOrdersCount?: number,
   totalProductsCount?: number,
-  logo?: string
+  logo?: string,
+  userRole?: string
 }) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -96,49 +99,58 @@ export function AdminSidebar({
       }
     };
 
-    // Fetch immediately on mount to get latest state
     fetchUnreadCount();
 
     const interval = setInterval(fetchUnreadCount, 15000);
     return () => clearInterval(interval);
-  }, [pathname]); // Also re-fetch when pathname changes (e.g. going to order details)
+  }, [pathname]);
 
+  const isStaff = userRole === "staff";
 
-  const navigation = [
-    {
-      title: "MANAGEMENT",
-      items: [
-        { 
-          name: "Products", 
-          subItems: [
-            { name: "All Products", href: "/admin/products" },
-            { name: "Add Product", href: "/admin/products/add" }
+  const navigation = isStaff 
+    ? [
+        {
+          title: "ORDER MANAGEMENT",
+          items: [
+            { name: "Orders", href: "/admin/orders" },
+          ]
+        }
+      ]
+    : [
+        {
+          title: "MANAGEMENT",
+          items: [
+            { 
+              name: "Products", 
+              subItems: [
+                { name: "All Products", href: "/admin/products" },
+                { name: "Add Product", href: "/admin/products/add" }
+              ]
+            },
+            { name: "Categories", href: "/admin/categories" },
+            { name: "Attributes", href: "/admin/attributes" },
+            { name: "Orders", href: "/admin/orders" },
+            { name: "Customers", href: "/admin/customers" },
+            { name: "Inventory", href: "/admin/inventory" },
+            { name: "Shipping", href: "/admin/shipping" },
           ]
         },
-        { name: "Categories", href: "/admin/categories" },
-        { name: "Attributes", href: "/admin/attributes" },
-        { name: "Orders", href: "/admin/orders" },
-        { name: "Customers", href: "/admin/customers" },
-        { name: "Inventory", href: "/admin/inventory" },
-        { name: "Shipping", href: "/admin/shipping" },
-      ]
-    },
-    {
-      title: "ANALYTICS",
-      items: [
-        { name: "Visitors", href: "/admin/analytics" }
-      ]
-    },
-    {
-      title: "SETTINGS",
-      items: [
-        { name: "Appearance", href: "/admin/appearance" },
-        { name: "Settings", href: "/admin/settings" },
-        { name: "Integrations", href: "/admin/integrations" },
-        { name: "Trash", href: "/admin/integrations/trash" },
-      ]
-    }
-  ];
+        {
+          title: "ANALYTICS",
+          items: [
+            { name: "Visitors", href: "/admin/analytics" }
+          ]
+        },
+        {
+          title: "SETTINGS",
+          items: [
+            { name: "Appearance", href: "/admin/appearance" },
+            { name: "Team", href: "/admin/team" },
+            { name: "Integrations", href: "/admin/integrations" },
+            { name: "Trash", href: "/admin/integrations/trash" },
+          ]
+        }
+      ];
 
   return (
     <>
@@ -206,25 +218,38 @@ export function AdminSidebar({
       </button>
 
       <div className="flex-1 overflow-y-auto overflow-x-hidden px-4 py-6 custom-scrollbar">
-        {/* Dashboard Link (Always at top) */}
-        <Link 
-          href="/admin"
-          className={cn(
-            "flex items-center py-3 rounded-xl font-medium mb-6 group transition-all duration-300 relative",
-            isCollapsed ? "justify-center" : "px-4",
-            pathname === "/admin" 
-              ? "bg-gradient-to-r from-primary to-primary/80 text-white shadow-lg shadow-primary/25 font-bold" 
-              : "text-gray-500 hover:bg-pink-50/50 hover:text-primary"
-          )}
-        >
-          <Home className={cn("w-5 h-5 shrink-0 transition-transform duration-300", !isCollapsed && "group-hover:scale-110", pathname === "/admin" ? "text-white" : "text-gray-400 group-hover:text-primary")} />
-          <span className={cn(
-            "transition-all duration-300 overflow-hidden whitespace-nowrap",
-            isCollapsed ? "max-w-0 opacity-0 ml-0" : "max-w-[200px] opacity-100 ml-3 group-hover:translate-x-1"
-          )}>
-            Dashboard
-          </span>
-        </Link>
+        {/* Dashboard Link (Only for Admin) or Operator Indicator */}
+        {!isStaff ? (
+          <Link 
+            href="/admin"
+            className={cn(
+              "flex items-center py-3 rounded-xl font-medium mb-6 group transition-all duration-300 relative",
+              isCollapsed ? "justify-center" : "px-4",
+              pathname === "/admin" 
+                ? "bg-gradient-to-r from-primary to-primary/80 text-white shadow-lg shadow-primary/25 font-bold" 
+                : "text-gray-500 hover:bg-pink-50/50 hover:text-primary"
+            )}
+          >
+            <Home className={cn("w-5 h-5 shrink-0 transition-transform duration-300", !isCollapsed && "group-hover:scale-110", pathname === "/admin" ? "text-white" : "text-gray-400 group-hover:text-primary")} />
+            <span className={cn(
+              "transition-all duration-300 overflow-hidden whitespace-nowrap",
+              isCollapsed ? "max-w-0 opacity-0 ml-0" : "max-w-[200px] opacity-100 ml-3 group-hover:translate-x-1"
+            )}>
+              Dashboard
+            </span>
+          </Link>
+        ) : (
+          <div className={cn("mb-6 transition-all duration-300", isCollapsed ? "px-1 text-center" : "px-3 py-2.5 bg-blue-50/80 border border-blue-100 rounded-xl")}>
+            {!isCollapsed ? (
+              <>
+                <span className="text-[10px] font-bold text-blue-600 uppercase tracking-wider block">Staff Portal</span>
+                <span className="text-xs font-semibold text-gray-800">Order Management</span>
+              </>
+            ) : (
+              <span className="text-[10px] font-bold text-blue-600 block">STAFF</span>
+            )}
+          </div>
+        )}
 
         {/* Dynamic Sections */}
         <div className="space-y-8">

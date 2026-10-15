@@ -17,7 +17,7 @@ export async function POST(req: NextRequest) {
 
     const user = await User.findOne({ email }).select("+password");
 
-    if (!user || user.role !== "admin") {
+    if (!user || (user.role !== "admin" && user.role !== "staff")) {
       return NextResponse.json({ success: false, message: "Invalid credentials" }, { status: 401 });
     }
 

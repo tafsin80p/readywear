@@ -40,18 +40,23 @@ export default withAuth(
       rateLimitMap.set(ip, current);
     };
     
-    // If the user tries to access the admin login page or forgot password page while already authenticated as admin
+    // If the user tries to access the admin login page or forgot password page while already authenticated
     if (pathname === "/admin/login" || pathname === "/admin/forgot-password") {
-      if (req.nextauth.token?.role === "admin") {
+      const userRole = req.nextauth.token?.role;
+      if (userRole === "admin") {
         return NextResponse.redirect(new URL("/admin", req.url));
+      }
+      if (userRole === "staff") {
+        return NextResponse.redirect(new URL("/admin/orders", req.url));
       }
       // If they are just visiting login or forgot password, we don't penalize them.
       return NextResponse.next();
     }
 
-    // If user tries to access /admin pages but is not an admin
+    // If user tries to access /admin pages
     if (pathname.startsWith("/admin")) {
-      if (req.nextauth.token?.role !== "admin") {
+      const userRole = req.nextauth.token?.role;
+      if (userRole !== "admin" && userRole !== "staff") {
         recordViolation();
         
         // If they just crossed the threshold, immediately rewrite to blocked
@@ -61,6 +66,17 @@ export default withAuth(
 
         // Show Access Denied instead of redirecting to login
         return NextResponse.rewrite(new URL("/access-denied", req.url));
+      }
+
+      // If user is a staff member, restrict them strictly to Orders and Profile
+      if (userRole === "staff") {
+        const isOrdersPath = pathname.startsWith("/admin/orders");
+        const isProfilePath = pathname === "/admin/profile";
+
+        if (!isOrdersPath && !isProfilePath) {
+          // Redirect staff cleanly to their order management view
+          return NextResponse.redirect(new URL("/admin/orders", req.url));
+        }
       }
     }
 

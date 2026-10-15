@@ -10,7 +10,7 @@ export const fetchCache = 'force-no-store';
 export async function GET() {
   try {
     const session = await getServerSession(authOptions);
-    if (!session?.user?.role || session.user.role !== "admin") {
+    if (!session?.user?.role || (session.user.role !== "admin" && session.user.role !== "staff")) {
       return NextResponse.json({ count: 0 }, { status: 401 });
     }
 

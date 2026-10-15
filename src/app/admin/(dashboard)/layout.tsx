@@ -27,7 +27,7 @@ export default async function AdminLayout({
 }) {
   const session = await getServerSession(authOptions);
   
-  if (!session || session.user?.role !== "admin") {
+  if (!session || (session.user?.role !== "admin" && session.user?.role !== "staff")) {
     redirect("/admin/login");
   }
 
@@ -52,7 +52,12 @@ export default async function AdminLayout({
   return (
     <Providers>
       <div className="flex h-screen bg-gray-50/50 font-sans overflow-hidden" suppressHydrationWarning>
-        <AdminSidebar unreadOrdersCount={unreadOrdersCount} totalProductsCount={totalProductsCount} logo={settings?.headerLogo || "/readywear logo.png"} />
+        <AdminSidebar 
+          unreadOrdersCount={unreadOrdersCount} 
+          totalProductsCount={totalProductsCount} 
+          logo={settings?.headerLogo || "/readywear logo.png"} 
+          userRole={session.user?.role}
+        />
         <div className="flex-1 flex flex-col h-screen overflow-hidden relative">
           <AdminHeader logo={settings?.headerLogo || "/readywear logo.png"} />
           <main className="flex-1 overflow-y-auto pb-20 lg:pb-0">
