@@ -83,6 +83,7 @@ interface OrderStatusUpdaterProps {
   courierStatus?: "unassigned" | "dispatched";
   dispatchedTo?: "pathao" | "steadfast" | undefined;
   consignmentId?: string;
+  canDelete?: boolean;
 }
 
 export function OrderStatusUpdater({ 
@@ -92,7 +93,8 @@ export function OrderStatusUpdater({
   verificationStatus = "pending_verification",
   courierStatus = "unassigned",
   dispatchedTo,
-  consignmentId 
+  consignmentId,
+  canDelete = true
 }: OrderStatusUpdaterProps) {
   const router = useRouter();
   const { confirm } = useConfirm();
@@ -329,16 +331,18 @@ export function OrderStatusUpdater({
           </div>
         )}
 
-        {/* Delete Button */}
-        <button 
-          onClick={handleDelete}
-          disabled={isUpdating}
-          className="flex items-center justify-center gap-1 sm:gap-2 px-2 sm:px-4 py-1.5 sm:py-2 bg-white border border-red-200 text-red-600 text-[10px] sm:text-sm font-semibold rounded-lg hover:bg-red-50 hover:text-red-700 transition-colors shadow-sm disabled:opacity-50"
-          title="Delete Order"
-        >
-          <Trash2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-          <span className="hidden sm:inline">Delete</span>
-        </button>
+        {/* Delete Button (Admin Only) */}
+        {canDelete && (
+          <button 
+            onClick={handleDelete}
+            disabled={isUpdating}
+            className="flex items-center justify-center gap-1 sm:gap-2 px-2 sm:px-4 py-1.5 sm:py-2 bg-white border border-red-200 text-red-600 text-[10px] sm:text-sm font-semibold rounded-lg hover:bg-red-50 hover:text-red-700 transition-colors shadow-sm disabled:opacity-50"
+            title="Delete Order"
+          >
+            <Trash2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+            <span className="hidden sm:inline">Delete</span>
+          </button>
+        )}
 
         {/* Invoice Button */}
         <button 

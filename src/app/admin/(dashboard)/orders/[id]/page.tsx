@@ -5,6 +5,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowLeft, MapPin, Phone, User, Calendar, CreditCard, ShoppingBag, Hash, Package, Truck, CheckCircle2, AlertCircle, RotateCcw, Clock } from "lucide-react";
 import { OrderStatusUpdater } from "@/components/admin/OrderStatusUpdater";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
 
 export const dynamic = 'force-dynamic';
 export const fetchCache = 'force-no-store';
@@ -21,6 +23,8 @@ const formatDate = (date: Date) => {
 };
 
 export default async function AdminOrderDetailsPage({ params }: { params: Promise<{ id: string }> }) {
+  const session = await getServerSession(authOptions);
+  const canDelete = session?.user?.role === "admin";
   const { id } = await params;
   
   await connectToDatabase();
@@ -87,6 +91,7 @@ export default async function AdminOrderDetailsPage({ params }: { params: Promis
               courierStatus={order.courierStatus}
               dispatchedTo={order.dispatchedTo}
               consignmentId={order.consignmentId}
+              canDelete={canDelete}
             />
           </div>
         </div>

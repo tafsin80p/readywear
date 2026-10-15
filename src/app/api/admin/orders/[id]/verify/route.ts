@@ -9,9 +9,12 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
     const resolvedParams = await params;
     await connectToDatabase();
     
-    // In a real app, verify that the session user is an admin.
+    // Verify that the session user is an admin or staff member
     const session = await getServerSession(authOptions);
-    const adminName = session?.user?.name || "Admin (Dashboard)";
+    if (!session?.user || (session.user.role !== "admin" && session.user.role !== "staff")) {
+      return NextResponse.json({ success: false, message: "Unauthorized" }, { status: 401 });
+    }
+    const adminName = session.user.name || (session.user.role === "staff" ? "Staff Operator" : "Admin");
 
     const body = await req.json();
     const { action } = body;
