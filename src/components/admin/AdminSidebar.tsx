@@ -121,6 +121,12 @@ export function AdminSidebar({
               ]
             },
           ]
+        },
+        {
+          title: "SETTINGS",
+          items: [
+            { name: "Settings", href: "/admin/profile" },
+          ]
         }
       ]
     : [
@@ -151,6 +157,7 @@ export function AdminSidebar({
         {
           title: "SETTINGS",
           items: [
+            { name: "Settings", href: "/admin/profile" },
             { name: "Appearance", href: "/admin/appearance" },
             { name: "Team", href: "/admin/team" },
             { name: "Integrations", href: "/admin/integrations" },

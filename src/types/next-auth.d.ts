@@ -9,11 +9,13 @@ declare module "next-auth" {
       /** The user's postal address. */
       id: string
       role: string
+      phone?: string
     } & DefaultSession["user"]
   }
 
   interface User {
     id: string
     role: string
+    phone?: string
   }
 }

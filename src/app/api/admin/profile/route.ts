@@ -5,6 +5,49 @@ import connectToDatabase from "@/lib/mongodb";
 import User from "@/models/User";
 import bcrypt from "bcryptjs";
 
+export async function GET() {
+  try {
+    const session = await getServerSession(authOptions);
+
+    if (!session || !session.user) {
+      return NextResponse.json(
+        { message: "Unauthorized. Please log in." },
+        { status: 401 }
+      );
+    }
+
+    const userId = (session.user as any).id;
+    await connectToDatabase();
+
+    const user = await User.findById(userId).select("-password").lean();
+
+    if (!user) {
+      return NextResponse.json(
+        { message: "User not found." },
+        { status: 404 }
+      );
+    }
+
+    return NextResponse.json({
+      success: true,
+      user: {
+        id: (user as any)._id.toString(),
+        name: (user as any).name || "",
+        email: (user as any).email || "",
+        phone: (user as any).phone || "",
+        role: (user as any).role || "staff",
+        image: (user as any).image || "",
+      }
+    });
+  } catch (error: any) {
+    console.error("Profile fetch error:", error);
+    return NextResponse.json(
+      { message: error.message || "Failed to fetch profile." },
+      { status: 500 }
+    );
+  }
+}
+
 export async function PUT(req: Request) {
   try {
     const session = await getServerSession(authOptions);
@@ -17,7 +60,7 @@ export async function PUT(req: Request) {
     }
 
     const userId = (session.user as any).id;
-    const { name, email, currentPassword, newPassword, image } = await req.json();
+    const { name, email, phone, currentPassword, newPassword, image } = await req.json();
 
     if (!name || !email) {
       return NextResponse.json(
@@ -25,6 +68,8 @@ export async function PUT(req: Request) {
         { status: 400 }
       );
     }
+
+    const cleanEmail = email.trim().toLowerCase();
 
     await connectToDatabase();
 
@@ -39,8 +84,8 @@ export async function PUT(req: Request) {
     }
 
     let requiresRelogin = false;
-    let isEmailChanged = user.email !== email;
-    let isPasswordChanging = newPassword && newPassword.length > 0;
+    let isEmailChanged = user.email.toLowerCase() !== cleanEmail;
+    let isPasswordChanging = Boolean(newPassword && newPassword.length > 0);
 
     // If changing email or password, require current password
     if (isEmailChanged || isPasswordChanging) {
@@ -62,14 +107,14 @@ export async function PUT(req: Request) {
 
     // Check if new email is already taken
     if (isEmailChanged) {
-      const existingUser = await User.findOne({ email });
+      const existingUser = await User.findOne({ email: cleanEmail, _id: { $ne: userId } });
       if (existingUser) {
         return NextResponse.json(
           { message: "Email is already in use by another account." },
           { status: 409 }
         );
       }
-      user.email = email;
+      user.email = cleanEmail;
       requiresRelogin = true;
     }
 
@@ -85,8 +130,11 @@ export async function PUT(req: Request) {
       requiresRelogin = true;
     }
 
-    // Always update name and image
-    user.name = name;
+    // Update name, phone, and image
+    user.name = name.trim();
+    if (phone !== undefined) {
+      user.phone = phone.trim();
+    }
     if (image !== undefined) {
       user.image = image;
     }
@@ -96,7 +144,14 @@ export async function PUT(req: Request) {
     return NextResponse.json(
       { 
         message: "Profile updated successfully.",
-        requiresRelogin
+        requiresRelogin,
+        user: {
+          name: user.name,
+          email: user.email,
+          phone: user.phone,
+          image: user.image,
+          role: user.role
+        }
       },
       { status: 200 }
     );

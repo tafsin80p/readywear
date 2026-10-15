@@ -73,7 +73,7 @@ export function OrdersTableClient({ orders, canDelete = true }: { orders: any[],
   return (
     <div className="w-full">
       {selectedOrders.length > 0 && canDelete && (
-        <div className="bg-red-50 px-6 py-3 flex items-center justify-between border-y border-red-100">
+        <div className="bg-red-50 px-4 2xl:px-6 py-3 flex items-center justify-between border-y border-red-100">
           <span className="text-sm font-medium text-red-800">
             {selectedOrders.length} order(s) selected
           </span>
@@ -87,29 +87,31 @@ export function OrdersTableClient({ orders, canDelete = true }: { orders: any[],
           </button>
         </div>
       )}
-      <div className="w-full bg-white border-y border-gray-200 overflow-x-auto">
-        <table className="w-full text-left border-collapse">
+      <div className="w-full bg-white border-y border-gray-200 overflow-x-auto scrollbar-thin scrollbar-thumb-gray-200">
+        <table className="w-full text-left border-collapse min-w-[1000px]">
           <thead>
-            <tr className="bg-gray-50/80 border-b border-gray-200 text-sm font-semibold text-gray-600">
+            <tr className="bg-gray-50/80 border-b border-gray-200 text-xs 2xl:text-sm font-semibold text-gray-600">
               {canDelete && (
-                <th className="px-6 py-4 whitespace-nowrap w-10">
+                <th className="px-3 2xl:px-4 py-3.5 whitespace-nowrap w-8">
                   <input 
                     type="checkbox" 
-                    className="rounded border-gray-300 text-primary focus:ring-primary"
+                    className="rounded border-gray-300 text-primary focus:ring-primary cursor-pointer"
                     checked={selectedOrders.length === orders.length && orders.length > 0}
                     onChange={handleSelectAll}
                   />
                 </th>
               )}
-              <th className="px-6 py-4 whitespace-nowrap">Customer Info</th>
-              <th className="px-6 py-4 whitespace-nowrap">Order ID</th>
-              <th className="px-6 py-4 whitespace-nowrap">Product</th>
-              <th className="px-6 py-4 whitespace-nowrap">Date</th>
-              <th className="px-6 py-4 whitespace-nowrap">Total Bill</th>
-              <th className="px-6 py-4 whitespace-nowrap">Payment</th>
-              <th className="px-6 py-4 whitespace-nowrap">Status</th>
-              <th className="px-6 py-4 whitespace-nowrap">Verification & Meta</th>
-              <th className="px-6 py-4 whitespace-nowrap text-right">Action</th>
+              <th className="px-3 2xl:px-4 py-3.5 whitespace-nowrap">Customer Info</th>
+              <th className="px-3 2xl:px-4 py-3.5 whitespace-nowrap">Order ID</th>
+              <th className="px-3 2xl:px-4 py-3.5 whitespace-nowrap">Product</th>
+              <th className="px-3 2xl:px-4 py-3.5 whitespace-nowrap">Date</th>
+              <th className="px-3 2xl:px-4 py-3.5 whitespace-nowrap">Total Bill</th>
+              <th className="px-3 2xl:px-4 py-3.5 whitespace-nowrap">Payment</th>
+              <th className="px-3 2xl:px-4 py-3.5 whitespace-nowrap">Status</th>
+              <th className="px-3 2xl:px-4 py-3.5 whitespace-nowrap">Verification & Meta</th>
+              <th className="px-3 2xl:px-4 py-3.5 whitespace-nowrap text-right sticky right-0 bg-gray-50/95 backdrop-blur-sm z-20 shadow-[-4px_0_8px_rgba(0,0,0,0.04)]">
+                Action
+              </th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100">

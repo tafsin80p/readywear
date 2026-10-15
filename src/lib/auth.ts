@@ -74,6 +74,7 @@ export const authOptions: NextAuthOptions = {
           email: user.email,
           role: user.role,
           image: user.image,
+          phone: user.phone || "",
         };
       }
     })
@@ -90,11 +91,13 @@ export const authOptions: NextAuthOptions = {
         token.id = user.id;
         token.role = (user as any).role;
         token.picture = user.image; // NextAuth standard for image is picture
+        token.phone = (user as any).phone || "";
       }
-      // Handle session updates (e.g., when user changes their name or image)
+      // Handle session updates (e.g., when user changes their name, image, or phone)
       if (trigger === "update" && session) {
         if (session.name) token.name = session.name;
         if (session.image) token.picture = session.image;
+        if (session.phone !== undefined) token.phone = session.phone;
       }
       return token;
     },
@@ -102,6 +105,9 @@ export const authOptions: NextAuthOptions = {
       if (token && session.user) {
         (session.user as any).id = token.id;
         (session.user as any).role = token.role;
+        (session.user as any).phone = token.phone || "";
+        if (token.picture) session.user.image = token.picture as string;
+        if (token.name) session.user.name = token.name as string;
       }
       return session;
     }
