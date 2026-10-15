@@ -6,8 +6,12 @@ import Link from "next/link";
 import Image from "next/image";
 import { useToast } from "@/context/ToastContext";
 import { useConfirm } from "@/context/ConfirmContext";
+import { useSession } from "next-auth/react";
 
 export default function ProductsList() {
+  const { data: session } = useSession();
+  const canDelete = session?.user?.role === "admin";
+
   const [products, setProducts] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
@@ -51,6 +55,11 @@ export default function ProductsList() {
   };
 
   const handleDelete = async (id: string, name: string) => {
+    if (!canDelete) {
+      toast("error", "You do not have permission to delete products.");
+      return;
+    }
+
     if (!(await confirm({
       title: "Delete Product",
       message: `Are you sure you want to delete "${name}"? This action cannot be undone.`,
@@ -341,12 +350,14 @@ export default function ProductsList() {
                         >
                           <Copy className="w-4 h-4" />
                         </button>
-                        <button 
-                          onClick={() => handleDelete(product._id, product.name)}
-                          className="p-2 text-gray-400 hover:text-primary hover:bg-primary/10 rounded-lg transition-colors" title="Delete"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
+                        {canDelete && (
+                          <button 
+                            onClick={() => handleDelete(product._id, product.name)}
+                            className="p-2 text-gray-400 hover:text-primary hover:bg-primary/10 rounded-lg transition-colors" title="Delete"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        )}
                       </div>
                       {/* Mobile fallback (always visible on very small screens) */}
                       <button className="p-2 text-gray-400 lg:hidden">

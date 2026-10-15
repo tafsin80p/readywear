@@ -110,9 +110,16 @@ export function AdminSidebar({
   const navigation = isStaff 
     ? [
         {
-          title: "ORDER MANAGEMENT",
+          title: "MANAGEMENT",
           items: [
             { name: "Orders", href: "/admin/orders" },
+            { 
+              name: "Products", 
+              subItems: [
+                { name: "All Products", href: "/admin/products" },
+                { name: "Add Product", href: "/admin/products/add" }
+              ]
+            },
           ]
         }
       ]

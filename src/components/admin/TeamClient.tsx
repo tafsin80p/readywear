@@ -230,7 +230,7 @@ export function TeamClient({
           <div>
             <p className="text-xs font-semibold text-amber-600 uppercase tracking-wider">Staff Operators</p>
             <p className="text-2xl font-bold text-gray-900 mt-1">{staffCount}</p>
-            <p className="text-[11px] text-gray-400 mt-0.5">Orders Only (No Delete)</p>
+            <p className="text-[11px] text-gray-400 mt-0.5">Orders & Products (No Delete)</p>
           </div>
           <div className="w-12 h-12 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center">
             <PackageCheck className="w-6 h-6" />
@@ -343,8 +343,8 @@ export function TeamClient({
                           </div>
                         ) : (
                           <div className="text-xs text-gray-700">
-                            <span className="font-medium text-amber-600">● Orders Only</span>
-                            <p className="text-[11px] text-gray-400 mt-0.5">View, manage & add orders. Cannot delete or see admin settings.</p>
+                            <span className="font-medium text-amber-600">● Orders & Products</span>
+                            <p className="text-[11px] text-gray-400 mt-0.5">Manage orders, view stock & add products. Cannot delete or see admin settings.</p>
                           </div>
                         )}
                       </td>
@@ -495,7 +495,7 @@ export function TeamClient({
                         </div>
                       )}
                     </div>
-                    <p className="text-xs text-gray-600 font-medium">Orders Only Access</p>
+                    <p className="text-xs text-gray-600 font-medium">Orders & Products Access</p>
                     <ul className="text-[11px] text-gray-500 mt-2 space-y-1">
                       <li className="flex items-center gap-1 text-emerald-600">
                         <Check className="w-3 h-3" /> View & update orders
@@ -503,8 +503,14 @@ export function TeamClient({
                       <li className="flex items-center gap-1 text-emerald-600">
                         <Check className="w-3 h-3" /> Add manual orders
                       </li>
+                      <li className="flex items-center gap-1 text-emerald-600">
+                        <Check className="w-3 h-3" /> View products & stock
+                      </li>
+                      <li className="flex items-center gap-1 text-emerald-600">
+                        <Check className="w-3 h-3" /> Add & edit products
+                      </li>
                       <li className="flex items-center gap-1 text-red-500">
-                        <Ban className="w-3 h-3" /> Cannot delete orders
+                        <Ban className="w-3 h-3" /> Cannot delete orders / products
                       </li>
                       <li className="flex items-center gap-1 text-red-500">
                         <Ban className="w-3 h-3" /> No settings/analytics

@@ -6,10 +6,11 @@ import Product from "@/models/Product";
 import { activityLogService } from "@/lib/services/activityLogService";
 import { revalidatePath } from "next/cache";
 
-// Check if user is admin
-async function isAdmin() {
+// Check if user is admin or staff
+async function isAuthorized() {
   const session = await getServerSession(authOptions);
-  return session?.user?.role === "admin";
+  const role = session?.user?.role;
+  return role === "admin" || role === "staff";
 }
 
 export async function POST(
@@ -17,7 +18,7 @@ export async function POST(
   context: { params: Promise<{ id: string }> }
 ) {
   try {
-    if (!(await isAdmin())) {
+    if (!(await isAuthorized())) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 

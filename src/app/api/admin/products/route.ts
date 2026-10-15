@@ -9,13 +9,11 @@ import { revalidatePath } from "next/cache";
 
 export const dynamic = 'force-dynamic';
 
-// Helper to check admin access
-async function checkAdmin() {
+// Helper to check admin or staff access
+async function checkAdminOrStaff() {
   const session = await getServerSession(authOptions);
-  if (!session || (session.user as any).role !== "admin") {
-    return false;
-  }
-  return true;
+  const role = (session?.user as any)?.role;
+  return role === "admin" || role === "staff";
 }
 
 // GET all products
@@ -39,8 +37,8 @@ export async function GET(req: Request) {
 // POST a new product
 export async function POST(req: Request) {
   try {
-    const isAdmin = await checkAdmin();
-    if (!isAdmin) {
+    const isAuthorized = await checkAdminOrStaff();
+    if (!isAuthorized) {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
 

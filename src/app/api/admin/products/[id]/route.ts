@@ -12,13 +12,20 @@ async function isAdmin() {
   return session?.user?.role === "admin";
 }
 
+// Check if user is admin or staff
+async function isAuthorized() {
+  const session = await getServerSession(authOptions);
+  const role = session?.user?.role;
+  return role === "admin" || role === "staff";
+}
+
 // GET single product
 export async function GET(
   req: NextRequest,
   context: { params: Promise<{ id: string }> }
 ) {
   try {
-    if (!(await isAdmin())) {
+    if (!(await isAuthorized())) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
@@ -47,7 +54,7 @@ export async function PUT(
   context: { params: Promise<{ id: string }> }
 ) {
   try {
-    if (!(await isAdmin())) {
+    if (!(await isAuthorized())) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 

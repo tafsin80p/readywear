@@ -68,12 +68,13 @@ export default withAuth(
         return NextResponse.rewrite(new URL("/access-denied", req.url));
       }
 
-      // If user is a staff member, restrict them strictly to Orders and Profile
+      // If user is a staff member, restrict them strictly to Orders, Products, and Profile
       if (userRole === "staff") {
         const isOrdersPath = pathname.startsWith("/admin/orders");
+        const isProductsPath = pathname.startsWith("/admin/products");
         const isProfilePath = pathname === "/admin/profile";
 
-        if (!isOrdersPath && !isProfilePath) {
+        if (!isOrdersPath && !isProductsPath && !isProfilePath) {
           // Redirect staff cleanly to their order management view
           return NextResponse.redirect(new URL("/admin/orders", req.url));
         }
