@@ -1,5 +1,6 @@
 import connectToDatabase from "@/lib/mongodb";
 import Order from "@/models/Order";
+import Notification from "@/models/Notification";
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
@@ -40,12 +41,12 @@ export default async function AdminOrderDetailsPage({ params }: { params: Promis
     notFound();
   }
 
-  // Mark order as read if it isn't already (handles both false and missing/undefined)
+  // Mark order and its notifications as read
   if (!order.isRead) {
     await Order.findByIdAndUpdate(id, { isRead: true });
-    // Note: since this is a Server Component, Next.js will cache the initial unread state on the client navigation if not careful, 
-    // but the layout will refresh on the next navigation or refresh.
   }
+  // Automatically mark notification for this order as read so the badge decreases
+  await Notification.updateMany({ link: { $regex: id } }, { isRead: true });
 
   return (
     <div className="w-full flex flex-col bg-gray-50/50 min-h-screen">

@@ -78,10 +78,48 @@ export function AdminHeader({ logo = "/readywear logo.png" }: { logo?: string })
     };
     fetchNotifications();
     
-    // Refresh notifications periodically
-    const interval = setInterval(fetchNotifications, 60000);
+    // Refresh notifications periodically every 15 seconds
+    const interval = setInterval(fetchNotifications, 15000);
     return () => clearInterval(interval);
-  }, []);
+  }, [pathname]);
+
+  const handleNotificationClick = async (notification: any) => {
+    setIsNotificationSidebarOpen(false);
+
+    if (!notification.isRead) {
+      setNotifications(prev => prev.map(n => n._id === notification._id ? { ...n, isRead: true } : n));
+      setUnreadCount(prev => Math.max(0, prev - 1));
+
+      try {
+        await fetch("/api/admin/notifications", {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ notificationId: notification._id })
+        });
+      } catch (err) {
+        console.error("Failed to mark notification read", err);
+      }
+    }
+
+    if (notification.link) {
+      router.push(notification.link);
+    }
+  };
+
+  const handleMarkAllAsRead = async () => {
+    setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
+    setUnreadCount(0);
+
+    try {
+      await fetch("/api/admin/notifications", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ markAllRead: true })
+      });
+    } catch (err) {
+      console.error("Failed to mark all read", err);
+    }
+  };
 
   // Debounced search effect
   useEffect(() => {
@@ -340,10 +378,13 @@ export function AdminHeader({ logo = "/readywear logo.png" }: { logo?: string })
           <button 
             onClick={() => setIsNotificationSidebarOpen(!isNotificationSidebarOpen)}
             className="relative p-2 text-gray-500 hover:bg-gray-50 rounded-full transition-colors"
+            title="Notifications"
           >
             <Bell className="w-5 h-5" />
             {unreadCount > 0 && (
-              <span className="absolute top-1 right-1 w-2.5 h-2.5 bg-primary rounded-full border-2 border-white box-content animate-pulse"></span>
+              <span className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] bg-red-600 text-white text-[10px] font-bold rounded-full flex items-center justify-center px-1 border-2 border-white animate-pulse">
+                {unreadCount > 99 ? '99+' : unreadCount}
+              </span>
             )}
           </button>
           
@@ -354,22 +395,32 @@ export function AdminHeader({ logo = "/readywear logo.png" }: { logo?: string })
               <div className="fixed inset-0 bg-black/20 z-40 lg:hidden" onClick={() => setIsNotificationSidebarOpen(false)} />
               
               <div className="fixed top-0 right-0 h-screen w-80 sm:w-96 bg-white shadow-2xl z-50 transform transition-transform duration-300 ease-in-out border-l border-gray-100 flex flex-col animate-in slide-in-from-right">
-                <div className="flex items-center justify-between p-5 border-b border-gray-100 bg-gray-50/50">
+                <div className="flex items-center justify-between p-4 border-b border-gray-100 bg-gray-50/50">
                   <div className="flex items-center gap-2">
                     <Bell className="w-5 h-5 text-gray-700" />
                     <h3 className="font-bold text-gray-900">Notifications</h3>
                     {unreadCount > 0 && (
-                      <span className="bg-primary text-white text-[10px] font-bold px-2 py-0.5 rounded-full ml-1">
+                      <span className="bg-red-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-full ml-1">
                         {unreadCount} New
                       </span>
                     )}
                   </div>
-                  <button 
-                    onClick={() => setIsNotificationSidebarOpen(false)}
-                    className="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-200 rounded-lg transition-colors"
-                  >
-                    <X className="w-4 h-4" />
-                  </button>
+                  <div className="flex items-center gap-2">
+                    {unreadCount > 0 && (
+                      <button
+                        onClick={handleMarkAllAsRead}
+                        className="text-xs font-semibold text-primary hover:text-primary/80 transition-colors"
+                      >
+                        Mark all read
+                      </button>
+                    )}
+                    <button 
+                      onClick={() => setIsNotificationSidebarOpen(false)}
+                      className="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-200 rounded-lg transition-colors"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
                 </div>
                 
                 <div className="flex-1 overflow-y-auto p-2">
@@ -381,13 +432,12 @@ export function AdminHeader({ logo = "/readywear logo.png" }: { logo?: string })
                   ) : notifications.length > 0 ? (
                     <div className="flex flex-col gap-1">
                       {notifications.map((notification) => (
-                        <Link 
-                          href={notification.link}
+                        <div 
                           key={notification._id}
-                          onClick={() => setIsNotificationSidebarOpen(false)}
-                          className={`p-3 rounded-xl transition-all ${
+                          onClick={() => handleNotificationClick(notification)}
+                          className={`p-3 rounded-xl transition-all cursor-pointer ${
                             notification.isRead 
-                              ? 'hover:bg-gray-50' 
+                              ? 'hover:bg-gray-50 opacity-75' 
                               : 'bg-primary/5 hover:bg-primary/10 border border-primary/10'
                           }`}
                         >
@@ -406,11 +456,11 @@ export function AdminHeader({ logo = "/readywear logo.png" }: { logo?: string })
                                 }
                               })()}
                             </div>
-                            <div>
+                            <div className="flex-1 min-w-0">
                               <p className={`text-sm mb-1 ${notification.isRead ? 'font-medium text-gray-800' : 'font-bold text-gray-900'}`}>
                                 {notification.title}
                               </p>
-                              <p className="text-xs text-gray-500 leading-relaxed mb-2">
+                              <p className="text-xs text-gray-500 leading-relaxed mb-2 line-clamp-2">
                                 {notification.message}
                               </p>
                               <p className="text-[10px] font-medium text-gray-400">
@@ -418,7 +468,7 @@ export function AdminHeader({ logo = "/readywear logo.png" }: { logo?: string })
                               </p>
                             </div>
                           </div>
-                        </Link>
+                        </div>
                       ))}
                     </div>
                   ) : (

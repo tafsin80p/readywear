@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useCallback } from "react";
 import OneSignal from 'react-onesignal';
 import { toast } from "react-hot-toast";
 import { usePathname, useRouter } from "next/navigation";
@@ -17,6 +17,71 @@ export default function PushNotificationManager({ toneUrl }: { toneUrl?: string 
   const pathname = usePathname();
   const router = useRouter();
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const soundLoopRef = useRef<any>(null);
+  const seenOrderIdsRef = useRef<Set<string>>(new Set());
+
+  // Stop alert sound
+  const stopAlertSound = useCallback(() => {
+    if (soundLoopRef.current) {
+      clearInterval(soundLoopRef.current);
+      soundLoopRef.current = null;
+    }
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
+    }
+  }, []);
+
+  // Start continuous loud order alert sound until user interacts
+  const startAlertSound = useCallback(() => {
+    stopAlertSound();
+
+    if (toneUrl && audioRef.current) {
+      try {
+        audioRef.current.src = toneUrl;
+        audioRef.current.loop = true;
+        audioRef.current.load();
+        const p = audioRef.current.play();
+        if (p) p.catch(() => {});
+        return;
+      } catch (e) {
+        console.error("Audio element error", e);
+      }
+    }
+
+    // High quality loud repeating cash-register / POS chime via Web Audio
+    const playChimeSequence = () => {
+      try {
+        const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
+        if (!AudioCtx) return;
+        const ctx = new AudioCtx();
+
+        const playTone = (freq: number, start: number, dur: number) => {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = "sine";
+          osc.frequency.setValueAtTime(freq, ctx.currentTime + start);
+          gain.gain.setValueAtTime(0, ctx.currentTime + start);
+          gain.gain.linearRampToValueAtTime(0.7, ctx.currentTime + start + 0.03);
+          gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + start + dur);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start(ctx.currentTime + start);
+          osc.stop(ctx.currentTime + start + dur);
+        };
+
+        const now = 0;
+        playTone(987.77, now, 0.3);         // B5
+        playTone(1318.51, now + 0.18, 0.35); // E6
+        playTone(1760.00, now + 0.38, 0.7);  // A6
+      } catch (e) {
+        console.error("Web audio chime error:", e);
+      }
+    };
+
+    playChimeSequence();
+    soundLoopRef.current = setInterval(playChimeSequence, 1600);
+  }, [toneUrl, stopAlertSound]);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -41,7 +106,6 @@ export default function PushNotificationManager({ toneUrl }: { toneUrl?: string 
           audioRef.current?.pause();
           setAudioUnlocked(true);
         }).catch(() => {});
-        // Remove listeners once unlocked
         window.removeEventListener('click', unlockAudio);
         window.removeEventListener('touchstart', unlockAudio);
       }
@@ -56,6 +120,7 @@ export default function PushNotificationManager({ toneUrl }: { toneUrl?: string 
     };
   }, [audioUnlocked]);
 
+  // OneSignal Init
   useEffect(() => {
     if (!isSupported || !appId) return;
 
@@ -67,7 +132,6 @@ export default function PushNotificationManager({ toneUrl }: { toneUrl?: string 
           allowLocalhostAsSecureOrigin: true
         });
 
-        // Add 'role: admin' tag if user is in admin dashboard
         if (pathname.startsWith('/admin')) {
           await OneSignal.User.addTag("role", "admin");
         }
@@ -78,9 +142,9 @@ export default function PushNotificationManager({ toneUrl }: { toneUrl?: string 
         updateSubscriptionStatus();
         OneSignal.User.PushSubscription.addEventListener("change", updateSubscriptionStatus);
 
-        // Handle foreground notifications (OneSignal v16+)
+        // Handle foreground notifications
         const handleNotification = (event: any) => {
-          event.preventDefault(); // Prevent default browser notification in foreground
+          event.preventDefault();
           
           const notification = event.notification;
           const data = notification.additionalData as any;
@@ -99,42 +163,14 @@ export default function PushNotificationManager({ toneUrl }: { toneUrl?: string 
                 body,
                 url: data?.url || "/admin/orders"
               });
+              startAlertSound();
             } else {
               toast.success(`${title}\n${body}`, {
                 duration: 5000,
                 icon: '🛍️',
               });
             }
-
-            // Play audio ONLY when a new order arrives!
-            if (toneUrl && audioRef.current) {
-              audioRef.current.src = toneUrl;
-              audioRef.current.loop = pathname.startsWith('/admin');
-              audioRef.current.load();
-              const playPromise = audioRef.current.play();
-              if (playPromise !== undefined) {
-                playPromise.catch(e => console.error("Failed to play order alert:", e));
-              }
-            } else if (!toneUrl) {
-              const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
-              if (AudioContext) {
-                const ctx = new AudioContext();
-                const osc = ctx.createOscillator();
-                const gain = ctx.createGain();
-                osc.type = 'sine';
-                osc.frequency.setValueAtTime(880, ctx.currentTime);
-                osc.frequency.exponentialRampToValueAtTime(1760, ctx.currentTime + 0.1);
-                gain.gain.setValueAtTime(0, ctx.currentTime);
-                gain.gain.linearRampToValueAtTime(0.5, ctx.currentTime + 0.05);
-                gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.5);
-                osc.connect(gain);
-                gain.connect(ctx.destination);
-                osc.start();
-                osc.stop(ctx.currentTime + 0.6);
-              }
-            }
           } else {
-            // General / non-order notification: show toast silently with NO sound
             toast.success(`${title}\n${body}`, {
               duration: 5000,
               icon: '🔔',
@@ -144,7 +180,6 @@ export default function PushNotificationManager({ toneUrl }: { toneUrl?: string 
 
         OneSignal.Notifications.addEventListener('foregroundWillDisplay', handleNotification);
 
-        // Cleanup function for listener
         return () => {
           OneSignal.Notifications.removeEventListener('foregroundWillDisplay', handleNotification);
         };
@@ -163,13 +198,12 @@ export default function PushNotificationManager({ toneUrl }: { toneUrl?: string 
       if (cleanupFn) cleanupFn();
     };
 
-  }, [isSupported, appId, pathname, toneUrl]);
+  }, [isSupported, appId, pathname, startAlertSound]);
 
   // Handle custom prompt
   useEffect(() => {
     if (typeof window !== "undefined" && pathname.startsWith('/admin') && pathname !== '/admin/login' && appId) {
       const checkPermission = async () => {
-        // OneSignal uses its own permission state, but browser permission is sufficient for the prompt check
         if (Notification.permission === "default") {
           const hasDismissed = localStorage.getItem('push_prompt_dismissed');
           if (!hasDismissed) {
@@ -181,12 +215,11 @@ export default function PushNotificationManager({ toneUrl }: { toneUrl?: string 
     }
   }, [pathname, appId]);
 
-  // Fallback Polling for iOS PWA where Web Push foreground events might fail
+  // Fast Polling for New Orders in Admin Panel (every 5 seconds)
   useEffect(() => {
     if (!pathname.startsWith('/admin')) return;
     
-    // Check every 10 seconds for new orders
-    let lastChecked = Date.now();
+    let lastChecked = Date.now() - 5000;
     
     const pollOrders = async () => {
       try {
@@ -196,45 +229,19 @@ export default function PushNotificationManager({ toneUrl }: { toneUrl?: string 
         const data = await res.json();
         
         if (data.success && data.orders && data.orders.length > 0) {
-          const newOrder = data.orders[0]; // Most recent order
+          const freshOrders = data.orders.filter((o: any) => !seenOrderIdsRef.current.has(o._id));
           
-          setIncomingOrder({
-            title: "New Order Received! 🛍️",
-            body: `Order ${newOrder.orderId} has been placed for ${newOrder.pricing?.total} BDT.`,
-            url: `/admin/orders/${newOrder._id}`
-          });
-          
-          if (toneUrl && audioRef.current) {
-            // Ensure audio is not already playing to avoid overlapping
-            if (audioRef.current.paused) {
-              audioRef.current.src = toneUrl;
-              audioRef.current.loop = true;
-              audioRef.current.load();
-              const playPromise = audioRef.current.play();
-              if (playPromise !== undefined) {
-                playPromise.catch(() => {});
-              }
-            }
-          } else if (!toneUrl) {
-            // Fallback beep for polling if no custom tone
-            const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
-            if (AudioContext) {
-              try {
-                const ctx = new AudioContext();
-                const osc = ctx.createOscillator();
-                const gain = ctx.createGain();
-                osc.type = 'sine';
-                osc.frequency.setValueAtTime(880, ctx.currentTime);
-                osc.frequency.exponentialRampToValueAtTime(1760, ctx.currentTime + 0.1);
-                gain.gain.setValueAtTime(0, ctx.currentTime);
-                gain.gain.linearRampToValueAtTime(0.5, ctx.currentTime + 0.05);
-                gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.5);
-                osc.connect(gain);
-                gain.connect(ctx.destination);
-                osc.start();
-                osc.stop(ctx.currentTime + 0.6);
-              } catch(e) {}
-            }
+          if (freshOrders.length > 0) {
+            const newOrder = freshOrders[0];
+            seenOrderIdsRef.current.add(newOrder._id);
+            
+            setIncomingOrder({
+              title: "New Order Received! 🛍️",
+              body: `Order #${newOrder.orderId} from ${newOrder.customerInfo?.firstName || 'Customer'} • ৳${newOrder.pricing?.total?.toLocaleString('en-US')}`,
+              url: `/admin/orders/${newOrder._id}`
+            });
+            
+            startAlertSound();
           }
         }
         
@@ -244,10 +251,65 @@ export default function PushNotificationManager({ toneUrl }: { toneUrl?: string 
       }
     };
 
-    const interval = setInterval(pollOrders, 10000);
-    return () => clearInterval(interval);
-  }, [pathname, toneUrl]);
+    const interval = setInterval(pollOrders, 5000);
+    return () => {
+      clearInterval(interval);
+      stopAlertSound();
+    };
+  }, [pathname, startAlertSound, stopAlertSound]);
 
+  const handleCloseOverlay = (redirectUrl?: string) => {
+    setIsClosing(true);
+    stopAlertSound();
+
+    setTimeout(() => {
+      setIncomingOrder(null);
+      setIsClosing(false);
+      if (redirectUrl) {
+        router.push(redirectUrl);
+      }
+    }, 200);
+  };
+
+  // FULL SCREEN POPUP ALWAYS HAS HIGHEST PRIORITY OVER EVERYTHING
+  if (incomingOrder) {
+    return (
+      <div className={`fixed inset-0 z-[99999] flex flex-col items-center justify-center bg-primary/95 backdrop-blur-md p-4 duration-300 ${isClosing ? 'animate-zoom-out' : 'animate-fade-zoom'}`}>
+        <button 
+          onClick={(e) => {
+            e.stopPropagation();
+            handleCloseOverlay();
+          }}
+          className="absolute top-6 right-6 text-white/70 hover:text-white bg-black/20 hover:bg-black/40 p-2.5 rounded-full transition-all"
+          title="Close Alert"
+        >
+          <X className="w-6 h-6" />
+        </button>
+        
+        <div 
+          onClick={() => handleCloseOverlay(incomingOrder.url)}
+          className="flex flex-col items-center justify-center cursor-pointer text-white group max-w-lg text-center"
+        >
+          <div className="w-24 h-24 bg-white text-primary rounded-full flex items-center justify-center mb-8 shadow-2xl animate-ripple group-hover:scale-110 transition-transform duration-300">
+            <ShoppingBag className="w-12 h-12 animate-ring" />
+          </div>
+          
+          <h1 className="text-3xl md:text-5xl font-black mb-4 text-center tracking-tight drop-shadow-lg">
+            {incomingOrder.title}
+          </h1>
+          <p className="text-base md:text-xl text-white/90 text-center font-medium mb-8 drop-shadow-md leading-relaxed px-4">
+            {incomingOrder.body}
+          </p>
+          
+          <div className="bg-white text-primary font-black text-lg px-8 py-3 rounded-2xl shadow-xl hover:bg-gray-50 transition-colors">
+            View Order Details →
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Push Prompt Dialog
   if (showPrompt && pathname.startsWith('/admin')) {
     return (
       <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-fade-in">
@@ -292,61 +354,6 @@ export default function PushNotificationManager({ toneUrl }: { toneUrl?: string 
             >
               Maybe Later
             </button>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  const handleCloseOverlay = (redirectUrl?: string) => {
-    setIsClosing(true);
-    
-    // Stop audio
-    if (audioRef.current) {
-      audioRef.current.pause();
-      audioRef.current.currentTime = 0;
-    }
-
-    setTimeout(() => {
-      setIncomingOrder(null);
-      setIsClosing(false);
-      if (redirectUrl) {
-        router.push(redirectUrl);
-      }
-    }, 200);
-  };
-
-
-  if (incomingOrder) {
-    return (
-      <div className={`fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-primary/95 backdrop-blur-md p-4 duration-300 ${isClosing ? 'animate-zoom-out' : 'animate-fade-zoom'}`}>
-        <button 
-          onClick={(e) => {
-            e.stopPropagation();
-            handleCloseOverlay();
-          }}
-          className="absolute top-6 right-6 text-white/70 hover:text-white bg-black/20 hover:bg-black/40 p-2 rounded-full transition-all"
-        >
-          <X className="w-6 h-6" />
-        </button>
-        
-        <div 
-          onClick={() => handleCloseOverlay(incomingOrder.url)}
-          className="flex flex-col items-center justify-center cursor-pointer text-white group"
-        >
-          <div className="w-24 h-24 bg-white text-primary rounded-full flex items-center justify-center mb-8 shadow-2xl animate-ripple group-hover:scale-110 transition-transform duration-300">
-            <ShoppingBag className="w-12 h-12 animate-ring" />
-          </div>
-          
-          <h1 className="text-4xl md:text-5xl font-black mb-4 text-center tracking-tight drop-shadow-lg">
-            {incomingOrder.title}
-          </h1>
-          <p className="text-lg md:text-xl text-white/90 text-center max-w-2xl font-medium mb-8 drop-shadow-md">
-            {incomingOrder.body}
-          </p>
-          
-          <div className="bg-white text-primary font-black text-lg px-8 py-3 rounded-2xl shadow-xl hover:bg-gray-50 transition-colors">
-            View Order Details
           </div>
         </div>
       </div>
