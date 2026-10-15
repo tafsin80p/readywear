@@ -18,17 +18,13 @@ const escapeMarkdown = (text: string | number | undefined | null) => {
 };
 
 const buildOrderMessageText = (order: any, extraText: string = "") => {
-  let allSizes: string[] = [];
-  let allColors: string[] = [];
-  let otherAttrs: string[] = [];
-
   let productsList = order.items.map((item: any) => {
     let name = escapeMarkdown(item.title || item.name);
-    
     let plainItem = typeof item.toJSON === 'function' ? item.toJSON() : item;
     
     let size = item.size;
     let color = item.color;
+    let otherAttrs: string[] = [];
     
     if (plainItem.attributes && typeof plainItem.attributes === 'object') {
       const attrsObj = plainItem.attributes instanceof Map ? Object.fromEntries(plainItem.attributes) : plainItem.attributes;
@@ -40,22 +36,35 @@ const buildOrderMessageText = (order: any, extraText: string = "") => {
          }
       }
     }
-    
-    if (size) allSizes.push(String(size));
-    if (color) allColors.push(String(color));
 
+    let details: string[] = [];
+    const sizeStr = size != null ? String(size).trim() : "";
+    if (sizeStr && sizeStr !== "undefined" && sizeStr !== "null") {
+      details.push(`সাইজ: ${sizeStr}`);
+    }
+    const colorStr = color != null ? String(color).trim() : "";
+    if (colorStr && colorStr !== "undefined" && colorStr !== "null") {
+      details.push(`রং: ${colorStr}`);
+    }
+    if (otherAttrs.length > 0) {
+      details.push(otherAttrs.join(", "));
+    }
     if (item.quantity > 1) {
-      name += ` x${item.quantity}`;
+      details.push(`পরিমাণ: ${item.quantity}টি`);
     }
-    if (item.image) {
-      name = `[\u200B](${item.image})` + name;
+
+    if (details.length > 0) {
+      name += ` _(${escapeMarkdown(details.join(" | "))})_`;
     }
+
+    const itemImg = item.image || (item.images && item.images[0]);
+    if (itemImg && typeof itemImg === 'string' && (itemImg.startsWith('http://') || itemImg.startsWith('https://'))) {
+      name = `[\u200B](${itemImg})` + name;
+    }
+
     return name;
   }).join("\n• ");
 
-  allSizes = [...new Set(allSizes)];
-  allColors = [...new Set(allColors)];
-  otherAttrs = [...new Set(otherAttrs)];
   let totalQty = order.items.reduce((sum: number, item: any) => sum + item.quantity, 0);
   const dateObj = order.createdAt ? new Date(order.createdAt) : new Date();
   let orderDate = escapeMarkdown(dateObj.toLocaleString('en-US', { 
@@ -88,7 +97,7 @@ const buildOrderMessageText = (order: any, extraText: string = "") => {
 *Order Source:* ${escapeMarkdown(order.source || "Website")}
 
 *Product:* 
-• ${productsList}${allSizes.length > 0 ? `\n\n*Size:* ${escapeMarkdown(allSizes.join(", "))}` : ''}${allColors.length > 0 ? `\n*Color:* ${escapeMarkdown(allColors.join(", "))}` : ''}${otherAttrs.length > 0 ? `\n*Attributes:* ${escapeMarkdown(otherAttrs.join(", "))}` : ''}
+• ${productsList}
 
 *Customer:* ${escapeMarkdown(order.customerInfo.firstName)} ${escapeMarkdown(order.customerInfo.lastName || "")}
 *Phone:* ${escapeMarkdown(order.customerInfo.phone)}
@@ -122,7 +131,7 @@ export const telegramService = {
       // Telegram rejects localhost URLs in inline keyboards
       let appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://yourwebsite.com";
       if (appUrl.includes("localhost")) {
-        appUrl = "https://yourwebsite.com"; // Fallback so Telegram doesn't reject the message
+        appUrl = "https://yourwebsite.com";
       }
       
       const keyboard = {
@@ -140,21 +149,58 @@ export const telegramService = {
         ]
       };
 
-      const url = `https://api.telegram.org/bot${botToken}/sendMessage`;
-      const response = await fetch(url, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          chat_id: chatId,
-          text: message,
-          parse_mode: "Markdown",
-          reply_markup: keyboard
-        })
+      // Check if first item has a valid web image
+      const firstValidImage = order.items?.find((i: any) => {
+        const img = i.image || (i.images && i.images[0]);
+        return img && typeof img === 'string' && (img.startsWith('http://') || img.startsWith('https://'));
       });
+      const imageUrl = firstValidImage ? (firstValidImage.image || firstValidImage.images[0]) : null;
 
-      const data = await response.json();
-      if (!data.ok) {
-        throw new Error(data.description);
+      let data: any = null;
+      let sentWithPhoto = false;
+
+      // Try sendPhoto first if valid image and caption <= 1024 chars
+      if (imageUrl && message.length <= 1024) {
+        try {
+          const photoUrl = `https://api.telegram.org/bot${botToken}/sendPhoto`;
+          const photoRes = await fetch(photoUrl, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              chat_id: chatId,
+              photo: imageUrl,
+              caption: message,
+              parse_mode: "Markdown",
+              reply_markup: keyboard
+            })
+          });
+          const photoData = await photoRes.json();
+          if (photoData.ok) {
+            data = photoData;
+            sentWithPhoto = true;
+          }
+        } catch (photoErr) {
+          console.warn("[Telegram] sendPhoto failed, will fallback to sendMessage:", photoErr);
+        }
+      }
+
+      if (!sentWithPhoto) {
+        const url = `https://api.telegram.org/bot${botToken}/sendMessage`;
+        const response = await fetch(url, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            chat_id: chatId,
+            text: message,
+            parse_mode: "Markdown",
+            reply_markup: keyboard
+          })
+        });
+
+        data = await response.json();
+        if (!data.ok) {
+          throw new Error(data.description);
+        }
       }
 
       return {
@@ -202,7 +248,6 @@ Lead: ${order.metaLeadEventStatus === "sent" ? "✅ SENT" : "🚫 NOT SENT"}
 
       const message = buildOrderMessageText(order, extraText);
 
-      // Telegram rejects localhost URLs in inline keyboards
       let appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://yourwebsite.com";
       if (appUrl.includes("localhost")) {
         appUrl = "https://yourwebsite.com";
@@ -218,7 +263,6 @@ Lead: ${order.metaLeadEventStatus === "sent" ? "✅ SENT" : "🚫 NOT SENT"}
         ]);
       }
 
-      // Add Confirm/Fake/Lead if order is not yet confirmed or fake
       if (order.verificationStatus !== "confirmed" && order.verificationStatus !== "fake") {
         let actionRow = [
           { text: "❌ Fake Order", callback_data: `ask-fake_${order._id}` }
@@ -248,7 +292,21 @@ Lead: ${order.metaLeadEventStatus === "sent" ? "✅ SENT" : "🚫 NOT SENT"}
         })
       });
 
-      const data = await response.json();
+      const editData = await response.json();
+      // If original message was a photo, edit caption instead
+      if (!editData.ok && String(editData.description).toLowerCase().includes("no text")) {
+        await fetch(`https://api.telegram.org/bot${botToken}/editMessageCaption`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            chat_id: order.telegramChatId,
+            message_id: order.telegramMessageId,
+            caption: message,
+            parse_mode: "Markdown",
+            reply_markup: keyboard
+          })
+        });
+      }
       
       // Send a reply message mimicking the requested format
       if (isConfirmed || isLead) {
@@ -281,7 +339,7 @@ Lead: ${order.metaLeadEventStatus === "sent" ? "✅ SENT" : "🚫 NOT SENT"}
         });
       }
 
-      return { success: data.ok };
+      return { success: editData.ok };
     } catch (error: any) {
       console.error("[Telegram] Error editing message:", error);
       return { success: false, error: error.message };

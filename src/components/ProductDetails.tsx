@@ -37,7 +37,7 @@ const toBengaliNumber = (num: number) => {
 
 export function ProductDetails({ product, relatedProducts }: { product: Product, relatedProducts: Product[] }) {
   const router = useRouter();
-  const { addToCart } = useCart();
+  const { addToCart, buyNow } = useCart();
   const { showDiscountPrice } = useStoreSettings();
 
   const hasDiscount = Boolean(showDiscountPrice && product.oldPrice && product.oldPrice > product.price);
@@ -61,7 +61,10 @@ export function ProductDetails({ product, relatedProducts }: { product: Product,
   const handleAddToCart = () => {
     if (isAdded) return;
     
-    addToCart({ ...product, price: displayPrice } as any, quantity, undefined, undefined, selectedAttributes);
+    const sizeVal = selectedAttributes['Size'] || selectedAttributes['size'] || selectedAttributes['সাইজ'];
+    const colorVal = selectedAttributes['Color'] || selectedAttributes['color'] || selectedAttributes['রং'];
+
+    addToCart({ ...product, price: displayPrice } as any, quantity, sizeVal, colorVal, selectedAttributes);
     setIsAdded(true);
     
     setTimeout(() => setIsAdded(false), 2000);
@@ -316,7 +319,9 @@ export function ProductDetails({ product, relatedProducts }: { product: Product,
                 {/* Buy Now */}
                 <button 
                   onClick={() => {
-                    addToCart({ ...product, price: displayPrice } as any, quantity, undefined, undefined, selectedAttributes, false);
+                    const sizeVal = selectedAttributes['Size'] || selectedAttributes['size'] || selectedAttributes['সাইজ'];
+                    const colorVal = selectedAttributes['Color'] || selectedAttributes['color'] || selectedAttributes['রং'];
+                    buyNow({ ...product, price: displayPrice } as any, quantity, sizeVal, colorVal, selectedAttributes);
                     router.push('/checkout');
                   }}
                   disabled={isOutOfStock}

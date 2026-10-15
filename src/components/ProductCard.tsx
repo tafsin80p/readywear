@@ -37,7 +37,7 @@ const toBengaliNumber = (num: number) => {
 
 export function ProductCard({ product, priority = false }: ProductProps) {
   const router = useRouter();
-  const { addToCart } = useCart();
+  const { addToCart, buyNow } = useCart();
   const { showDiscountPrice } = useStoreSettings();
   const [isAdded, setIsAdded] = useState(false);
 
@@ -60,10 +60,13 @@ export function ProductCard({ product, priority = false }: ProductProps) {
     }
 
     const cartProduct = {
-      id: product._id as any,
+      _id: product._id,
+      id: product._id,
+      name: product.name,
       title: product.name,
       price: displayPrice,
-      image: product.images[0] || "",
+      images: product.images || [],
+      image: product.images?.[0] || "",
       category: product.category,
       oldPrice: hasDiscount ? (product.oldPrice || 0) : 0,
       discount: hasDiscount ? (product.discount || 0) : 0,
@@ -104,8 +107,8 @@ export function ProductCard({ product, priority = false }: ProductProps) {
     if (isOutOfStock) return;
 
     const { cartProduct, sizeVal, colorVal, defaultAttributes } = getCartPayload();
-    // Add to cart with openSidebar = false for smooth checkout navigation
-    addToCart(cartProduct, 1, sizeVal, colorVal, defaultAttributes, false);
+    // Sets cart to solely this product and proceeds directly to checkout
+    buyNow(cartProduct, 1, sizeVal, colorVal, defaultAttributes);
     router.push('/checkout');
   };
 

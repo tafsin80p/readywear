@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { after } from "next/server";
+import mongoose from "mongoose";
 import connectToDatabase from "@/lib/mongodb";
 import Order from "@/models/Order";
+import Product from "@/models/Product";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { telegramService } from "@/lib/services/telegramService";
@@ -21,6 +23,29 @@ export async function POST(req: NextRequest) {
     }
 
     await connectToDatabase();
+
+    // Verify & synchronize items with current database products (drops deleted/stale items)
+    const validItems: any[] = [];
+    for (const item of items) {
+      if (item.productId && mongoose.Types.ObjectId.isValid(String(item.productId))) {
+        const dbProduct = await Product.findById(item.productId).lean();
+        if (dbProduct) {
+          validItems.push({
+            ...item,
+            productId: String(dbProduct._id),
+            title: dbProduct.name, // Always use the active title in DB
+            image: (dbProduct.images && dbProduct.images.length > 0) ? dbProduct.images[0] : (item.image || ""),
+            price: item.price || dbProduct.price
+          });
+          continue;
+        }
+        // If product no longer exists in DB (e.g. was deleted), do not include it
+      } else {
+        validItems.push(item);
+      }
+    }
+
+    const orderItems = validItems.length > 0 ? validItems : items;
 
     // Generate Order ID (MZO-0001, MZO-0002, etc.)
     // Find the order with the highest orderId
@@ -47,7 +72,7 @@ export async function POST(req: NextRequest) {
     const orderData: any = {
       orderId,
       customerInfo,
-      items,
+      items: orderItems,
       pricing,
       paymentMethod: paymentMethod || "cod",
       status: "pending",
